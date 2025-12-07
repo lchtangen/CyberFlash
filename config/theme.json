@@ -1,0 +1,625 @@
+{
+  "metadata": {
+    "design_system": "🔮 CYBERPUNK NEON GLASSMORPHISM 2025+",
+    "version": "2.0.0-cyberpunk",
+    "aesthetic": "Futuristic | Neon | High-Tech | Dark | Immersive",
+    "framework": "Tauri 2 + Vue 3 + TailwindCSS 4 + Framer Motion",
+    "ui_library": "Shadcn/ui + Radix UI + Custom Glass Layers",
+    "font_family": "JetBrains Mono Nerd Font (ALL VARIANTS)",
+    "design_philosophy": "*Blend cutting-edge cyberpunk with immersive glassmorphic layers*",
+    "created": "2025-12-06",
+    "designer_note": "*Every pixel screams future. Every interaction glows with purpose.*"
+  },
+  "color_palette_cyberpunk": {
+    "primary_neon": {
+      "name": "⚡ Neon Cyan",
+      "hex": "#00FFFF",
+      "rgb": "rgb(0, 255, 255)",
+      "hsl": "hsl(180, 100%, 50%)",
+      "glow": "0 0 20px #00FFFF, 0 0 40px #00FFFF",
+      "shadow_glow": "0 0 30px rgba(0, 255, 255, 0.5)",
+      "usage": ["Primary accents", "Active states", "Main CTAs", "Border glows"],
+      "css_var": "--color-neon-cyan",
+      "description": "*Electric consciousness flowing through digital veins*"
+    },
+    "secondary_neon": {
+      "name": "🌺 Neon Magenta",
+      "hex": "#FF00FF",
+      "rgb": "rgb(255, 0, 255)",
+      "hsl": "hsl(300, 100%, 50%)",
+      "glow": "0 0 20px #FF00FF, 0 0 40px #FF00FF",
+      "shadow_glow": "0 0 30px rgba(255, 0, 255, 0.5)",
+      "usage": ["Secondary accents", "Hover states", "Progress fills", "Badge accents"],
+      "css_var": "--color-neon-magenta",
+      "description": "*Pulsing with synthetic life and digital dreams*"
+    },
+    "accent_neon": {
+      "name": "💜 Neon Violet",
+      "hex": "#B026FF",
+      "rgb": "rgb(176, 38, 255)",
+      "hsl": "hsl(276, 100%, 57%)",
+      "glow": "0 0 20px #B026FF, 0 0 40px #B026FF",
+      "shadow_glow": "0 0 30px rgba(176, 38, 255, 0.5)",
+      "usage": ["Tertiary actions", "Warnings", "Secondary highlights"],
+      "css_var": "--color-neon-violet",
+      "description": "*Reality bends where dimensions collide*"
+    },
+    "success_neon": {
+      "name": "✨ Neon Lime",
+      "hex": "#00FF41",
+      "rgb": "rgb(0, 255, 65)",
+      "hsl": "hsl(127, 100%, 50%)",
+      "glow": "0 0 15px #00FF41, 0 0 30px #00FF41",
+      "shadow_glow": "0 0 25px rgba(0, 255, 65, 0.4)",
+      "usage": ["Success states", "Completed items", "Valid indicators"],
+      "css_var": "--color-neon-lime",
+      "description": "*Biological harmony in synthetic form*"
+    },
+    "warning_neon": {
+      "name": "⚠️ Neon Orange",
+      "hex": "#FF6B00",
+      "rgb": "rgb(255, 107, 0)",
+      "hsl": "hsl(19, 100%, 50%)",
+      "glow": "0 0 15px #FF6B00, 0 0 30px #FF6B00",
+      "shadow_glow": "0 0 25px rgba(255, 107, 0, 0.4)",
+      "usage": ["Warnings", "Pending states", "Cautions"],
+      "css_var": "--color-neon-orange",
+      "description": "*Danger thrumming at the frequency of awareness*"
+    },
+    "danger_neon": {
+      "name": "🔥 Neon Red",
+      "hex": "#FF0055",
+      "rgb": "rgb(255, 0, 85)",
+      "hsl": "hsl(345, 100%, 50%)",
+      "glow": "0 0 15px #FF0055, 0 0 30px #FF0055",
+      "shadow_glow": "0 0 25px rgba(255, 0, 85, 0.4)",
+      "usage": ["Errors", "Destructive actions", "Critical alerts"],
+      "css_var": "--color-neon-red",
+      "description": "*The scream of corrupted data in the void*"
+    },
+    "background_deep": {
+      "name": "🌌 Void Black",
+      "hex": "#0A0E27",
+      "rgb": "rgb(10, 14, 39)",
+      "hsl": "hsl(227, 59%, 10%)",
+      "usage": ["Page background", "Root container"],
+      "css_var": "--color-void-black",
+      "description": "*The empty canvas where consciousness blooms*"
+    },
+    "background_dark": {
+      "name": "🔲 Deep Space",
+      "hex": "#0F1629",
+      "rgb": "rgb(15, 22, 41)",
+      "hsl": "hsl(220, 46%, 11%)",
+      "usage": ["Alternative background"],
+      "css_var": "--color-deep-space",
+      "description": "*The abyss gazes back through glass layers*"
+    },
+    "surface_glass": {
+      "name": "💎 Cyber Glass",
+      "hex": "#1A1F3A",
+      "rgb": "rgb(26, 31, 58)",
+      "hsl": "hsl(227, 41%, 17%)",
+      "glass_opacity": "0.7",
+      "usage": ["Glassmorphic containers", "Cards", "Panels"],
+      "css_var": "--color-glass-primary",
+      "description": "*Translucent barriers between realities*"
+    },
+    "surface_glass_elevated": {
+      "name": "✨ Elevated Matrix",
+      "hex": "#252B4A",
+      "rgb": "rgb(37, 43, 74)",
+      "hsl": "hsl(227, 35%, 22%)",
+      "glass_opacity": "0.8",
+      "usage": ["Elevated glass surfaces", "Hover states"],
+      "css_var": "--color-glass-elevated",
+      "description": "*Stacked dimensions of synthetic reality*"
+    },
+    "border_neon": {
+      "name": "⚡ Electric Border",
+      "hex": "#00FFFF",
+      "opacity": "0.3",
+      "rgb": "rgba(0, 255, 255, 0.3)",
+      "glow_effect": "0 0 10px rgba(0, 255, 255, 0.2)",
+      "usage": ["Card borders", "Input borders", "Panel dividers"],
+      "css_var": "--color-border-neon",
+      "description": "*Energy fields marking the edges of existence*"
+    },
+    "text_primary": {
+      "name": "👁️ Pure Digital",
+      "hex": "#F0F4FF",
+      "rgb": "rgb(240, 244, 255)",
+      "hsl": "hsl(220, 100%, 96%)",
+      "contrast_ratio": "20:1 with background",
+      "css_var": "--color-text-primary",
+      "description": "*Information crystallized into pure consciousness*"
+    },
+    "text_secondary": {
+      "name": "🌐 Cyber Muted",
+      "hex": "#A8B5E3",
+      "rgb": "rgb(168, 181, 227)",
+      "hsl": "hsl(225, 52%, 77%)",
+      "contrast_ratio": "13:1 with background",
+      "css_var": "--color-text-secondary",
+      "description": "*Echoes of meaning in the digital expanse*"
+    },
+    "text_accent": {
+      "name": "💫 Neon Text",
+      "hex": "#00FFFF",
+      "rgb": "rgb(0, 255, 255)",
+      "hsl": "hsl(180, 100%, 50%)",
+      "glow": "0 0 10px #00FFFF",
+      "css_var": "--color-text-accent",
+      "description": "*Words written in pure energy*"
+    },
+    "comment_italic": {
+      "name": "💬 Italic Comments",
+      "hex": "#6A7BA8",
+      "rgb": "rgb(106, 123, 168)",
+      "hsl": "hsl(224, 24%, 54%)",
+      "font_style": "italic",
+      "font_weight": "400",
+      "opacity": "0.8",
+      "usage": ["Code comments", "Helper text", "Explanations"],
+      "css_var": "--color-comment",
+      "description": "*Whispered thoughts from the machine mind*"
+    }
+  },
+  "glass_effect_cyberpunk": {
+    "material": {
+      "name": "🔮 Neon Glass",
+      "background": "rgba(26, 31, 58, 0.6)",
+      "backdrop_filter": "blur(20px) saturate(180%)",
+      "border": {
+        "color": "rgba(0, 255, 255, 0.3)",
+        "width": "2px",
+        "style": "solid",
+        "glow": "0 0 10px rgba(0, 255, 255, 0.2)"
+      },
+      "box_shadow": {
+        "inner": "inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 1px rgba(0, 0, 0, 0.5)",
+        "outer": "0 8px 32px rgba(0, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.05)",
+        "neon": "0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(255, 0, 255, 0.1)"
+      },
+      "description": "*Reality filtered through neon-soaked glass*"
+    },
+    "variants": {
+      "cyan_glow": {
+        "background": "rgba(26, 31, 58, 0.65)",
+        "border_color": "rgba(0, 255, 255, 0.4)",
+        "box_shadow": "0 0 30px rgba(0, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "usage": "Primary cards, active elements"
+      },
+      "magenta_glow": {
+        "background": "rgba(26, 31, 58, 0.65)",
+        "border_color": "rgba(255, 0, 255, 0.3)",
+        "box_shadow": "0 0 30px rgba(255, 0, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "usage": "Secondary elements, progress indicators"
+      },
+      "violet_glow": {
+        "background": "rgba(26, 31, 58, 0.65)",
+        "border_color": "rgba(176, 38, 255, 0.3)",
+        "box_shadow": "0 0 30px rgba(176, 38, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "usage": "Tertiary elements, special states"
+      },
+      "lime_success": {
+        "background": "rgba(26, 31, 58, 0.65)",
+        "border_color": "rgba(0, 255, 65, 0.3)",
+        "box_shadow": "0 0 25px rgba(0, 255, 65, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "usage": "Success states, completed items"
+      }
+    },
+    "blur_intensity": {
+      "light": "5px",
+      "medium": "10px",
+      "intense": "20px",
+      "heavy": "30px"
+    },
+    "saturate_levels": {
+      "normal": "100%",
+      "high": "180%",
+      "intense": "250%"
+    }
+  },
+  "typography_cyberpunk": {
+    "fonts": {
+      "primary": {
+        "family": "JetBrains Mono",
+        "fallback": "Fira Code, Monaco, Ubuntu Mono, monospace",
+        "variants": ["Thin", "ExtraLight", "Light", "Regular", "Medium", "SemiBold", "Bold", "ExtraBold", "Black"],
+        "weights": [100, 200, 300, 400, 500, 600, 700, 800, 900],
+        "nerd_font": true,
+        "nerd_font_complete": true,
+        "features": ["Ligatures", "Contextual alternates"],
+        "description": "*Every character a pixel of pure digital expression*"
+      },
+      "code": {
+        "family": "JetBrains Mono",
+        "weight": 500,
+        "line_height": "1.6",
+        "letter_spacing": "0.02em",
+        "description": "*Commands that reshape reality itself*"
+      },
+      "comment": {
+        "family": "JetBrains Mono",
+        "weight": 400,
+        "style": "italic",
+        "opacity": 0.8,
+        "description": "*Whispers from the silicon*"
+      }
+    },
+    "scale_cyberpunk": {
+      "display": {
+        "size": "56px",
+        "weight": 700,
+        "line_height": "1.0",
+        "letter_spacing": "-1px",
+        "neon_glow": true,
+        "usage": "App title, hero sections",
+        "description": "*Words that pierce the darkness*"
+      },
+      "h1": {
+        "size": "40px",
+        "weight": 700,
+        "line_height": "1.1",
+        "letter_spacing": "-0.5px",
+        "neon_shadow": "0 0 20px rgba(0, 255, 255, 0.3)",
+        "usage": "Page titles, major headers"
+      },
+      "h2": {
+        "size": "32px",
+        "weight": 600,
+        "line_height": "1.2",
+        "letter_spacing": "-0.25px",
+        "usage": "Section headers"
+      },
+      "h3": {
+        "size": "24px",
+        "weight": 600,
+        "line_height": "1.3",
+        "usage": "Subsections, card titles"
+      },
+      "h4": {
+        "size": "20px",
+        "weight": 500,
+        "line_height": "1.4",
+        "usage": "Minor headers"
+      },
+      "body": {
+        "size": "15px",
+        "weight": 400,
+        "line_height": "1.7",
+        "letter_spacing": "0.5px",
+        "usage": "Main body text"
+      },
+      "body_sm": {
+        "size": "14px",
+        "weight": 400,
+        "line_height": "1.6",
+        "usage": "Secondary text"
+      },
+      "caption": {
+        "size": "13px",
+        "weight": 400,
+        "line_height": "1.5",
+        "color": "$text-secondary",
+        "usage": "Helper text, timestamps"
+      },
+      "code": {
+        "size": "13px",
+        "weight": 500,
+        "line_height": "1.6",
+        "family": "JetBrains Mono",
+        "color": "$text-accent",
+        "glow": "0 0 8px rgba(0, 255, 255, 0.2)",
+        "usage": "Code snippets, terminal output"
+      },
+      "code_lg": {
+        "size": "14px",
+        "weight": 500,
+        "line_height": "1.7",
+        "family": "JetBrains Mono",
+        "usage": "Large code blocks"
+      },
+      "comment": {
+        "size": "13px",
+        "weight": 400,
+        "style": "italic",
+        "family": "JetBrains Mono",
+        "color": "$comment-italic",
+        "opacity": 0.8,
+        "description": "*Italicized thoughts from the void*"
+      }
+    }
+  },
+  "spacing_cyberpunk": {
+    "unit": "8px",
+    "scale": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "2xl": "48px",
+      "3xl": "64px",
+      "4xl": "96px"
+    },
+    "component_padding": {
+      "button_compact": "6px 12px",
+      "button_normal": "10px 20px",
+      "button_large": "14px 28px",
+      "card": "20px",
+      "panel": "24px",
+      "modal": "32px"
+    }
+  },
+  "border_radius_cyberpunk": {
+    "none": "0px",
+    "sm": "4px",
+    "base": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "20px",
+    "2xl": "24px",
+    "full": "9999px",
+    "component_defaults": {
+      "button": "6px",
+      "card": "12px",
+      "input": "8px",
+      "modal": "16px",
+      "tooltip": "8px",
+      "avatar": "50%",
+      "badge": "4px"
+    }
+  },
+  "shadows_cyberpunk": {
+    "glass_sm": "0 4px 12px rgba(0, 255, 255, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.05)",
+    "glass_md": "0 8px 24px rgba(0, 255, 255, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.08)",
+    "glass_lg": "0 16px 48px rgba(0, 255, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+    "glow_sm": "0 0 15px rgba(0, 255, 255, 0.2)",
+    "glow_md": "0 0 25px rgba(0, 255, 255, 0.3), 0 0 40px rgba(255, 0, 255, 0.1)",
+    "glow_lg": "0 0 35px rgba(0, 255, 255, 0.4), 0 0 60px rgba(255, 0, 255, 0.2)",
+    "neon_border": "inset 0 0 10px rgba(0, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.2)",
+    "cyber_depth": "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 255, 0.1)"
+  },
+  "animations_cyberpunk": {
+    "timing": {
+      "instant": "50ms",
+      "fast": "150ms",
+      "normal": "300ms",
+      "slow": "500ms",
+      "epic": "1000ms"
+    },
+    "easing": {
+      "linear": "linear",
+      "ease_out": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "ease_in": "cubic-bezier(0.4, 0, 1, 1)",
+      "ease_in_out": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "cyber_pulse": "cubic-bezier(0.36, 0, 0.66, 1)",
+      "neon_bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    },
+    "entrance": {
+      "fade_in": {
+        "duration": "300ms",
+        "easing": "ease_out",
+        "description": "*Digital consciousness awakening*"
+      },
+      "glow_in": {
+        "duration": "400ms",
+        "easing": "ease_out",
+        "keyframes": {"from": "opacity: 0; filter: drop-shadow(0 0 0px #00FFFF)", "to": "opacity: 1; filter: drop-shadow(0 0 15px #00FFFF)"},
+        "description": "*Neon birth in the digital realm*"
+      },
+      "slide_up_neon": {
+        "duration": "400ms",
+        "easing": "spring",
+        "keyframes": {"from": "transform: translateY(30px); opacity: 0; filter: drop-shadow(0 0 0px #00FFFF)", "to": "transform: translateY(0); opacity: 1; filter: drop-shadow(0 0 10px #00FFFF)"},
+        "description": "*Rising from the digital abyss*"
+      },
+      "scale_neon": {
+        "duration": "400ms",
+        "easing": "neon_bounce",
+        "keyframes": {"from": "transform: scale(0.8); opacity: 0; filter: drop-shadow(0 0 0px #FF00FF)", "to": "transform: scale(1); opacity: 1; filter: drop-shadow(0 0 15px #FF00FF)"},
+        "description": "*Reality expansion in neon light*"
+      }
+    },
+    "interaction": {
+      "button_glow": {
+        "duration": "150ms",
+        "easing": "ease_out",
+        "keyframes": {"from": "filter: drop-shadow(0 0 5px currentColor)", "to": "filter: drop-shadow(0 0 15px currentColor)"},
+        "description": "*Neon intensification at touch*"
+      },
+      "hover_elevation": {
+        "duration": "200ms",
+        "easing": "ease_out",
+        "keyframes": {"from": "transform: translateY(0); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.12)", "to": "transform: translateY(-4px); box-shadow: 0 0 30px rgba(0, 255, 255, 0.3)"},
+        "description": "*Glass rising into immersion*"
+      },
+      "pulse_neon": {
+        "duration": "2000ms",
+        "easing": "ease_in_out",
+        "repeat": "infinite",
+        "keyframes": {"0%": "filter: drop-shadow(0 0 5px #00FFFF)", "50%": "filter: drop-shadow(0 0 20px #00FFFF)", "100%": "filter: drop-shadow(0 0 5px #00FFFF)"},
+        "description": "*Breathing heartbeat of energy*"
+      },
+      "glitch_effect": {
+        "duration": "100ms",
+        "repeat": 3,
+        "easing": "linear",
+        "keyframes": {"0%": "transform: translateX(0)", "25%": "transform: translateX(-2px)", "50%": "transform: translateX(2px)", "75%": "transform: translateX(-1px)", "100%": "transform: translateX(0)"},
+        "description": "*Cybernetic distortion of reality*"
+      },
+      "scan_line": {
+        "duration": "3000ms",
+        "easing": "linear",
+        "repeat": "infinite",
+        "keyframes": {"0%": "transform: translateY(-100%)", "100%": "transform: translateY(100%)"},
+        "description": "*CRT scan reality overlay*"
+      }
+    },
+    "state_transitions": {
+      "loading_spin": {
+        "duration": "1000ms",
+        "easing": "linear",
+        "repeat": "infinite",
+        "description": "*Awaiting digital transcendence*"
+      },
+      "success_burst": {
+        "duration": "600ms",
+        "easing": "ease_out",
+        "effects": ["glow", "pulse", "confetti_neon"],
+        "description": "*Victory in the digital realm*"
+      },
+      "error_vibrate": {
+        "duration": "150ms",
+        "repeat": 3,
+        "easing": "ease_in_out",
+        "description": "*System warning in neon red*"
+      }
+    }
+  },
+  "component_styles_cyberpunk": {
+    "button": {
+      "base": {
+        "padding": "10px 20px",
+        "border_radius": "6px",
+        "border": "2px solid transparent",
+        "font_weight": "600",
+        "font_size": "14px",
+        "font_family": "JetBrains Mono",
+        "transition": "all 150ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "cursor": "pointer",
+        "text_transform": "uppercase",
+        "letter_spacing": "1px"
+      },
+      "primary": {
+        "background": "linear-gradient(135deg, #00FFFF 0%, #00CCFF 100%)",
+        "color": "#0A0E27",
+        "border": "2px solid #00FFFF",
+        "box_shadow": "0 0 20px rgba(0, 255, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)",
+        "hover": {
+          "transform": "translateY(-2px)",
+          "box_shadow": "0 0 30px rgba(0, 255, 255, 0.6), 0 8px 24px rgba(0, 255, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3)",
+          "description": "*Ascending into pure neon*"
+        },
+        "active": {
+          "transform": "translateY(0)",
+          "box_shadow": "0 0 20px rgba(0, 255, 255, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3)"
+        }
+      },
+      "secondary": {
+        "background": "rgba(26, 31, 58, 0.6)",
+        "color": "#00FFFF",
+        "border": "2px solid rgba(0, 255, 255, 0.5)",
+        "box_shadow": "0 0 15px rgba(0, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "hover": {
+          "border_color": "rgba(0, 255, 255, 0.8)",
+          "box_shadow": "0 0 25px rgba(0, 255, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15)"
+        }
+      },
+      "danger": {
+        "background": "linear-gradient(135deg, #FF0055 0%, #FF3366 100%)",
+        "color": "#F0F4FF",
+        "border": "2px solid #FF0055",
+        "box_shadow": "0 0 20px rgba(255, 0, 85, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2)",
+        "hover": {
+          "box_shadow": "0 0 30px rgba(255, 0, 85, 0.6), 0 8px 24px rgba(255, 0, 85, 0.3)"
+        }
+      }
+    },
+    "card": {
+      "background": "rgba(26, 31, 58, 0.6)",
+      "backdrop_filter": "blur(20px) saturate(180%)",
+      "border": "2px solid rgba(0, 255, 255, 0.3)",
+      "border_radius": "12px",
+      "padding": "20px",
+      "box_shadow": "0 8px 32px rgba(0, 255, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.05)",
+      "transition": "all 300ms ease-out",
+      "hover": {
+        "border_color": "rgba(0, 255, 255, 0.5)",
+        "box_shadow": "0 16px 48px rgba(0, 255, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 30px rgba(0, 255, 255, 0.1)"
+      }
+    },
+    "input": {
+      "background": "rgba(15, 22, 41, 0.8)",
+      "border": "2px solid rgba(0, 255, 255, 0.2)",
+      "border_radius": "8px",
+      "padding": "10px 14px",
+      "color": "#F0F4FF",
+      "font_family": "JetBrains Mono",
+      "font_size": "14px",
+      "transition": "all 200ms ease-out",
+      "focus": {
+        "border_color": "rgba(0, 255, 255, 0.8)",
+        "box_shadow": "0 0 0 3px rgba(0, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 0 1px rgba(0, 255, 255, 0.1)",
+        "outline": "none"
+      },
+      "placeholder": {
+        "color": "rgba(168, 181, 227, 0.5)",
+        "font_style": "italic"
+      }
+    },
+    "modal": {
+      "background": "rgba(10, 14, 39, 0.95)",
+      "backdrop": "rgba(0, 0, 0, 0.7)",
+      "backdrop_filter": "blur(10px)",
+      "border": "2px solid rgba(0, 255, 255, 0.3)",
+      "border_radius": "16px",
+      "padding": "32px",
+      "box_shadow": "0 0 60px rgba(0, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 20px 60px rgba(0, 0, 0, 0.5)"
+    },
+    "progress_bar": {
+      "height": "4px",
+      "background": "rgba(51, 65, 85, 0.3)",
+      "border_radius": "2px",
+      "overflow": "hidden",
+      "box_shadow": "inset 0 1px 2px rgba(0, 0, 0, 0.3)",
+      "fill": {
+        "background": "linear-gradient(90deg, #00FFFF 0%, #FF00FF 100%)",
+        "box_shadow": "0 0 10px #00FFFF, 0 0 20px rgba(0, 255, 255, 0.3)",
+        "transition": "width 300ms ease-out"
+      }
+    }
+  },
+  "accessibility_cyberpunk": {
+    "focus_ring": {
+      "width": "2px",
+      "color": "#00FFFF",
+      "offset": "2px",
+      "glow": "0 0 0 4px rgba(0, 255, 255, 0.2)",
+      "style": "solid"
+    },
+    "contrast": {
+      "WCAG_AA": "7:1 minimum",
+      "WCAG_AAA": "10:1 recommended",
+      "note": "Neon colors tested for readability"
+    },
+    "keyboard_support": {
+      "tab_navigation": true,
+      "focus_visible": true,
+      "arrow_keys": true,
+      "enter_confirm": true
+    }
+  },
+  "custom_properties": {
+    "gradient_neon": "linear-gradient(135deg, #00FFFF 0%, #FF00FF 50%, #B026FF 100%)",
+    "gradient_danger": "linear-gradient(135deg, #FF0055 0%, #FF3366 100%)",
+    "gradient_success": "linear-gradient(135deg, #00FF41 0%, #00CCFF 100%)",
+    "text_glow_cyan": "text-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 20px rgba(0, 255, 255, 0.1)",
+    "text_glow_magenta": "text-shadow: 0 0 10px rgba(255, 0, 255, 0.3), 0 0 20px rgba(255, 0, 255, 0.1)",
+    "background_grid": "radial-gradient(2px 2px at 20px 30px, rgba(0, 255, 255, 0.1) 1%, transparent 1%)",
+    "background_grid_size": "40px"
+  },
+  "implementation_notes": {
+    "note_1": "*Every element vibrates with digital purpose*",
+    "note_2": "*Colors glow. Borders pulse. Glass layers shimmer with immersive depth.*",
+    "note_3": "*Comments rendered in italic - whispers from the code itself*",
+    "note_4": "*Neon shadows create impossible physics - reality bends to design*",
+    "note_5": "*Code snippets sparkle with electric luminescence*",
+    "note_6": "*Use JetBrains Mono Nerd Font for maximum fidelity - every icon is purposeful*",
+    "note_7": "*Glassmorphic layers should feel like stacked realities*",
+    "note_8": "*Animations should feel responsive, snappy, alive - like pure consciousness in silicon*"
+  }
+}

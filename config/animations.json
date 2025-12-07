@@ -1,0 +1,314 @@
+{
+  "animations": {
+    "metadata": {
+      "framework": "CSS Keyframes + Framer Motion",
+      "duration_unit": "milliseconds",
+      "easing_format": "cubic-bezier",
+      "version": "2.0.0-cyberpunk"
+    },
+    "keyframes": {
+      "fadeIn": {
+        "duration": 300,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "opacity": 0
+          },
+          "100%": {
+            "opacity": 1
+          }
+        },
+        "description": "*Digital consciousness awakening*"
+      },
+      "glowIn": {
+        "duration": 400,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "opacity": 0,
+            "filter": "drop-shadow(0 0 0px #00FFFF)"
+          },
+          "100%": {
+            "opacity": 1,
+            "filter": "drop-shadow(0 0 15px #00FFFF)"
+          }
+        },
+        "description": "*Neon birth in digital realm*"
+      },
+      "slideUpNeon": {
+        "duration": 400,
+        "easing": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "frames": {
+          "0%": {
+            "transform": "translateY(30px)",
+            "opacity": 0,
+            "filter": "drop-shadow(0 0 0px #00FFFF)"
+          },
+          "100%": {
+            "transform": "translateY(0)",
+            "opacity": 1,
+            "filter": "drop-shadow(0 0 10px #00FFFF)"
+          }
+        },
+        "description": "*Rising from digital abyss*"
+      },
+      "scaleNeon": {
+        "duration": 400,
+        "easing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "frames": {
+          "0%": {
+            "transform": "scale(0.8)",
+            "opacity": 0,
+            "filter": "drop-shadow(0 0 0px #FF00FF)"
+          },
+          "100%": {
+            "transform": "scale(1)",
+            "opacity": 1,
+            "filter": "drop-shadow(0 0 15px #FF00FF)"
+          }
+        },
+        "description": "*Reality expansion in neon light*"
+      },
+      "buttonGlow": {
+        "duration": 150,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "filter": "drop-shadow(0 0 5px currentColor)"
+          },
+          "100%": {
+            "filter": "drop-shadow(0 0 15px currentColor)"
+          }
+        },
+        "description": "*Neon intensification at touch*",
+        "triggers": ["hover", "focus"]
+      },
+      "hoverElevation": {
+        "duration": 200,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "transform": "translateY(0)",
+            "box-shadow": "0 8px 24px rgba(0, 255, 255, 0.12)"
+          },
+          "100%": {
+            "transform": "translateY(-4px)",
+            "box-shadow": "0 0 30px rgba(0, 255, 255, 0.3)"
+          }
+        },
+        "description": "*Glass rising into immersion*",
+        "triggers": ["hover"]
+      },
+      "pulseNeon": {
+        "duration": 2000,
+        "easing": "cubic-bezier(0.36, 0, 0.66, 1)",
+        "repeat": "infinite",
+        "frames": {
+          "0%": {
+            "filter": "drop-shadow(0 0 5px #00FFFF)"
+          },
+          "50%": {
+            "filter": "drop-shadow(0 0 20px #00FFFF)"
+          },
+          "100%": {
+            "filter": "drop-shadow(0 0 5px #00FFFF)"
+          }
+        },
+        "description": "*Breathing heartbeat of energy*",
+        "applies_to": ["active_elements", "status_indicators"]
+      },
+      "glitchEffect": {
+        "duration": 100,
+        "easing": "linear",
+        "repeat": 3,
+        "frames": {
+          "0%": {
+            "transform": "translateX(0)"
+          },
+          "25%": {
+            "transform": "translateX(-2px)"
+          },
+          "50%": {
+            "transform": "translateX(2px)"
+          },
+          "75%": {
+            "transform": "translateX(-1px)"
+          },
+          "100%": {
+            "transform": "translateX(0)"
+          }
+        },
+        "description": "*Cybernetic distortion of reality*",
+        "triggers": ["error_state"]
+      },
+      "scanLine": {
+        "duration": 3000,
+        "easing": "linear",
+        "repeat": "infinite",
+        "frames": {
+          "0%": {
+            "transform": "translateY(-100%)"
+          },
+          "100%": {
+            "transform": "translateY(100%)"
+          }
+        },
+        "description": "*CRT scan reality overlay*",
+        "applies_to": ["background_overlay"],
+        "optional": true
+      },
+      "successBurst": {
+        "duration": 600,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "transform": "scale(0.8)",
+            "opacity": 0,
+            "filter": "drop-shadow(0 0 0px #00FF41)"
+          },
+          "50%": {
+            "filter": "drop-shadow(0 0 20px #00FF41)"
+          },
+          "100%": {
+            "transform": "scale(1)",
+            "opacity": 1,
+            "filter": "drop-shadow(0 0 10px #00FF41)"
+          }
+        },
+        "description": "*Victory in digital realm*",
+        "triggers": ["phase_complete", "download_finish"],
+        "effects": ["glow", "pulse", "confetti"]
+      },
+      "errorVibrate": {
+        "duration": 150,
+        "easing": "cubic-bezier(0.4, 0, 0.6, 1)",
+        "repeat": 3,
+        "frames": {
+          "0%": {
+            "transform": "translateX(0)"
+          },
+          "50%": {
+            "transform": "translateX(-3px)"
+          },
+          "100%": {
+            "transform": "translateX(3px)"
+          }
+        },
+        "description": "*System warning in neon red*",
+        "triggers": ["error_alert"]
+      },
+      "loadingSpin": {
+        "duration": 1000,
+        "easing": "linear",
+        "repeat": "infinite",
+        "frames": {
+          "0%": {
+            "transform": "rotate(0deg)",
+            "filter": "drop-shadow(0 0 10px #00FFFF)"
+          },
+          "50%": {
+            "filter": "drop-shadow(0 0 20px #00FFFF)"
+          },
+          "100%": {
+            "transform": "rotate(360deg)",
+            "filter": "drop-shadow(0 0 10px #00FFFF)"
+          }
+        },
+        "description": "*Awaiting digital transcendence*",
+        "applies_to": ["loading_spinners", "progress_indicators"]
+      },
+      "cardGlow": {
+        "duration": 300,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "border-color": "rgba(0, 255, 255, 0.3)",
+            "box-shadow": "0 8px 32px rgba(0, 255, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.05)"
+          },
+          "100%": {
+            "border-color": "rgba(0, 255, 255, 0.5)",
+            "box-shadow": "0 16px 48px rgba(0, 255, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 30px rgba(0, 255, 255, 0.1)"
+          }
+        },
+        "description": "*Neon card elevation*",
+        "triggers": ["hover"]
+      },
+      "progressGradient": {
+        "duration": 300,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "frames": {
+          "0%": {
+            "background-position": "0% center"
+          },
+          "100%": {
+            "background-position": "100% center"
+          }
+        },
+        "description": "*Flowing gradient energy*",
+        "applies_to": ["progress_bars"],
+        "note": "Use with: background: linear-gradient(90deg, #00FFFF 0%, #FF00FF 100%); background-size: 200% 100%;"
+      },
+      "textGlowCyan": {
+        "duration": 2000,
+        "easing": "cubic-bezier(0.36, 0, 0.66, 1)",
+        "repeat": "infinite",
+        "frames": {
+          "0%": {
+            "text-shadow": "0 0 5px rgba(0, 255, 255, 0.3), 0 0 10px rgba(0, 255, 255, 0.1)"
+          },
+          "50%": {
+            "text-shadow": "0 0 15px rgba(0, 255, 255, 0.5), 0 0 25px rgba(0, 255, 255, 0.2)"
+          },
+          "100%": {
+            "text-shadow": "0 0 5px rgba(0, 255, 255, 0.3), 0 0 10px rgba(0, 255, 255, 0.1)"
+          }
+        },
+        "description": "*Words written in pure energy*",
+        "applies_to": ["headings", "code_blocks"]
+      }
+    },
+    "timing_functions": {
+      "ease_out": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "ease_in": "cubic-bezier(0.4, 0, 1, 1)",
+      "ease_in_out": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "cyber_pulse": "cubic-bezier(0.36, 0, 0.66, 1)",
+      "neon_bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    },
+    "animation_groups": {
+      "entrance": [
+        "fadeIn",
+        "glowIn",
+        "slideUpNeon",
+        "scaleNeon"
+      ],
+      "interaction": [
+        "buttonGlow",
+        "hoverElevation",
+        "pulseNeon",
+        "cardGlow"
+      ],
+      "state_change": [
+        "successBurst",
+        "errorVibrate",
+        "glitchEffect"
+      ],
+      "continuous": [
+        "loadingSpin",
+        "pulseNeon",
+        "scanLine",
+        "textGlowCyan",
+        "progressGradient"
+      ]
+    },
+    "implementation_notes": {
+      "note_1": "*Apply entrance animations on component mount*",
+      "note_2": "*Interaction animations trigger on hover/focus/active*",
+      "note_3": "*State change animations on phase transitions*",
+      "note_4": "*Combine multiple animations for complex effects*",
+      "note_5": "*Use requestAnimationFrame for smooth 60fps*",
+      "note_6": "*Test performance on lower-end systems*",
+      "note_7": "*Ensure reduced-motion respects prefers-reduced-motion*"
+    }
+  }
+}

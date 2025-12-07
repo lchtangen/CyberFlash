@@ -1,0 +1,539 @@
+{
+  "metadata": {
+    "component_library": "Cyberpunk Neon Glassmorphic Components",
+    "version": "1.0.0",
+    "framework": "Vue 3 + Shadcn/ui + Radix UI",
+    "created": "2025-12-06",
+    "description": "*A complete library of glassmorphic neon components for the OnePlus Flasher application*"
+  },
+
+  "components": {
+    "button": {
+      "description": "*Interactive element with neon glow and gradient fills*",
+      "variants": {
+        "primary": {
+          "background": "linear-gradient(135deg, #00FFFF 0%, #00CCFF 100%)",
+          "color": "#0A0E27",
+          "border": "2px solid #00FFFF",
+          "padding": "10px 20px",
+          "border_radius": "6px",
+          "font_weight": "600",
+          "text_transform": "uppercase",
+          "letter_spacing": "1px",
+          "box_shadow": "0 0 20px rgba(0, 255, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)",
+          "hover": {
+            "transform": "translateY(-2px)",
+            "box_shadow": "0 0 30px rgba(0, 255, 255, 0.6), 0 8px 24px rgba(0, 255, 255, 0.3)"
+          },
+          "description": "*Primary action button with cyan neon*"
+        },
+        "secondary": {
+          "background": "rgba(26, 31, 58, 0.6)",
+          "color": "#00FFFF",
+          "border": "2px solid rgba(0, 255, 255, 0.5)",
+          "box_shadow": "0 0 15px rgba(0, 255, 255, 0.2)",
+          "hover": {
+            "border_color": "rgba(0, 255, 255, 0.8)",
+            "box_shadow": "0 0 25px rgba(0, 255, 255, 0.4)"
+          },
+          "description": "*Secondary glass button*"
+        },
+        "danger": {
+          "background": "linear-gradient(135deg, #FF0055 0%, #FF3366 100%)",
+          "color": "#F0F4FF",
+          "border": "2px solid #FF0055",
+          "box_shadow": "0 0 20px rgba(255, 0, 85, 0.4)",
+          "hover": {
+            "box_shadow": "0 0 30px rgba(255, 0, 85, 0.6)"
+          },
+          "description": "*Destructive action button*"
+        },
+        "success": {
+          "background": "linear-gradient(135deg, #00FF41 0%, #00CCFF 100%)",
+          "color": "#0A0E27",
+          "border": "2px solid #00FF41",
+          "box_shadow": "0 0 15px rgba(0, 255, 65, 0.3)",
+          "description": "*Success/confirmation button*"
+        }
+      },
+      "sizes": {
+        "sm": "padding: 6px 12px; font-size: 12px;",
+        "md": "padding: 10px 20px; font-size: 14px;",
+        "lg": "padding: 14px 28px; font-size: 16px;"
+      },
+      "states": {
+        "hover": "elevation + glow increase",
+        "active": "scale(0.98) + inset shadow",
+        "disabled": "opacity: 0.5; cursor: not-allowed",
+        "loading": "spinner + pulsing glow"
+      }
+    },
+
+    "card": {
+      "description": "*Glassmorphic container with neon borders and glows*",
+      "structure": {
+        "background": "rgba(26, 31, 58, 0.6)",
+        "backdrop_filter": "blur(20px) saturate(180%)",
+        "border": "2px solid rgba(0, 255, 255, 0.3)",
+        "border_radius": "12px",
+        "padding": "20px",
+        "box_shadow": "0 8px 32px rgba(0, 255, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "transition": "all 300ms ease-out"
+      },
+      "variants": {
+        "primary": {
+          "border_color": "rgba(0, 255, 255, 0.3)",
+          "glow": "0 0 20px rgba(0, 255, 255, 0.05)",
+          "description": "*Cyan-bordered glass card*"
+        },
+        "elevated": {
+          "background": "rgba(26, 31, 58, 0.7)",
+          "box_shadow": "0 16px 48px rgba(0, 255, 255, 0.15)",
+          "transform": "translateY(-4px)",
+          "description": "*Elevated floating state*"
+        },
+        "accent": {
+          "border_color": "rgba(255, 0, 255, 0.3)",
+          "glow": "0 0 20px rgba(255, 0, 255, 0.05)",
+          "description": "*Magenta-bordered card*"
+        }
+      },
+      "subcomponents": {
+        "header": {
+          "padding": "0 0 16px 0",
+          "border_bottom": "1px solid rgba(0, 255, 255, 0.1)",
+          "description": "*Card title section*"
+        },
+        "content": {
+          "padding": "16px 0",
+          "description": "*Main card content area*"
+        },
+        "footer": {
+          "padding": "16px 0 0 0",
+          "border_top": "1px solid rgba(0, 255, 255, 0.1)",
+          "description": "*Card footer with actions*"
+        }
+      }
+    },
+
+    "input": {
+      "description": "*Text input with neon focus and glow effects*",
+      "structure": {
+        "background": "rgba(15, 22, 41, 0.8)",
+        "border": "2px solid rgba(0, 255, 255, 0.2)",
+        "border_radius": "8px",
+        "padding": "10px 14px",
+        "color": "#F0F4FF",
+        "font_family": "JetBrains Mono",
+        "font_size": "14px",
+        "transition": "all 200ms ease-out"
+      },
+      "states": {
+        "idle": {
+          "border_color": "rgba(0, 255, 255, 0.2)",
+          "box_shadow": "none"
+        },
+        "focus": {
+          "border_color": "rgba(0, 255, 255, 0.8)",
+          "box_shadow": "0 0 0 3px rgba(0, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.3)",
+          "outline": "none",
+          "description": "*Neon focus ring*"
+        },
+        "error": {
+          "border_color": "rgba(255, 0, 85, 0.8)",
+          "box_shadow": "0 0 0 3px rgba(255, 0, 85, 0.1), 0 0 15px rgba(255, 0, 85, 0.3)"
+        },
+        "disabled": {
+          "opacity": "0.5",
+          "cursor": "not-allowed"
+        }
+      },
+      "placeholder": {
+        "color": "rgba(168, 181, 227, 0.5)",
+        "font_style": "italic",
+        "description": "*Italic placeholder text*"
+      }
+    },
+
+    "progress_bar": {
+      "description": "*Animated progress indicator with neon gradient*",
+      "structure": {
+        "container": {
+          "height": "4px",
+          "background": "rgba(51, 65, 85, 0.3)",
+          "border_radius": "2px",
+          "overflow": "hidden",
+          "box_shadow": "inset 0 1px 2px rgba(0, 0, 0, 0.3)"
+        },
+        "fill": {
+          "background": "linear-gradient(90deg, #00FFFF 0%, #FF00FF 100%)",
+          "height": "100%",
+          "box_shadow": "0 0 10px #00FFFF, 0 0 20px rgba(0, 255, 255, 0.3)",
+          "transition": "width 300ms ease-out",
+          "border_radius": "2px"
+        }
+      },
+      "variants": {
+        "cyan": {
+          "background": "linear-gradient(90deg, #00FFFF 0%, #00CCFF 100%)",
+          "glow": "0 0 15px #00FFFF"
+        },
+        "magenta": {
+          "background": "linear-gradient(90deg, #FF00FF 0%, #B026FF 100%)",
+          "glow": "0 0 15px #FF00FF"
+        },
+        "success": {
+          "background": "linear-gradient(90deg, #00FF41 0%, #00CCFF 100%)",
+          "glow": "0 0 15px #00FF41"
+        }
+      }
+    },
+
+    "modal": {
+      "description": "*Fullscreen modal with blurred backdrop and glass container*",
+      "backdrop": {
+        "background": "rgba(0, 0, 0, 0.7)",
+        "backdrop_filter": "blur(10px)",
+        "animation": "fade_in 300ms ease-out"
+      },
+      "container": {
+        "background": "rgba(10, 14, 39, 0.95)",
+        "border": "2px solid rgba(0, 255, 255, 0.3)",
+        "border_radius": "16px",
+        "padding": "32px",
+        "max_width": "90vw",
+        "max_height": "90vh",
+        "box_shadow": "0 0 60px rgba(0, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 20px 60px rgba(0, 0, 0, 0.5)",
+        "animation": "modal_entrance 400ms cubic-bezier(0.34, 1.56, 0.64, 1)"
+      },
+      "header": {
+        "margin_bottom": "20px",
+        "border_bottom": "1px solid rgba(0, 255, 255, 0.1)"
+      },
+      "close_button": {
+        "position": "absolute",
+        "top": "16px",
+        "right": "16px",
+        "cursor": "pointer",
+        "color": "#A8B5E3",
+        "hover_color": "#00FFFF"
+      }
+    },
+
+    "tooltip": {
+      "description": "*Floating informational box with neon border*",
+      "structure": {
+        "background": "rgba(26, 31, 58, 0.9)",
+        "border": "1px solid rgba(0, 255, 255, 0.3)",
+        "border_radius": "8px",
+        "padding": "8px 12px",
+        "font_size": "12px",
+        "color": "#A8B5E3",
+        "box_shadow": "0 4px 12px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 255, 255, 0.1)",
+        "z_index": "1000"
+      },
+      "animation": "fade_in 200ms ease-out",
+      "position": "absolute"
+    },
+
+    "badge": {
+      "description": "*Small labeled element with color coding*",
+      "structure": {
+        "padding": "4px 8px",
+        "border_radius": "4px",
+        "font_size": "12px",
+        "font_weight": "600",
+        "display": "inline-block"
+      },
+      "variants": {
+        "success": {
+          "background": "rgba(0, 255, 65, 0.2)",
+          "color": "#00FF41",
+          "border": "1px solid rgba(0, 255, 65, 0.4)"
+        },
+        "warning": {
+          "background": "rgba(255, 107, 0, 0.2)",
+          "color": "#FF6B00",
+          "border": "1px solid rgba(255, 107, 0, 0.4)"
+        },
+        "error": {
+          "background": "rgba(255, 0, 85, 0.2)",
+          "color": "#FF0055",
+          "border": "1px solid rgba(255, 0, 85, 0.4)"
+        },
+        "info": {
+          "background": "rgba(0, 255, 255, 0.2)",
+          "color": "#00FFFF",
+          "border": "1px solid rgba(0, 255, 255, 0.4)"
+        }
+      }
+    },
+
+    "dropdown": {
+      "description": "*Menu with glass panel and neon highlight*",
+      "trigger": {
+        "type": "button",
+        "appearance": "secondary"
+      },
+      "menu": {
+        "background": "rgba(26, 31, 58, 0.9)",
+        "border": "2px solid rgba(0, 255, 255, 0.3)",
+        "border_radius": "8px",
+        "padding": "8px",
+        "box_shadow": "0 8px 32px rgba(0, 255, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+        "min_width": "200px"
+      },
+      "item": {
+        "padding": "8px 12px",
+        "color": "#F0F4FF",
+        "cursor": "pointer",
+        "transition": "all 150ms ease-out",
+        "hover": {
+          "background": "rgba(0, 255, 255, 0.1)",
+          "color": "#00FFFF",
+          "padding_left": "16px"
+        }
+      }
+    },
+
+    "tabs": {
+      "description": "*Tabbed interface with neon indicators*",
+      "header": {
+        "background": "rgba(26, 31, 58, 0.4)",
+        "border_bottom": "2px solid rgba(0, 255, 255, 0.2)",
+        "padding": "0 16px",
+        "display": "flex",
+        "gap": "8px"
+      },
+      "tab": {
+        "padding": "12px 16px",
+        "color": "#A8B5E3",
+        "cursor": "pointer",
+        "transition": "all 200ms ease-out",
+        "border_bottom": "2px solid transparent",
+        "hover": {
+          "color": "#00FFFF"
+        }
+      },
+      "tab_active": {
+        "color": "#00FFFF",
+        "border_bottom_color": "#00FFFF",
+        "box_shadow": "0 2px 8px rgba(0, 255, 255, 0.2)"
+      },
+      "content": {
+        "padding": "16px",
+        "animation": "fade_in 200ms ease-out"
+      }
+    },
+
+    "checkbox": {
+      "description": "*Custom checkbox with neon border and fill*",
+      "structure": {
+        "size": "20px",
+        "border": "2px solid rgba(0, 255, 255, 0.4)",
+        "border_radius": "4px",
+        "background": "transparent",
+        "cursor": "pointer",
+        "transition": "all 200ms ease-out"
+      },
+      "states": {
+        "unchecked": {
+          "border_color": "rgba(0, 255, 255, 0.4)"
+        },
+        "checked": {
+          "background": "linear-gradient(135deg, #00FFFF 0%, #00CCFF 100%)",
+          "border_color": "#00FFFF",
+          "box_shadow": "0 0 10px rgba(0, 255, 255, 0.3)",
+          "checkmark_color": "#0A0E27"
+        },
+        "hover": {
+          "border_color": "rgba(0, 255, 255, 0.6)"
+        }
+      }
+    },
+
+    "radio": {
+      "description": "*Radio button with neon ring*",
+      "structure": {
+        "size": "20px",
+        "border": "2px solid rgba(0, 255, 255, 0.4)",
+        "border_radius": "50%",
+        "cursor": "pointer"
+      },
+      "checked": {
+        "border_color": "#00FFFF",
+        "box_shadow": "inset 0 0 0 6px #00FFFF, 0 0 10px rgba(0, 255, 255, 0.3)"
+      }
+    },
+
+    "toggle": {
+      "description": "*Switch toggle with smooth animation*",
+      "structure": {
+        "width": "44px",
+        "height": "24px",
+        "background": "rgba(51, 65, 85, 0.5)",
+        "border_radius": "12px",
+        "cursor": "pointer",
+        "transition": "background 300ms ease-out"
+      },
+      "knob": {
+        "width": "20px",
+        "height": "20px",
+        "background": "linear-gradient(135deg, #A8B5E3 0%, #CBD5E1 100%)",
+        "border_radius": "50%",
+        "position": "absolute",
+        "top": "2px",
+        "left": "2px",
+        "transition": "all 300ms ease-out"
+      },
+      "on": {
+        "background": "linear-gradient(135deg, #00FFFF 0%, #00CCFF 100%)",
+        "knob": {
+          "left": "22px",
+          "box_shadow": "0 0 10px rgba(0, 255, 255, 0.5)"
+        }
+      }
+    },
+
+    "slider": {
+      "description": "*Range slider with neon fill*",
+      "track": {
+        "height": "4px",
+        "background": "rgba(51, 65, 85, 0.3)",
+        "border_radius": "2px"
+      },
+      "fill": {
+        "background": "linear-gradient(90deg, #00FFFF 0%, #FF00FF 100%)",
+        "box_shadow": "0 0 10px #00FFFF"
+      },
+      "thumb": {
+        "width": "16px",
+        "height": "16px",
+        "background": "linear-gradient(135deg, #00FFFF 0%, #FF00FF 100%)",
+        "border_radius": "50%",
+        "box_shadow": "0 0 10px rgba(0, 255, 255, 0.4)",
+        "cursor": "pointer"
+      }
+    },
+
+    "alert": {
+      "description": "*Status alert message with color coding*",
+      "structure": {
+        "padding": "12px 16px",
+        "border_radius": "8px",
+        "border_left": "4px solid currentColor",
+        "display": "flex",
+        "align_items": "center",
+        "gap": "12px"
+      },
+      "variants": {
+        "info": {
+          "background": "rgba(0, 255, 255, 0.1)",
+          "border_color": "#00FFFF",
+          "color": "#00FFFF"
+        },
+        "success": {
+          "background": "rgba(0, 255, 65, 0.1)",
+          "border_color": "#00FF41",
+          "color": "#00FF41"
+        },
+        "warning": {
+          "background": "rgba(255, 107, 0, 0.1)",
+          "border_color": "#FF6B00",
+          "color": "#FF6B00"
+        },
+        "error": {
+          "background": "rgba(255, 0, 85, 0.1)",
+          "border_color": "#FF0055",
+          "color": "#FF0055"
+        }
+      }
+    },
+
+    "loader": {
+      "description": "*Loading spinner with neon glow*",
+      "variants": {
+        "spinner": {
+          "size": "32px",
+          "border": "3px solid rgba(0, 255, 255, 0.1)",
+          "border_top_color": "#00FFFF",
+          "border_radius": "50%",
+          "animation": "loading_spin 1000ms linear infinite",
+          "box_shadow": "0 0 10px rgba(0, 255, 255, 0.3)"
+        },
+        "pulse": {
+          "size": "40px",
+          "background": "rgba(0, 255, 255, 0.2)",
+          "border_radius": "50%",
+          "animation": "loading_pulse 1500ms ease-in-out infinite",
+          "box_shadow": "0 0 20px rgba(0, 255, 255, 0.3)"
+        },
+        "dots": {
+          "display": "flex",
+          "gap": "4px",
+          "description": "*Three pulsing dots*"
+        }
+      }
+    },
+
+    "avatar": {
+      "description": "*User/device avatar with status indicator*",
+      "structure": {
+        "size": "40px",
+        "border_radius": "50%",
+        "background": "linear-gradient(135deg, #00FFFF 0%, #FF00FF 100%)",
+        "display": "flex",
+        "align_items": "center",
+        "justify_content": "center",
+        "color": "#0A0E27",
+        "font_weight": "600"
+      },
+      "status": {
+        "size": "12px",
+        "border_radius": "50%",
+        "position": "absolute",
+        "bottom": "-2px",
+        "right": "-2px",
+        "border": "2px solid #0A0E27",
+        "variants": {
+          "online": "background: #00FF41",
+          "offline": "background: #A8B5E3",
+          "busy": "background: #FF6B00"
+        }
+      }
+    }
+  },
+
+  "composition_patterns": {
+    "card_with_header_footer": {
+      "structure": ["card.header", "card.content", "card.footer"],
+      "description": "Complete card layout pattern"
+    },
+    "form_group": {
+      "structure": ["label", "input", "error_message"],
+      "description": "Standard form control pattern"
+    },
+    "button_group": {
+      "structure": ["button.primary", "button.secondary"],
+      "spacing": "8px",
+      "description": "Grouped action buttons"
+    },
+    "status_with_icon": {
+      "structure": ["badge", "icon", "text"],
+      "description": "Status indicator pattern"
+    }
+  },
+
+  "accessibility": {
+    "focus_management": {
+      "focus_ring": "2px solid #00FFFF",
+      "focus_offset": "2px",
+      "visible_on_keyboard": true
+    },
+    "semantic_html": true,
+    "aria_labels": true,
+    "keyboard_navigation": true,
+    "screen_reader_support": true,
+    "color_contrast": "WCAG AAA"
+  }
+}

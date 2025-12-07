@@ -1,0 +1,77 @@
+{
+  "roadmap": {
+    "version": "2.0.0",
+    "design_system": "Apple Vision Pro Glassmorphism",
+    "status": "planning",
+    "priorities": {
+      "high": {
+        "count": 20,
+        "description": "Core UI primitives required for the Vision design language.",
+        "components": [
+          { "name": "VisionWindow", "description": "Main application shell with backdrop-filter blur and rounded corners." },
+          { "name": "VisionSidebar", "description": "Translucent navigation rail with active state depth effects." },
+          { "name": "VisionButton", "description": "Interactive elements with mesh gradient hover states and glass borders." },
+          { "name": "VisionCard", "description": "Fundamental content container with variable blur levels (sm, md, lg)." },
+          { "name": "VisionInput", "description": "Text fields with inner shadow and glass background." },
+          { "name": "VisionToggle", "description": "iOS-style switch with vivid accent colors (Green/Blue)." },
+          { "name": "VisionProgressBar", "description": "Smooth animated progress bar with glowing leading edge." },
+          { "name": "VisionBadge", "description": "Pill-shaped status indicators with subtle background tints." },
+          { "name": "VisionModal", "description": "Center-aligned dialogs with heavy background dimming and blur." },
+          { "name": "VisionTooltip", "description": "Floating helper text with glass background." },
+          { "name": "VisionTabs", "description": "Segmented control for switching views." },
+          { "name": "VisionSpinner", "description": "Indeterminate loading state, potentially 3D-like." },
+          { "name": "VisionAlert", "description": "Toast notifications for success/error states." },
+          { "name": "VisionAvatar", "description": "Circular representations for devices or users." },
+          { "name": "VisionBreadcrumb", "description": "Path navigation helper." },
+          { "name": "VisionDivider", "description": "1px glass line for separation." },
+          { "name": "VisionSlider", "description": "Range selector for settings." },
+          { "name": "VisionSelect", "description": "Custom dropdown with glass menu." },
+          { "name": "VisionScrollArea", "description": "Invisible or glass-styled scrollbars." },
+          { "name": "VisionGrid", "description": "Responsive layout grid system." }
+        ]
+      },
+      "medium": {
+        "count": 10,
+        "description": "Functional components specific to the flashing workflow.",
+        "components": [
+          { "name": "DeviceStatusPanel", "description": "Real-time ADB/Fastboot status visualization." },
+          { "name": "LogStreamViewer", "description": "Terminal-like output window with syntax highlighting." },
+          { "name": "FileDropZone", "description": "Large interactive area for dragging ROM zips." },
+          { "name": "StepWizard", "description": "Progress stepper for the flashing phases." },
+          { "name": "AIChatInterface", "description": "Floating chat interface for Gemini integration." },
+          { "name": "RomSelector", "description": "Grid of cards for selecting firmware versions." },
+          { "name": "DownloadManager", "description": "List of active downloads with pause/resume." },
+          { "name": "SettingsPanel", "description": "Configuration form for app preferences." },
+          { "name": "ThemeAccentPicker", "description": "Allow user to choose the primary vivid accent color." },
+          { "name": "CommandPalette", "description": "Cmd+K interface for quick actions." }
+        ]
+      },
+      "low": {
+        "count": 5,
+        "description": "Polish and delight features.",
+        "components": [
+          { "name": "ParallaxBackground", "description": "Mouse-aware movement of background mesh gradients." },
+          { "name": "SoundEffects", "description": "Subtle audio cues for interactions." },
+          { "name": "KeyboardShortcuts", "description": "Visual cheat sheet for power users." },
+          { "name": "OnboardingTour", "description": "Guided walkthrough for first-time users." },
+          { "name": "EasterEggs", "description": "Hidden interactions for fun." }
+        ]
+      }
+    },
+    "ai_integration": {
+      "provider": "Google Gemini 3 Pro",
+      "features": [
+        "Predictive Flashing Analysis",
+        "Smart Error Recovery Suggestions",
+        "Interactive Chat Assistant"
+      ],
+      "architecture": "Rust Backend Proxy -> Gemini API"
+    },
+    "automation": {
+      "tools": [
+        "device_manager.py (Device Discovery)",
+        "project_automator.py (Build & Env Check)"
+      ]
+    }
+  }
+}
