@@ -46,9 +46,11 @@ CYBERFLASH_V2/
 │   │   ├── flash.ts            # Flashing state machine
 │   │   └── device.ts           # Device state
 │
-└── specs/                      # 📄 CONFIGURATION
+└── config/                     # 📄 CONFIGURATION (Single Source of Truth)
+    ├── app-config.yaml         # Global App Settings
     ├── downloads.json          # URLs for ROM, Firmware, TWRP
-    └── phases.json             # Definition of the 8 phases
+    ├── phases.json             # Definition of the 8 phases
+    └── theme.json              # Design tokens
 ```
 
 ## 🏗️ Project Structure
