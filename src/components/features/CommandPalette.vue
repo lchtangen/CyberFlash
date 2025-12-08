@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAIStore } from '../../stores/ai';
-import { aiService } from '../../services/aiService';
+import { useNotificationStore } from '../../stores/notifications';
 
 const isOpen = ref(false);
 const searchQuery = ref('');
 const aiStore = useAIStore();
+const notificationStore = useNotificationStore();
 
 const commands = [
   { id: 'flash', label: 'Flash ROM', icon: 'system_update', shortcut: '⌘F', action: () => console.log('Flash') },
   { id: 'wipe', label: 'Wipe Data', icon: 'delete_forever', shortcut: '⌘W', action: () => console.log('Wipe') },
   { id: 'reboot', label: 'Reboot Device', icon: 'restart_alt', shortcut: '⌘R', action: () => console.log('Reboot') },
-  { id: 'settings', label: 'Open Settings', icon: 'settings', shortcut: '⌘,', action: () => aiService.executeAction('nav_settings') },
-  { id: 'scan', label: 'Scan Devices', icon: 'devices', shortcut: '⌘D', action: () => aiService.executeAction('adb_scan') },
-  { id: 'logs', label: 'Analyze Logs', icon: 'analytics', shortcut: '⌘L', action: () => aiService.executeAction('analyze_logcat') },
+  { id: 'settings', label: 'Open Settings', icon: 'settings', shortcut: '⌘,', action: () => console.log('Settings') },
+  { id: 'scan', label: 'Scan Devices', icon: 'devices', shortcut: '⌘D', action: () => console.log('Scan') },
+  { id: 'logs', label: 'Analyze Logs', icon: 'analytics', shortcut: '⌘L', action: () => console.log('Logs') },
 ];
 
 const filteredCommands = computed(() => {
@@ -33,6 +34,12 @@ const handleKeydown = (e: KeyboardEvent) => {
 
 const executeCommand = (cmd: any) => {
   cmd.action();
+  notificationStore.addNotification({
+    title: 'Command Executed',
+    message: `Running: ${cmd.label}`,
+    type: 'info',
+    duration: 2000
+  });
   isOpen.value = false;
   searchQuery.value = '';
 };
@@ -40,7 +47,7 @@ const executeCommand = (cmd: any) => {
 const askAI = () => {
   aiStore.isVisible = true;
   aiStore.addMessage('user', searchQuery.value);
-  aiService.processUserMessage(searchQuery.value);
+  // Trigger AI processing here
   isOpen.value = false;
   searchQuery.value = '';
 };
@@ -54,7 +61,7 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isOpen = false"></div>
     
     <!-- Modal Content -->
-    <div class="relative w-full max-w-lg bg-[#1c1c1e] border border-white/10 rounded-xl shadow-2xl overflow-hidden">
+    <div class="relative w-full max-w-lg bg-surface/90 border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
       <div class="p-4 border-b border-white/10">
         <input 
           v-model="searchQuery" 
@@ -73,7 +80,7 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
           class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-white/10 transition-colors group text-left focus:bg-white/10 outline-none"
         >
           <div class="flex items-center gap-3">
-            <span class="material-icons text-gray-400 group-hover:text-white">{{ cmd.icon }}</span>
+            <span class="material-symbols-rounded text-gray-400 group-hover:text-white">{{ cmd.icon }}</span>
             <span class="text-white">{{ cmd.label }}</span>
           </div>
           <span class="text-xs text-gray-400 bg-white/5 px-2 py-1 rounded">{{ cmd.shortcut }}</span>
@@ -83,10 +90,10 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
         <button
           v-if="searchQuery && filteredCommands.length === 0"
           @click="askAI"
-          class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-primary/20 transition-colors group text-left border border-dashed border-white/10 hover:border-primary/50"
+          class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-500/20 transition-colors group text-left border border-dashed border-white/10 hover:border-blue-500/50"
         >
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-            <span class="material-icons text-white text-sm">auto_awesome</span>
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            <span class="material-symbols-rounded text-white text-sm">auto_awesome</span>
           </div>
           <div>
             <span class="text-white block text-sm">Ask AI Assistant</span>

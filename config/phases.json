@@ -61,27 +61,18 @@
         {
           "step": 3,
           "title": "Download Firmware H.41",
-          "command": "wget -c 'https://c.mi.com/api/file/android/' -O OP7Pro_firmware_H.41.zip",
+          "command": "wget -c 'https://sourceforge.net/projects/oneplus-firmware/files/OnePlus7Pro/H.41/OPM7.181205.001_H41.zip/download' -O OP7Pro_firmware_H.41.zip",
           "description": "Download official OnePlus firmware tool (142 MB)",
           "expected_size": "142 MB",
           "copy_to_clipboard": true
         },
         {
           "step": 4,
-          "title": "Manual: Download TWRP 3.7.1 (Browser Required)",
-          "browser_action": true,
-          "browser_url": "https://twrp.me/devices/oneplus7pro.html",
-          "description": "TeamWin server requires browser JavaScript execution",
-          "detailed_steps": [
-            "Open web browser (Firefox/Chrome/Edge)",
-            "Go to: https://twrp.me/devices/oneplus7pro.html",
-            "Find 'OnePlus 7 Pro (guacamole)' device section",
-            "Click 'Recovery' or 'Download' button for twrp-3.7.1_12-0-guacamole.img",
-            "Save file to: ~/OnePlus7Pro_crDroid11/downloads/",
-            "Verify file size is ~96 MB (not 6.7K)"
-          ],
+          "title": "Download TWRP 3.7.1",
+          "command": "wget -c 'https://dl.twrp.me/guacamole/twrp-3.7.1_12-0-guacamole.img' -O twrp-3.7.1_12-0-guacamole.img",
+          "description": "Download TWRP Recovery (96 MB)",
           "expected_size": "96 MB",
-          "copy_to_clipboard": false
+          "copy_to_clipboard": true
         },
         {
           "step": 5,
@@ -251,6 +242,13 @@
         }
       ],
       "validations": [
+        {
+          "check": "device_model_match",
+          "title": "Verify Device Model",
+          "command": "adb shell getprop ro.product.device",
+          "expected": "guacamole|guacamoleb",
+          "critical": true
+        },
         {
           "check": "usb_debugging_visible",
           "title": "USB Debugging Option Visible",

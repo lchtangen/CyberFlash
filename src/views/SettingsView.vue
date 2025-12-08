@@ -1,0 +1,9 @@
+<script setup lang="ts">
+import SettingsPanel from '../components/features/SettingsPanel.vue';
+</script>
+
+<template>
+  <div class="h-full p-6 overflow-hidden">
+    <SettingsPanel />
+  </div>
+</template>

@@ -1,81 +1,80 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import DeviceStatusPanel from '../components/features/DeviceStatusPanel.vue';
-
-const currentStep = ref(1);
-const steps = ['Select ROM', 'Verify Device', 'Flash', 'Complete'];
+import DevicePanel from '../components/features/DevicePanel.vue';
+import FlashWizard from '../components/features/FlashWizard.vue';
+import RomSelector from '../components/features/RomSelector.vue';
+import SlotManager from '../components/features/SlotManager.vue';
+import PartitionVisualizer from '../components/features/PartitionVisualizer.vue';
+import SideloadAssistant from '../components/features/SideloadAssistant.vue';
+import DeviceFingerprinter from '../components/features/DeviceFingerprinter.vue';
+import FactoryResetSafe from '../components/features/FactoryResetSafe.vue';
+import BackupManager from '../components/features/BackupManager.vue';
+import LogAnalyst from '../components/features/LogAnalyst.vue';
+import BootloaderUnlockFlow from '../components/features/BootloaderUnlockFlow.vue';
+import RecoveryInstaller from '../components/features/RecoveryInstaller.vue';
+import MagiskInjector from '../components/features/MagiskInjector.vue';
+import DownloadCenter from '../components/features/DownloadCenter.vue';
+import ThemeEngine from '../components/features/ThemeEngine.vue';
+import DriverHealthCheck from '../components/features/DriverHealthCheck.vue';
+import PermissionGate from '../components/features/PermissionGate.vue';
+import AppUpdater from '../components/features/AppUpdater.vue';
+import LiveTerminal from '../components/features/LiveTerminal.vue';
+import AIGuardian from '../components/features/AIGuardian.vue';
 </script>
 
 <template>
-  <div class="p-6 h-full flex flex-col">
+  <div class="p-6 h-full flex flex-col overflow-y-auto custom-scrollbar">
+    <DriverHealthCheck />
+    <PermissionGate />
+    <AppUpdater />
+    <AIGuardian />
     <header class="mb-8">
-      <h2 class="text-2xl font-bold text-white">Flash Firmware</h2>
-      <p class="text-text-secondary">Install new ROMs safely</p>
+      <h2 class="text-2xl font-bold text-white tracking-tight">Flash Firmware</h2>
+      <p class="text-text-secondary text-sm">Install new ROMs safely</p>
     </header>
 
     <div class="flex-1 flex gap-6">
       <div class="flex-1 flex flex-col gap-6">
-        <!-- Progress -->
-        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
-           <div class="flex justify-between relative">
-             <div class="absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -z-10"></div>
-             <div 
-               v-for="(step, index) in steps" 
-               :key="step"
-               class="flex flex-col items-center gap-2 bg-[#121212] px-2"
-             >
-               <div 
-                 class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors"
-                 :class="currentStep > index + 1 ? 'bg-success text-black' : currentStep === index + 1 ? 'bg-primary text-black shadow-[0_0_10px_rgba(10,132,255,0.5)]' : 'bg-white/10 text-gray-500'"
-               >
-                 {{ currentStep > index + 1 ? '✓' : index + 1 }}
-               </div>
-               <span 
-                 class="text-xs font-medium"
-                 :class="currentStep === index + 1 ? 'text-white' : 'text-gray-500'"
-               >
-                 {{ step }}
-               </span>
-             </div>
-           </div>
-        </div>
+        <!-- Wizard -->
+        <FlashWizard />
+        
+        <!-- ROM Selection -->
+        <RomSelector />
 
-        <!-- Main Content Area -->
-        <div class="flex-1 bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md relative overflow-hidden">
-          <div v-if="currentStep === 1" class="h-full flex flex-col items-center justify-center text-center space-y-4">
-            <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">
-              <span class="material-icons text-4xl text-gray-400">upload_file</span>
-            </div>
-            <h3 class="text-xl font-semibold text-white">Select Firmware</h3>
-            <p class="text-gray-400 max-w-md">Drag and drop your ROM zip file here, or browse to select. Supports .zip, .img, and payload.bin</p>
-            <button class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg shadow-primary/20">
-              Browse Files
-            </button>
-          </div>
-        </div>
+        <!-- Download Center -->
+        <DownloadCenter />
+
+        <!-- Backup Manager -->
+        <BackupManager />
+
+        <!-- Sideload Assistant -->
+        <SideloadAssistant />
+
+        <!-- Log Analyst -->
+        <LogAnalyst />
+        
+        <!-- Live Terminal -->
+        <LiveTerminal />
       </div>
 
       <!-- Sidebar -->
       <div class="w-80 space-y-6">
-        <DeviceStatusPanel />
+        <DevicePanel />
+
+        <DeviceFingerprinter />
         
-        <div class="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md">
-          <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Flash Options</h3>
-          <div class="space-y-3">
-            <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-              <input type="checkbox" class="w-4 h-4 rounded border-gray-600 text-primary focus:ring-primary bg-transparent">
-              <span class="text-sm text-gray-300">Wipe Data / Factory Reset</span>
-            </label>
-            <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-              <input type="checkbox" class="w-4 h-4 rounded border-gray-600 text-primary focus:ring-primary bg-transparent">
-              <span class="text-sm text-gray-300">Disable Verity / V-B Meta</span>
-            </label>
-            <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-              <input type="checkbox" class="w-4 h-4 rounded border-gray-600 text-primary focus:ring-primary bg-transparent">
-              <span class="text-sm text-gray-300">Inject Magisk (Root)</span>
-            </label>
-          </div>
-        </div>
+        <BootloaderUnlockFlow />
+
+        <RecoveryInstaller />
+
+        <MagiskInjector />
+
+        <SlotManager />
+
+        <PartitionVisualizer />
+
+        <FactoryResetSafe />
+
+        <ThemeEngine />
       </div>
     </div>
   </div>

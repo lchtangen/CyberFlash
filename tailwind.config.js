@@ -8,34 +8,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Core Brand Colors (Cyber/Neon)
-        background: '#050505',
-        surface: '#121212',
-        'surface-light': '#1E1E1E',
+        // Vision UI Colors (Apple System Colors)
+        background: '#000000', // Pure black for OLED/Depth
+        surface: '#1C1C1E', // Apple Dark Gray
+        'surface-light': '#2C2C2E',
         
         primary: {
-          DEFAULT: '#00F0FF', // Cyan Neon
-          hover: '#00D0DD',
-          dim: 'rgba(0, 240, 255, 0.1)',
+          DEFAULT: 'var(--color-primary)', // Dynamic Primary
+          hover: '#0077ED', // We might want to make this dynamic too, but for now static is safer
+          dim: 'rgba(10, 132, 255, 0.1)',
         },
         secondary: {
-          DEFAULT: '#7000FF', // Purple Neon
-          hover: '#6000DD',
-          dim: 'rgba(112, 0, 255, 0.1)',
+          DEFAULT: '#5E5CE6', // Apple Indigo
+          hover: '#4F4DCD',
+          dim: 'rgba(94, 92, 230, 0.1)',
         },
         accent: {
-          DEFAULT: '#FF003C', // Red Neon
-          hover: '#DD0030',
+          DEFAULT: '#BF5AF2', // Apple Purple
+          hover: '#AF4BE2',
         },
-        success: '#00FF9D',
-        warning: '#FFD600',
-        error: '#FF003C',
+        success: '#30D158', // Apple Green
+        warning: '#FFD60A', // Apple Yellow
+        error: '#FF453A', // Apple Red
         
         // Text Colors
         text: {
           primary: '#FFFFFF',
-          secondary: '#A0A0A0',
-          muted: '#505050',
+          secondary: '#EBEBF599', // Apple Label Secondary (60%)
+          muted: '#EBEBF54D', // Apple Label Tertiary (30%)
         },
         
         // Legacy Vision Support (Mapped to new colors to prevent crashes)
@@ -48,10 +48,7 @@ export default {
             primary: '#FFFFFF',
             secondary: '#A0A0A0',
           },
-          accent: '#00F0FF',
-          success: '#00FF9D',
-          danger: '#FF003C',
-        }
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

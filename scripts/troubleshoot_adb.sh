@@ -28,6 +28,7 @@ adb shell getprop ro.product.model 2>/dev/null || echo "Device not accessible vi
 echo ""
 
 echo "=== Troubleshooting Tips ==="
+echo "✓ Run 'sudo ./scripts/install_udev_rules.sh' to fix permissions"
 echo "✓ Make sure USB Debugging is enabled on phone"
 echo "✓ Make sure Developer Options are enabled on phone"
 echo "✓ Check the USB permission prompt on phone and allow it"

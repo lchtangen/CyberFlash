@@ -139,35 +139,34 @@ export function useADB() {
 
 ---
 
-## ✨ Glassmorphic Design System
+## ✨ Vision UI Design System
 
-**CyberFlash V2** adopts a refined "Glassmorphism" aesthetic. It is **not** chaotic cyberpunk; it is sophisticated, transparent, and functional.
+**CyberFlash V2** adopts the "Vision UI" aesthetic—a spatial, glassmorphic design language inspired by modern spatial computing. It prioritizes depth, clarity, and semantic color usage over decorative neon effects.
 
 ### Core Principles
-1.  **Glass Surfaces**: High transparency (`opacity-70`), heavy blur (`backdrop-blur-xl`), and subtle white borders.
-2.  **Neon Accents**: Used sparingly for focus states and active indicators (Cyan & Magenta).
-3.  **Floating Depth**: Elements float on different z-indexes with soft, colored shadows.
+1.  **Spatial Glass**: Heavy blur (`backdrop-blur-xl`), translucent layers (`bg-surface/30`), and subtle borders (`border-white/10`).
+2.  **Mesh Gradients**: Backgrounds are dynamic and flowing, never flat black.
+3.  **Semantic Clarity**: Colors are used for status (Green=Success, Red=Error, Blue=Action), not just decoration.
 
 ### 🎨 Color Palette (Tailwind Config)
 
 | Token | Hex | Tailwind Class | Usage |
 |-------|-----|----------------|-------|
-| **Primary** | `#00F0FF` | `text-neon-cyan` | Main actions, active states, glow |
-| **Secondary** | `#7000FF` | `text-neon-purple` | Gradients, secondary highlights |
-| **Surface** | `#121212` | `bg-obsidian` | Deep background (behind glass) |
-| **Glass** | `rgba(255,255,255,0.05)` | `bg-glass` | Card backgrounds |
-| **Success** | `#00FF94` | `text-emerald-400` | Successful flash/connection |
-| **Error** | `#FF0055` | `text-rose-500` | Errors, critical warnings |
+| **Primary** | `#0A84FF` | `text-primary` | Main actions, active states |
+| **Surface** | `#1C1C1E` | `bg-surface` | Base layer background |
+| **Success** | `#30D158` | `text-success` | Online, Connected, Flashed |
+| **Error** | `#FF453A` | `text-error` | Offline, Failed, Critical |
+| **Warning** | `#FFD60A` | `text-warning` | Low Battery, Unlocked |
+| **Text** | `#FFFFFF` | `text-white` | Primary content |
 
 ### 💎 Component Patterns
 
-#### The Base Glass Card
+#### The Vision Glass Card
 ```vue
 <template>
   <div 
-    class="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)]"
+    class="relative overflow-hidden rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl transition-all duration-300 hover:bg-surface/40"
   >
-    <div class="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
     <div class="relative z-10 p-6">
       <slot />
     </div>
@@ -175,11 +174,11 @@ export function useADB() {
 </template>
 ```
 
-#### Neon Button
+#### Action Button
 ```vue
 <template>
   <button
-    class="group relative px-6 py-3 rounded-lg font-jetbrains font-bold uppercase tracking-wider transition-all duration-300 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-400/10 hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
+    class="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20 active:scale-95"
   >
     <slot />
   </button>

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
 
 export const useSettingsStore = defineStore('settings', () => {
   // --- General & UI ---
@@ -81,9 +82,21 @@ export const useSettingsStore = defineStore('settings', () => {
   // --- AI & Automation ---
   const aiEnabled = ref(true);
   const geminiApiKey = ref('');
-  const aiModel = ref('claude-sonnet-4.5');
+  const aiModel = ref('gemini-1.5-flash');
   const autoAnalyzeLogs = ref(true);
   const suggestNextSteps = ref(true);
+
+  // --- Performance & Optimization (New) ---
+  const hardwareAcceleration = ref(true);
+  const processPriority = ref('high'); // normal, high, realtime
+  const maxConcurrentDownloads = ref(3);
+  const cacheSizeLimit = ref(1024); // MB
+  const autoClearCache = ref(true);
+  const lowSpecMode = ref(false);
+  const backgroundProcessing = ref(true);
+  const networkTimeout = ref(30000); // ms
+  const compressionLevel = ref(5); // 0-9
+  const useGpuRendering = ref(true);
 
   function toggleTheme() {
     theme.value = theme.value === 'light' ? 'dark' : 'light';
@@ -98,6 +111,47 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
+  // Map for easy save/load
+  const stateMap = {
+    theme, accentColor, enableAnimations, glassOpacity, soundEffects, hapticFeedback, compactMode, showTerminalOverlay,
+    blurStrength, borderRadius, shadowIntensity, fontSizeScale, showMeshGradient, sidebarTransparency, cardHoverEffects, buttonGlow, textContrast, scrollbarStyle, animationSpeed, layoutDensity, iconStyle, toastPosition, tooltipDelay, rippleEffects, terminalOpacity, navBarBlur, activeTabStyle, fontFamily,
+    verifyMd5Checksum, checkBatteryLevel, minBatteryThreshold, backupEFS, backupPersist, checkDeviceCompatibility, preventDowngrade, autoUnbrick,
+    adbPath, fastbootPath, useInternalServer, killServerOnExit, connectionTimeout, maxRetries, usbBufferAlignment, forceSlotSwitch,
+    wipeData, wipeCache, disableVerity, disableEncryption, flashMagisk, magiskVersion, flashGapps, rebootAfterFlash, bootToRecovery,
+    checkUpdates, sendStats, downloadRegion, bandwidthLimit, proxyEnabled, proxyAddress,
+    verboseLogging, saveLogsToFile, mockMode,
+    aiEnabled, geminiApiKey, aiModel, autoAnalyzeLogs, suggestNextSteps,
+    hardwareAcceleration, processPriority, maxConcurrentDownloads, cacheSizeLimit, autoClearCache, lowSpecMode, backgroundProcessing, networkTimeout, compressionLevel, useGpuRendering
+  };
+
+  async function saveSettings() {
+    const state: Record<string, any> = {};
+    for (const [key, refVar] of Object.entries(stateMap)) {
+        state[key] = refVar.value;
+    }
+    try {
+        await invoke('save_settings', { settings: state });
+    } catch (error) {
+        console.error('Failed to save settings:', error);
+        throw error;
+    }
+  }
+
+  async function loadSettings() {
+    try {
+        const saved: any = await invoke('load_settings');
+        for (const [key, value] of Object.entries(saved)) {
+            if (key in stateMap) {
+                // @ts-ignore
+                stateMap[key].value = value;
+            }
+        }
+        updateTheme();
+    } catch (e) {
+        console.error('Failed to load settings:', e);
+    }
+  }
+
   return {
     // State
     theme, accentColor, enableAnimations, glassOpacity, soundEffects, hapticFeedback, compactMode, showTerminalOverlay,
@@ -108,7 +162,8 @@ export const useSettingsStore = defineStore('settings', () => {
     checkUpdates, sendStats, downloadRegion, bandwidthLimit, proxyEnabled, proxyAddress,
     verboseLogging, saveLogsToFile, mockMode,
     aiEnabled, geminiApiKey, aiModel, autoAnalyzeLogs, suggestNextSteps,
+    hardwareAcceleration, processPriority, maxConcurrentDownloads, cacheSizeLimit, autoClearCache, lowSpecMode, backgroundProcessing, networkTimeout, compressionLevel, useGpuRendering,
     // Actions
-    toggleTheme, updateTheme
+    toggleTheme, updateTheme, saveSettings, loadSettings
   };
 });
