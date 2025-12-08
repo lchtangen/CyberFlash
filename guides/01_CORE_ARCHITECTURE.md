@@ -1,6 +1,6 @@
-# 🖥️ macOS & Linux Framework Guide (Vue 3 Edition)
+# 🏗️ Core Architecture & Design System
 
-**Version**: 2.0.0 | **Stack**: Tauri 2 + Vue 3 | **Status**: Production Ready
+**Version**: 2.0.0 | **Stack**: Tauri 2 + Vue 3 + Rust | **Updated**: December 8, 2025
 
 ---
 
@@ -104,46 +104,49 @@ export function useADB() {
 
 ---
 
-## 📦 State Management (Pinia)
+## ✨ Glassmorphic Design System
 
-We use Pinia to manage global state like connected devices and flashing progress.
+**CyberFlash V2** adopts a refined "Glassmorphism" aesthetic. It is **not** chaotic cyberpunk; it is sophisticated, transparent, and functional.
 
-```typescript
-// src/stores/device.ts
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+### Core Principles
+1.  **Glass Surfaces**: High transparency (`opacity-70`), heavy blur (`backdrop-blur-xl`), and subtle white borders.
+2.  **Neon Accents**: Used sparingly for focus states and active indicators (Cyan & Magenta).
+3.  **Floating Depth**: Elements float on different z-indexes with soft, colored shadows.
 
-export const useDeviceStore = defineStore('device', () => {
-  const currentDevice = ref<string | null>(null)
-  const isConnected = ref(false)
-  const batteryLevel = ref(0)
+### 🎨 Color Palette (Tailwind Config)
 
-  function setDevice(id: string) {
-    currentDevice.value = id
-    isConnected.value = true
-  }
+| Token | Hex | Tailwind Class | Usage |
+|-------|-----|----------------|-------|
+| **Primary** | `#00F0FF` | `text-neon-cyan` | Main actions, active states, glow |
+| **Secondary** | `#7000FF` | `text-neon-purple` | Gradients, secondary highlights |
+| **Surface** | `#121212` | `bg-obsidian` | Deep background (behind glass) |
+| **Glass** | `rgba(255,255,255,0.05)` | `bg-glass` | Card backgrounds |
+| **Success** | `#00FF94` | `text-emerald-400` | Successful flash/connection |
+| **Error** | `#FF0055` | `text-rose-500` | Errors, critical warnings |
 
-  return { currentDevice, isConnected, batteryLevel, setDevice }
-})
+### 💎 Component Patterns
+
+#### The Base Glass Card
+```vue
+<template>
+  <div 
+    class="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)]"
+  >
+    <div class="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
+    <div class="relative z-10 p-6">
+      <slot />
+    </div>
+  </div>
+</template>
 ```
 
----
-
-## 🐧 Linux & macOS Specifics
-
-### Linux (AppImage)
-- **Dependencies**: `libwebkit2gtk-4.0-dev`, `build-essential`, `curl`, `wget`, `file`, `libssl-dev`, `libgtk-3-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`.
-- **Distribution**: We build an **AppImage** which runs on Ubuntu, Fedora, Arch, etc. without installation.
-
-### macOS (DMG)
-- **Universal Binary**: We target both `x86_64` (Intel) and `aarch64` (Apple Silicon).
-- **Permissions**: `tauri.conf.json` must configure `macOS` entitlements for USB access.
-
----
-
-## 🚀 Why This Stack?
-
-1.  **Performance**: Rust is memory-safe and blazingly fast. Vue 3's Virtual DOM is highly optimized.
-2.  **Binary Size**: Tauri apps are tiny (<10MB installer) compared to Electron (>100MB).
-3.  **Security**: The frontend cannot directly access the OS. All system calls go through secure Rust commands.
-4.  **Developer Experience**: Vite provides instant feedback. TypeScript catches errors at compile time.
+#### Neon Button
+```vue
+<template>
+  <button
+    class="group relative px-6 py-3 rounded-lg font-jetbrains font-bold uppercase tracking-wider transition-all duration-300 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-400/10 hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
+  >
+    <slot />
+  </button>
+</template>
+```

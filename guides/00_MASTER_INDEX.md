@@ -6,39 +6,27 @@
 
 ## 🗺️ Documentation Map
 
-This documentation is structured to guide you from setup to deployment of the **CyberFlash V2** ROM flasher.
+This documentation has been consolidated into three core pillars for efficiency.
 
-### 🎨 Foundation & Design
+### 🏗️ 1. Architecture & Design
 | Guide | Description |
 |-------|-------------|
-| **[01_GLASSMORPHIC_DESIGN_SYSTEM.md](./01_GLASSMORPHIC_DESIGN_SYSTEM.md)** | The visual language. Colors, typography, and Vue 3 glass components. |
-| **[02_MACOS_LINUX_FRAMEWORK_GUIDE.md](./02_MACOS_LINUX_FRAMEWORK_GUIDE.md)** | Architecture decisions. Why Tauri 2 + Vue 3 is the optimal stack. |
+| **[01_CORE_ARCHITECTURE.md](./01_CORE_ARCHITECTURE.md)** | The blueprint. Tech stack, project structure, Glassmorphic design system, and IPC architecture. |
 
-### 🛠️ Development
+### 🛠️ 2. Operations & Workflow
 | Guide | Description |
 |-------|-------------|
-| **[03_DEVELOPMENT_WORKFLOW.md](./03_DEVELOPMENT_WORKFLOW.md)** | Daily routines. Git flow, testing with Vitest, and code quality. |
-| **[06_AI_INTEGRATION_GEMINI.md](./06_AI_INTEGRATION_GEMINI.md)** | **NEW**: Implementing Gemini 3 Pro for smart flashing and error prediction. |
-| **[07_GEMINI_PROMPTS.md](./07_GEMINI_PROMPTS.md)** | Optimized prompts for generating code and features with Gemini 3 Pro. |
+| **[02_DEVOPS_MANUAL.md](./02_DEVOPS_MANUAL.md)** | The manual. Development workflow, testing, building for Linux/macOS, CI/CD, and troubleshooting. |
 
-### 🚀 Operations
+### 🧠 3. AI Intelligence
 | Guide | Description |
 |-------|-------------|
-| **[04_BUILD_DEPLOYMENT.md](./04_BUILD_DEPLOYMENT.md)** | Compiling for macOS (DMG) and Linux (AppImage). CI/CD pipelines. |
-| **[05_TROUBLESHOOTING.md](./05_TROUBLESHOOTING.md)** | Solutions for common ADB, build, and runtime issues. |
+| **[03_AI_NEURAL_CORE.md](./03_AI_NEURAL_CORE.md)** | The brain. Gemini 3 Pro integration, Rust backend implementation, and the 25 specialized CrDroid features. |
 
 ---
 
-## 🌟 Quick Links
-
-- **Project Root**: `~/CYBERFLASH_V2/`
-- **Source Code**: `src/` (Vue 3) & `src-tauri/` (Rust)
-- **Specs**: `specs/` (JSON configurations)
-- **Scripts**: `scripts/` (Helper utilities)
-
 ## ⚡ Getting Started
 
-1. **Read** [02_MACOS_LINUX_FRAMEWORK_GUIDE.md](./02_MACOS_LINUX_FRAMEWORK_GUIDE.md) to understand the stack.
-2. **Setup** your environment using the instructions in the Framework Guide.
-3. **Review** [01_GLASSMORPHIC_DESIGN_SYSTEM.md](./01_GLASSMORPHIC_DESIGN_SYSTEM.md) to understand the UI patterns.
-4. **Start** coding with [03_DEVELOPMENT_WORKFLOW.md](./03_DEVELOPMENT_WORKFLOW.md).
+1.  **Read** [01_CORE_ARCHITECTURE.md](./01_CORE_ARCHITECTURE.md) to understand the system.
+2.  **Setup** your environment using [02_DEVOPS_MANUAL.md](./02_DEVOPS_MANUAL.md).
+3.  **Explore** the AI capabilities in [03_AI_NEURAL_CORE.md](./03_AI_NEURAL_CORE.md).
