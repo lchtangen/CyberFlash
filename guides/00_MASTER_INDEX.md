@@ -38,6 +38,11 @@ This documentation has been consolidated into core pillars for efficiency.
 |-------|-------------|
 | **[06_USER_MANUAL_BETA.md](./06_USER_MANUAL_BETA.md)** | The guide. User-facing manual for the CyberFlash Tool (Beta). |
 
+### 🚀 7. Future Roadmap
+| Guide | Description |
+|-------|-------------|
+| **[07_FEATURE_ROADMAP_2026.md](./07_FEATURE_ROADMAP_2026.md)** | The vision. 100+ innovative ideas, AI features, and roadmap for 2025-2026. |
+
 ---
 
 ## ⚡ Getting Started
