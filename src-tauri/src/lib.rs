@@ -3,6 +3,8 @@ use std::process::{Command, Stdio};
 use std::io::{BufRead, BufReader};
 use std::thread;
 
+mod commands;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -48,7 +50,15 @@ fn start_logcat(app_handle: tauri::AppHandle) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, run_adb_command, start_logcat])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            run_adb_command,
+            start_logcat,
+            commands::adb::get_connected_devices,
+            commands::fastboot::get_fastboot_devices,
+            commands::gemini::ask_gemini,
+            commands::automation::start_flash_process
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
