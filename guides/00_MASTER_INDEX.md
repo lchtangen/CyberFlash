@@ -1,12 +1,12 @@
 # 📚 CyberFlash V2 Master Documentation Index
 
-**Version**: 2.0.0 | **Stack**: Tauri 2 + Vue 3 + Rust | **Updated**: December 7, 2025
+**Version**: 2.1.0 | **Stack**: Tauri 2 + Vue 3 + Rust | **Updated**: December 8, 2025
 
 ---
 
 ## 🗺️ Documentation Map
 
-This documentation has been consolidated into three core pillars for efficiency.
+This documentation has been consolidated into core pillars for efficiency.
 
 ### 🏗️ 1. Architecture & Design
 | Guide | Description |
@@ -16,12 +16,27 @@ This documentation has been consolidated into three core pillars for efficiency.
 ### 🛠️ 2. Operations & Workflow
 | Guide | Description |
 |-------|-------------|
-| **[02_DEVOPS_MANUAL.md](./02_DEVOPS_MANUAL.md)** | The manual. Development workflow, testing, building for Linux/macOS, CI/CD, and troubleshooting. |
+| **[02_DEVOPS_MANUAL.md](./02_DEVOPS_MANUAL.md)** | The manual. Development workflow, testing, building for Linux/macOS/Windows, CI/CD, and troubleshooting. |
 
 ### 🧠 3. AI Intelligence
 | Guide | Description |
 |-------|-------------|
 | **[03_AI_NEURAL_CORE.md](./03_AI_NEURAL_CORE.md)** | The brain. Gemini 3 Pro integration, Rust backend implementation, and the 25 specialized CrDroid features. |
+
+### ⚙️ 4. Automation & Logic
+| Guide | Description |
+|-------|-------------|
+| **[04_AUTOMATION_LOGIC_SPEC.md](./04_AUTOMATION_LOGIC_SPEC.md)** | The engine. Detailed breakdown of the 8-Phase Flashing Process and how it is automated in Rust. |
+
+### 🌐 5. Platform Guidelines
+| Guide | Description |
+|-------|-------------|
+| **[05_CROSS_PLATFORM_GUIDELINES.md](./05_CROSS_PLATFORM_GUIDELINES.md)** | The rules. Specific requirements for Android 16, macOS Sequoia, Windows 11, and Linux Wayland. |
+
+### 📖 6. User Manual
+| Guide | Description |
+|-------|-------------|
+| **[06_USER_MANUAL_BETA.md](./06_USER_MANUAL_BETA.md)** | The guide. User-facing manual for the CyberFlash Tool (Beta). |
 
 ---
 

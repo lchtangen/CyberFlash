@@ -1,6 +1,6 @@
 # 🛠️ DevOps Manual: Workflow, Build & Ops
 
-**Version**: 2.0.0 | **Updated**: December 8, 2025
+**Version**: 2.1.0 | **Updated**: December 8, 2025
 
 ---
 
@@ -67,11 +67,15 @@ npm run tauri build
 - **Artifacts**: `src-tauri/target/release/bundle/dmg/CyberFlash_2.0.0_x64.dmg`
 - **Signing**: Export `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID`.
 
+### 🪟 Windows Deployment (MSI/EXE)
+- **Artifacts**: `src-tauri/target/release/bundle/msi/CyberFlash_2.0.0_x64.msi`
+- **Requirements**: Microsoft Visual Studio C++ Build Tools.
+
 ---
 
 ## 🔄 CI/CD (GitHub Actions)
 
-We use GitHub Actions to build for both platforms automatically on release.
+We use GitHub Actions to build for all platforms automatically on release.
 
 ```yaml
 # .github/workflows/release.yml
@@ -84,7 +88,7 @@ jobs:
   build-tauri:
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-20.04]
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
@@ -107,11 +111,12 @@ jobs:
 | **Device not found** | Enable USB Debugging. Check cable. Run `adb kill-server && adb start-server`. |
 | **Unauthorized** | Check phone screen for popup. Revoke USB debugging authorizations and reconnect. |
 | **Linux Permissions** | Add udev rules: `SUBSYSTEM=="usb", ATTR{idVendor}=="2d01", MODE="0666", GROUP="plugdev"` |
+| **Windows Drivers** | Install "OnePlus USB Drivers" or "Google USB Driver". Check Device Manager. |
 
 ### 🏗️ Build & Runtime
 
 | Issue | Solution |
 |-------|----------|
 | **Rust dependency error** | `rustup update` then `cargo clean`. |
-| **WebView2 not found** | Install `libwebkit2gtk-4.0-dev` (Linux). |
+| **WebView2 not found** | Install `libwebkit2gtk-4.0-dev` (Linux) or WebView2 Runtime (Windows). |
 | **AI API Key Invalid** | Check `.env` for `GEMINI_API_KEY`. Ensure permissions for `gemini-pro`. |

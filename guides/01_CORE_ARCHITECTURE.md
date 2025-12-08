@@ -1,12 +1,12 @@
 # 🏗️ Core Architecture & Design System
 
-**Version**: 2.0.0 | **Stack**: Tauri 2 + Vue 3 + Rust | **Updated**: December 8, 2025
+**Version**: 2.1.0 | **Stack**: Tauri 2 + Vue 3 + Rust | **Updated**: December 8, 2025
 
 ---
 
 ## 🎯 The "CyberFlash V2" Architecture
 
-We have selected the **highest performance** and **most modern** stack available for 2025 development on macOS and Linux.
+We have selected the **highest performance** and **most modern** stack available for 2025 development on macOS, Windows, and Linux.
 
 ### 🏆 The Stack
 1.  **Core**: **Tauri 2.0** (Rust) - *Smaller, faster, and more secure than Electron.*
@@ -17,6 +17,39 @@ We have selected the **highest performance** and **most modern** stack available
 6.  **AI**: **Google Gemini 3 Pro** - *Integrated via Rust backend for secure API handling.*
 
 ---
+
+## 🏗️ Project Structure
+
+This structure is optimized for scalability and separation of concerns.
+
+```
+CYBERFLASH_V2/
+├── src-tauri/                  # 🦀 RUST BACKEND
+│   ├── src/
+│   │   ├── main.rs             # Entry point
+│   │   ├── commands/           # IPC Commands (exposed to frontend)
+│   │   │   ├── adb.rs          # ADB wrapper
+│   │   │   ├── fastboot.rs     # Fastboot wrapper (NEW)
+│   │   │   ├── gemini.rs       # AI integration
+│   │   │   └── automation.rs   # The "Auto-Flash" Engine (NEW)
+│   │   └── lib.rs              # Shared logic
+│   ├── tauri.conf.json         # Tauri Config (permissions, windows)
+│   └── Cargo.toml              # Rust dependencies
+│
+├── src/                        # ⚡ VUE 3 FRONTEND
+│   ├── components/             # Vue Components
+│   │   ├── features/           # Domain logic
+│   │   │   ├── FlashWizard.vue # The 8-Step Wizard
+│   │   │   ├── Terminal.vue    # Live Log Output
+│   │   │   └── DevicePanel.vue # Status & Battery
+│   ├── stores/                 # Pinia Stores
+│   │   ├── flash.ts            # Flashing state machine
+│   │   └── device.ts           # Device state
+│
+└── specs/                      # 📄 CONFIGURATION
+    ├── downloads.json          # URLs for ROM, Firmware, TWRP
+    └── phases.json             # Definition of the 8 phases
+```
 
 ## 🏗️ Project Structure
 

@@ -1,6 +1,6 @@
 # 🧠 AI Neural Core: Gemini 3 Pro Integration
 
-**Version**: 3.1.0 | **Model**: Gemini 3 Pro (Preview) | **Status**: Production Ready
+**Version**: 3.2.0 | **Model**: Gemini 3 Pro (Preview) | **Status**: Production Ready
 
 ---
 
