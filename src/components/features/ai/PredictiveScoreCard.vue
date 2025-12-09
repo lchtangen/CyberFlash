@@ -68,8 +68,10 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useDeviceStore } from '../../../stores/device';
+import { useFlashStore } from '../../../stores/flash';
 
 const deviceStore = useDeviceStore();
+const flashStore = useFlashStore();
 
 interface RiskFactor {
   name: string;
@@ -107,13 +109,30 @@ const progressBarClass = computed(() => {
 async function analyze() {
   loading.value = true;
   try {
-    // In a real scenario, we'd get these from the device store or active state
-    // For now, we simulate based on what we have
+    // Check if we have enough info to make a prediction
+    const hasDevice = deviceStore.isConnected;
+    const hasRom = !!flashStore.selectedRom;
+    
+    // Simple heuristic for firmware matching on frontend before sending to backend
+    // In a real app, backend would do deep inspection
+    let firmwareMatched = false;
+    if (hasDevice && hasRom && deviceStore.deviceModel) {
+      // Case-insensitive check if ROM filename contains device model
+      // e.g. "OnePlus7Pro" in "PixelExperience_OnePlus7Pro.zip"
+      const modelParts = deviceStore.deviceModel.split(' ');
+      const romName = flashStore.selectedRom!.name.toLowerCase();
+      // Check if at least one significant part of the model name is in the ROM name
+      firmwareMatched = modelParts.some(part => part.length > 3 && romName.includes(part.toLowerCase()));
+    } else if (!hasRom) {
+      // If no ROM selected, we assume match is neutral/true for now to just show device health
+      firmwareMatched = true;
+    }
+
     const result = await invoke<PredictionResult>('calculate_success_score', {
       batteryLevel: deviceStore.batteryLevel || 0,
-      isBootloaderUnlocked: true, // TODO: Get actual status
-      isDebugEnabled: deviceStore.isConnected,
-      firmwareMatched: true // TODO: Implement firmware check
+      isBootloaderUnlocked: deviceStore.isBootloaderUnlocked,
+      isDebugEnabled: deviceStore.isConnected, // If we can talk to it, debug is likely on
+      firmwareMatched: firmwareMatched
     });
 
     score.value = result.score;
@@ -134,7 +153,7 @@ onMounted(() => {
   analyze();
 });
 
-watch(() => deviceStore.batteryLevel, () => {
+watch(() => [deviceStore.batteryLevel, deviceStore.isConnected, flashStore.selectedRom], () => {
   analyze();
 });
 </script>

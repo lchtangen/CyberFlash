@@ -1,5 +1,27 @@
 use tauri::{command, AppHandle};
 use crate::commands::adb;
+use std::fs::File;
+use std::io::copy;
+use zip::ZipArchive;
+
+#[command]
+pub async fn extract_file_from_zip(zip_path: String, target_file: String, output_path: String) -> Result<String, String> {
+    let file = File::open(&zip_path).map_err(|e| e.to_string())?;
+    let mut archive = ZipArchive::new(file).map_err(|e| e.to_string())?;
+
+    for i in 0..archive.len() {
+        let mut file = archive.by_index(i).map_err(|e| e.to_string())?;
+        // Case insensitive match or exact match? Exact for now.
+        // Also handle paths inside zip (e.g. "images/boot.img")
+        if file.name().ends_with(&target_file) {
+            let mut out_file = File::create(&output_path).map_err(|e| e.to_string())?;
+            copy(&mut file, &mut out_file).map_err(|e| e.to_string())?;
+            return Ok(output_path);
+        }
+    }
+    
+    Err(format!("File {} not found in zip", target_file))
+}
 
 #[command]
 pub fn get_gapps_url(android_version: String, variant: String, arch: String) -> String {

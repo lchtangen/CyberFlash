@@ -1,8 +1,53 @@
-use tauri::{command, AppHandle, Emitter};
+use tauri::{command, AppHandle, Emitter, State};
 use tauri_plugin_shell::ShellExt;
 use serde::{Serialize, Deserialize};
 use std::time::Duration;
 use tokio::time::sleep;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
+use std::fs;
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ErrorPattern {
+    pub pattern: String,
+    pub tag: Option<String>,
+    pub severity: String,
+    pub summary: String,
+    pub fix: String,
+}
+
+pub struct SentinelState {
+    pub is_running: Arc<AtomicBool>,
+    pub patterns: Arc<Mutex<Vec<ErrorPattern>>>,
+}
+
+impl Default for SentinelState {
+    fn default() -> Self {
+        // Load patterns from config file if possible, else use defaults
+        let mut patterns = Vec::new();
+        if let Ok(content) = fs::read_to_string("../config/error_patterns.json") {
+             if let Ok(parsed) = serde_json::from_str(&content) {
+                 patterns = parsed;
+             }
+        }
+        
+        // Fallback if file load fails (or relative path is wrong in dev vs prod)
+        if patterns.is_empty() {
+            patterns.push(ErrorPattern {
+                pattern: "bootloop".to_string(),
+                tag: None,
+                severity: "Critical".to_string(),
+                summary: "Potential Bootloop".to_string(),
+                fix: "Factory reset recommended".to_string(),
+            });
+        }
+
+        Self {
+            is_running: Arc::new(AtomicBool::new(false)),
+            patterns: Arc::new(Mutex::new(patterns)),
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct LogEntry {
@@ -21,54 +66,43 @@ pub struct LogAnalysis {
 }
 
 // Simple heuristic analysis for common errors
-fn analyze_error(tag: &str, message: &str) -> Option<LogAnalysis> {
+fn analyze_error(tag: &str, message: &str, patterns: &[ErrorPattern]) -> Option<LogAnalysis> {
     let msg_lower = message.to_lowercase();
     
-    if msg_lower.contains("bootloop") || msg_lower.contains("reboot") {
-        return Some(LogAnalysis {
-            severity: "Critical".to_string(),
-            summary: "Potential Bootloop Detected".to_string(),
-            possible_fix: "Check incompatible modules or dirty flash. Try factory reset.".to_string(),
-        });
-    }
-    
-    if msg_lower.contains("permission denied") || msg_lower.contains("eacces") {
-        return Some(LogAnalysis {
-            severity: "High".to_string(),
-            summary: "Permission Error".to_string(),
-            possible_fix: "Ensure root access or correct file permissions (chmod 644/755).".to_string(),
-        });
-    }
+    for p in patterns {
+        let pattern_match = msg_lower.contains(&p.pattern) || 
+                           (regex::Regex::new(&p.pattern).map(|r| r.is_match(&msg_lower)).unwrap_or(false));
+        
+        let tag_match = match &p.tag {
+            Some(t) => tag == t,
+            None => true,
+        };
 
-    if tag == "AndroidRuntime" && msg_lower.contains("fatal exception") {
-        return Some(LogAnalysis {
-            severity: "Critical".to_string(),
-            summary: "App Crash (Fatal Exception)".to_string(),
-            possible_fix: "Clear app data or check for updates.".to_string(),
-        });
-    }
-
-    if msg_lower.contains("out of memory") || msg_lower.contains("oom") {
-        return Some(LogAnalysis {
-            severity: "Medium".to_string(),
-            summary: "Out of Memory".to_string(),
-            possible_fix: "Close background apps or check for memory leaks.".to_string(),
-        });
+        if pattern_match && tag_match {
+            return Some(LogAnalysis {
+                severity: p.severity.clone(),
+                summary: p.summary.clone(),
+                possible_fix: p.fix.clone(),
+            });
+        }
     }
 
     None
 }
 
 #[command]
-pub async fn start_log_sentinel(app: AppHandle) -> Result<(), String> {
-    // In a real implementation, this would spawn a long-running task 
-    // that reads from a Command::spawn("adb logcat") stdout stream.
-    // For this demo, we'll simulate a stream of logs mixed with real dump.
+pub async fn start_log_sentinel(app: AppHandle, state: State<'_, SentinelState>) -> Result<(), String> {
+    if state.is_running.load(Ordering::SeqCst) {
+        return Ok(()); // Already running
+    }
     
+    state.is_running.store(true, Ordering::SeqCst);
+    let is_running = state.is_running.clone();
+    let patterns = state.patterns.lock().unwrap().clone(); // Clone patterns for the thread
     let app_handle = app.clone();
     
     tauri::async_runtime::spawn(async move {
-        loop {
+        while is_running.load(Ordering::SeqCst) {
             // Fetch a small chunk of recent logs
             let output = match app_handle.shell().sidecar("adb") {
                 Ok(cmd) => cmd.args(["logcat", "-d", "-v", "threadtime", "-t", "10"])
@@ -104,7 +138,7 @@ pub async fn start_log_sentinel(app: AppHandle) -> Result<(), String> {
                         // Only care about Warnings and Errors for the Sentinel
                         if level == "E" || level == "F" || level == "W" {
                             let analysis = if level == "E" || level == "F" {
-                                analyze_error(tag, &message).map(|a| format!("{} - {}", a.summary, a.possible_fix))
+                                analyze_error(tag, &message, &patterns).map(|a| format!("{} - {}", a.summary, a.possible_fix))
                             } else {
                                 None
                             };
@@ -133,9 +167,8 @@ pub async fn start_log_sentinel(app: AppHandle) -> Result<(), String> {
 }
 
 #[command]
-pub async fn stop_log_sentinel() -> Result<(), String> {
-    // In a real implementation, this would signal the thread to stop.
-    // For now, we rely on the frontend to ignore events or the app closing.
+pub async fn stop_log_sentinel(state: State<'_, SentinelState>) -> Result<(), String> {
+    state.is_running.store(false, Ordering::SeqCst);
     Ok(())
 }
 

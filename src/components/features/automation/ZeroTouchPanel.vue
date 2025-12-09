@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
@@ -21,6 +22,9 @@ const state = ref<ZeroTouchState>({
 });
 
 const isLoading = ref(false);
+const countdown = ref<number | null>(null);
+const detectedDevice = ref('');
+const unlistenFns = ref<Function[]>([]);
 
 async function loadState() {
   try {
@@ -31,6 +35,9 @@ async function loadState() {
       profile_path: rawState.profile_path || '',
       auto_start_delay: rawState.auto_start_delay
     };
+    
+    // Start the background service
+    await invoke('start_zero_touch_service');
   } catch (e) {
     console.error(e);
   }
@@ -47,11 +54,47 @@ async function saveState() {
   }
 }
 
-onMounted(loadState);
+function cancelCountdown() {
+  invoke('cancel_zero_touch');
+  countdown.value = null;
+}
+
+onMounted(async () => {
+  await loadState();
+  
+  unlistenFns.value.push(await listen<string>('zero-touch-detected', (e) => {
+    detectedDevice.value = e.payload;
+  }));
+  
+  unlistenFns.value.push(await listen<number>('zero-touch-countdown', (e) => {
+    countdown.value = e.payload;
+  }));
+  
+  unlistenFns.value.push(await listen('zero-touch-started', () => {
+    countdown.value = null;
+    // Maybe redirect to flash view or show progress
+  }));
+  
+  unlistenFns.value.push(await listen('zero-touch-cancelled', () => {
+    countdown.value = null;
+  }));
+});
+
+onUnmounted(() => {
+  unlistenFns.value.forEach(fn => fn());
+});
 </script>
 
 <template>
-  <GlassCard>
+  <GlassCard class="relative overflow-hidden">
+    <!-- Countdown Overlay -->
+    <div v-if="countdown !== null" class="absolute inset-0 z-50 bg-surface/90 backdrop-blur-xl flex flex-col items-center justify-center animate-in fade-in">
+      <div class="text-6xl font-bold text-primary mb-4 animate-pulse">{{ countdown }}</div>
+      <h3 class="text-xl font-medium text-white mb-2">Auto-Flash Initiated</h3>
+      <p class="text-white/60 mb-8">Device: {{ detectedDevice }}</p>
+      <VisionButton variant="danger" @click="cancelCountdown" icon="close">CANCEL NOW</VisionButton>
+    </div>
+
     <div class="flex items-center gap-3 mb-6">
       <div class="p-3 rounded-xl bg-primary/20 text-primary">
         <span class="material-symbols-rounded text-2xl">bolt</span>

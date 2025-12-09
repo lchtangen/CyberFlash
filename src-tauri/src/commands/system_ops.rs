@@ -1,5 +1,68 @@
 use tauri::{command, AppHandle};
-use crate::commands::adb;
+use crate::commands::{adb, fastboot};
+use std::path::Path;
+
+#[command]
+pub async fn install_dsu(app: AppHandle, system_image_path: String, userdata_size_gb: u64) -> Result<String, String> {
+    // 1. Push system image to device
+    // DSU requires the file to be on the device (usually /sdcard/ or /data/local/tmp/)
+    let filename = Path::new(&system_image_path).file_name().unwrap().to_string_lossy();
+    let remote_path = format!("/sdcard/{}", filename);
+    
+    adb::push_file(app.clone(), system_image_path, remote_path.clone()).await?;
+    
+    // 2. Calculate userdata size in bytes
+    let userdata_bytes = userdata_size_gb * 1024 * 1024 * 1024;
+    
+    // 3. Send DSU Intent
+    // am start-activity \
+    // -n com.android.dynsystem/com.android.dynsystem.VerificationActivity \
+    // -a android.os.image.action.START_INSTALL \
+    // -d file:///sdcard/system.img \
+    // --el KEY_USERDATA_SIZE <bytes>
+    
+    let cmd = format!(
+        "am start-activity -n com.android.dynsystem/com.android.dynsystem.VerificationActivity \
+        -a android.os.image.action.START_INSTALL \
+        -d file://{} \
+        --el KEY_USERDATA_SIZE {}", 
+        remote_path, userdata_bytes
+    );
+    
+    adb::run_adb_shell(app, cmd).await
+}
+
+#[command]
+pub async fn flash_kernel_image(app: AppHandle, partition: String, file_path: String, slot: Option<String>) -> Result<String, String> {
+    // Valid partitions: boot, init_boot, vendor_boot, dtbo, recovery
+    let valid_partitions = vec!["boot", "init_boot", "vendor_boot", "dtbo", "recovery"];
+    if !valid_partitions.contains(&partition.as_str()) {
+        return Err(format!("Invalid partition for kernel flashing: {}", partition));
+    }
+    
+    // Check if device is in fastboot
+    let devices = fastboot::get_fastboot_devices(app.clone()).await?;
+    if devices.is_empty() {
+        // Try to reboot to bootloader if connected via ADB
+        let adb_devices = adb::get_connected_devices(app.clone()).await?;
+        if !adb_devices.is_empty() {
+            adb::reboot_device(app.clone(), "bootloader".to_string()).await?;
+            // Wait for reboot (simple sleep for now, ideally wait loop)
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+        } else {
+            return Err("No device found in Fastboot or ADB mode".to_string());
+        }
+    }
+    
+    // Construct partition name with slot if needed
+    let target_partition = if let Some(s) = slot {
+        format!("{}_{}", partition, s)
+    } else {
+        partition
+    };
+    
+    fastboot::flash_partition(app, target_partition, file_path, None).await
+}
 
 #[command]
 pub async fn resize_partition(app: AppHandle, partition: String, size_mb: u32) -> Result<String, String> {

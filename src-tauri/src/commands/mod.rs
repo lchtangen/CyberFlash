@@ -23,6 +23,7 @@ pub mod rom_tools;
 pub mod security;
 pub mod social;
 pub mod system_ops;
+pub mod hardware;
 
 
 

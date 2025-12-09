@@ -1,5 +1,6 @@
 use tauri::command;
 use serde::{Deserialize, Serialize};
+use base64::{Engine as _, engine::general_purpose};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CommunityRom {
@@ -11,6 +12,15 @@ pub struct CommunityRom {
     pub download_url: String,
     pub description: String,
     pub likes: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SharedConfig {
+    pub device: String,
+    pub rom: String,
+    pub gapps: Option<String>,
+    pub magisk: bool,
+    pub modules: Vec<String>,
 }
 
 #[command]
@@ -54,6 +64,28 @@ pub async fn fetch_community_repos() -> Result<Vec<CommunityRom>, String> {
     tokio::time::sleep(std::time::Duration::from_millis(800)).await;
 
     Ok(mock_roms)
+}
+
+#[command]
+pub fn generate_share_link(config: SharedConfig) -> Result<String, String> {
+    let json = serde_json::to_string(&config).map_err(|e| e.to_string())?;
+    let b64 = general_purpose::STANDARD.encode(json);
+    Ok(format!("cyberflash://share/{}", b64))
+}
+
+#[command]
+pub fn decode_share_link(link: String) -> Result<SharedConfig, String> {
+    let prefix = "cyberflash://share/";
+    if !link.starts_with(prefix) {
+        return Err("Invalid link format".to_string());
+    }
+    
+    let b64 = &link[prefix.len()..];
+    let bytes = general_purpose::STANDARD.decode(b64).map_err(|e| e.to_string())?;
+    let json = String::from_utf8(bytes).map_err(|e| e.to_string())?;
+    let config: SharedConfig = serde_json::from_str(&json).map_err(|e| e.to_string())?;
+    
+    Ok(config)
 }
 
 #[command]

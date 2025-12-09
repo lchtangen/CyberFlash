@@ -1,0 +1,39 @@
+[
+  {
+    "pattern": "bootloop|reboot",
+    "severity": "Critical",
+    "summary": "Potential Bootloop Detected",
+    "fix": "Check incompatible modules or dirty flash. Try factory reset."
+  },
+  {
+    "pattern": "permission denied|eacces",
+    "severity": "High",
+    "summary": "Permission Error",
+    "fix": "Ensure root access or correct file permissions (chmod 644/755)."
+  },
+  {
+    "pattern": "fatal exception",
+    "tag": "AndroidRuntime",
+    "severity": "Critical",
+    "summary": "App Crash (Fatal Exception)",
+    "fix": "Clear app data or check for updates."
+  },
+  {
+    "pattern": "out of memory|oom",
+    "severity": "Medium",
+    "summary": "Out of Memory",
+    "fix": "Close background apps or check for memory leaks."
+  },
+  {
+    "pattern": "signature verification failed",
+    "severity": "High",
+    "summary": "Signature Mismatch",
+    "fix": "The zip file is not signed correctly or is corrupted. Check hash."
+  },
+  {
+    "pattern": "no space left on device",
+    "severity": "High",
+    "summary": "Storage Full",
+    "fix": "Delete old backups or clear cache partition."
+  }
+]

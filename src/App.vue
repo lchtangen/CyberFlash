@@ -4,6 +4,8 @@ import DashboardView from './views/DashboardView.vue';
 import FlashView from './views/FlashView.vue';
 import SettingsView from './views/SettingsView.vue';
 import ToolsView from './views/ToolsView.vue';
+import SocialView from './views/SocialView.vue';
+import HardwareView from './views/HardwareView.vue';
 import AIAssistantOverlay from './components/features/ai/AIAssistantOverlay.vue';
 import CommandPalette from './components/features/core/CommandPalette.vue';
 import DeviceConnectionHub from './components/features/core/DeviceConnectionHub.vue';
@@ -117,6 +119,22 @@ onMounted(async () => {
           Tools
         </button>
         <button 
+          @click="currentView = 'social'"
+          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
+          :class="currentView === 'social' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
+        >
+          <span class="material-symbols-rounded">groups</span>
+          Social
+        </button>
+        <button 
+          @click="currentView = 'hardware'"
+          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
+          :class="currentView === 'hardware' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
+        >
+          <span class="material-symbols-rounded">memory</span>
+          Hardware
+        </button>
+        <button 
           @click="currentView = 'settings'"
           class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
           :class="currentView === 'settings' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
@@ -167,6 +185,8 @@ onMounted(async () => {
         <DashboardView v-if="currentView === 'dashboard'" />
         <FlashView v-if="currentView === 'flash'" />
         <ToolsView v-if="currentView === 'tools'" />
+        <SocialView v-if="currentView === 'social'" />
+        <HardwareView v-if="currentView === 'hardware'" />
         <SettingsView v-if="currentView === 'settings'" />
       </div>
     </main>

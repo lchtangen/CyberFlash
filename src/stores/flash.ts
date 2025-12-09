@@ -17,6 +17,7 @@ export const useFlashStore = defineStore('flash', () => {
   const logs = ref<string[]>([])
   const progress = ref(0)
   const currentStep = ref('')
+  const selectedRom = ref<{ name: string; path: string; size: number; hash: string } | null>(null)
 
   async function startFlash() {
     if (isFlashing.value) return;
@@ -81,6 +82,7 @@ export const useFlashStore = defineStore('flash', () => {
     logs,
     progress,
     currentStep,
+    selectedRom,
     startFlash,
     nextPhase
   }

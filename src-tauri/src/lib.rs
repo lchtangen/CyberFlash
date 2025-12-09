@@ -11,6 +11,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
+        .manage(commands::log_parser::SentinelState::default())
         // .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -104,6 +105,8 @@ pub fn run() {
             commands::zero_touch::get_zero_touch_state,
             commands::zero_touch::set_zero_touch_state,
             commands::zero_touch::check_zero_touch_trigger,
+            commands::zero_touch::start_zero_touch_service,
+            commands::zero_touch::cancel_zero_touch,
             commands::cloud_sync::list_github_artifacts,
             commands::cloud_sync::list_recent_runs,
             commands::multi_device::execute_batch_action,
@@ -121,21 +124,32 @@ pub fn run() {
             commands::rom_tools::get_gapps_url,
             commands::rom_tools::check_firmware_compliance,
             commands::rom_tools::get_device_firmware_info,
+            commands::rom_tools::extract_file_from_zip,
             commands::security::verify_file_hash,
             commands::security::calculate_file_hash,
             commands::security::backup_efs_partitions,
             commands::security::install_safetynet_fix,
             commands::security::audit_permissions,
             commands::security::revoke_permission,
+            commands::security::encrypt_file,
+            commands::security::decrypt_file,
             commands::security::lock_bootloader,
             commands::security::kill_switch,
             commands::social::fetch_community_repos,
             commands::social::share_config,
             commands::social::sync_dev_profile,
+            commands::social::generate_share_link,
+            commands::social::decode_share_link,
             commands::system_ops::resize_partition,
             commands::system_ops::install_kernelsu,
             commands::system_ops::switch_dual_boot_slot,
             commands::system_ops::stream_payload_extraction,
+            commands::system_ops::install_dsu,
+            commands::system_ops::flash_kernel_image,
+            commands::hardware::test_cable_speed,
+            commands::hardware::get_power_stats,
+            commands::hardware::get_thermal_stats,
+            commands::hardware::get_storage_health,
         ])
         .run(tauri::generate_context!())
 

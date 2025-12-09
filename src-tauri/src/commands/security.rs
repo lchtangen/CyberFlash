@@ -1,18 +1,137 @@
 use tauri::{command, AppHandle};
 use sha2::{Sha256, Digest};
 use md5;
-use std::fs::File;
-use std::io::{Read, BufReader};
+use std::fs::{self, File};
+use std::io::{Read, Write, BufReader};
 use crate::commands::adb;
 use crate::commands::module_manager;
 use crate::commands::http_client;
 use serde::{Deserialize, Serialize};
+use aes_gcm::{
+    aead::{Aead, KeyInit, OsRng},
+    Aes256Gcm, Nonce // Or `Aes128Gcm`
+};
+use rand::RngCore;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PermissionEntry {
     pub package: String,
     pub permission: String,
     pub status: String,
+}
+
+#[command]
+pub async fn audit_permissions(app: AppHandle) -> Result<Vec<PermissionEntry>, String> {
+    // We will check for dangerous permissions: Camera, Location, Mic, Contacts, SMS
+    // Command: adb shell appops query-op CAMERA allow
+    // Better approach: List all packages and check their requested permissions is too slow.
+    // Fast approach: Check ops for specific dangerous ops.
+    
+    let ops = vec![
+        ("CAMERA", "android:camera"),
+        ("FINE_LOCATION", "android:fine_location"),
+        ("RECORD_AUDIO", "android:record_audio"),
+        ("READ_SMS", "android:read_sms"),
+        ("READ_CONTACTS", "android:read_contacts"),
+    ];
+    
+    let mut entries = Vec::new();
+    
+    for (perm_name, op_code) in ops {
+        // "appops query-op <OP> allow" returns "PackageName"
+        // Output format: "Package: com.foo.bar"
+        let output = adb::run_adb_shell(app.clone(), format!("appops query-op {} allow", op_code)).await?;
+        
+        for line in output.lines() {
+            // Example output: "com.android.camera2" (It might just list package names directly on some versions)
+            // Or "Package: com.android.camera2"
+            let pkg = line.replace("Package: ", "").trim().to_string();
+            if !pkg.is_empty() {
+                entries.push(PermissionEntry {
+                    package: pkg,
+                    permission: perm_name.to_string(),
+                    status: "Granted".to_string(),
+                });
+            }
+        }
+    }
+    
+    Ok(entries)
+}
+
+#[command]
+pub async fn revoke_permission(app: AppHandle, package: String, permission: String) -> Result<String, String> {
+    // Map friendly name back to android permission
+    let android_perm = match permission.as_str() {
+        "CAMERA" => "android.permission.CAMERA",
+        "FINE_LOCATION" => "android.permission.ACCESS_FINE_LOCATION",
+        "RECORD_AUDIO" => "android.permission.RECORD_AUDIO",
+        "READ_SMS" => "android.permission.READ_SMS",
+        "READ_CONTACTS" => "android.permission.READ_CONTACTS",
+        _ => return Err("Unknown permission type".to_string()),
+    };
+    
+    adb::run_adb_shell(app, format!("pm revoke {} {}", package, android_perm)).await
+}
+
+#[command]
+pub async fn encrypt_file(input_path: String, output_path: String, password: String) -> Result<String, String> {
+    // Key derivation (Simple SHA256 of password for now - in prod use Argon2)
+    let mut hasher = Sha256::new();
+    hasher.update(password.as_bytes());
+    let key_bytes = hasher.finalize();
+    let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&key_bytes);
+    let cipher = Aes256Gcm::new(key);
+
+    // Generate random nonce
+    let mut nonce_bytes = [0u8; 12];
+    OsRng.fill_bytes(&mut nonce_bytes);
+    let nonce = Nonce::from_slice(&nonce_bytes);
+
+    // Read file
+    let plaintext = fs::read(&input_path).map_err(|e| e.to_string())?;
+
+    // Encrypt
+    let ciphertext = cipher.encrypt(nonce, plaintext.as_ref())
+        .map_err(|e| format!("Encryption failed: {}", e))?;
+
+    // Write Nonce + Ciphertext
+    let mut output_file = File::create(&output_path).map_err(|e| e.to_string())?;
+    output_file.write_all(&nonce_bytes).map_err(|e| e.to_string())?;
+    output_file.write_all(&ciphertext).map_err(|e| e.to_string())?;
+
+    Ok(output_path)
+}
+
+#[command]
+pub async fn decrypt_file(input_path: String, output_path: String, password: String) -> Result<String, String> {
+    // Key derivation
+    let mut hasher = Sha256::new();
+    hasher.update(password.as_bytes());
+    let key_bytes = hasher.finalize();
+    let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&key_bytes);
+    let cipher = Aes256Gcm::new(key);
+
+    // Read file
+    let mut file = File::open(&input_path).map_err(|e| e.to_string())?;
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).map_err(|e| e.to_string())?;
+
+    if buffer.len() < 12 {
+        return Err("File too short".to_string());
+    }
+
+    // Split Nonce and Ciphertext
+    let (nonce_bytes, ciphertext) = buffer.split_at(12);
+    let nonce = Nonce::from_slice(nonce_bytes);
+
+    // Decrypt
+    let plaintext = cipher.decrypt(nonce, ciphertext)
+        .map_err(|e| format!("Decryption failed (Wrong password?): {}", e))?;
+
+    fs::write(&output_path, plaintext).map_err(|e| e.to_string())?;
+
+    Ok(output_path)
 }
 
 #[command]
@@ -96,63 +215,6 @@ pub async fn install_safetynet_fix(app: AppHandle) -> Result<String, String> {
     
     // Install
     module_manager::install_module_zip(app, save_path.into()).await
-}
-
-#[command]
-pub async fn audit_permissions(app: AppHandle) -> Result<Vec<PermissionEntry>, String> {
-    // Check for Location, Camera, Microphone
-    let perms = vec![
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-    ];
-    
-    let mut results = Vec::new();
-    
-    for perm in perms {
-        // dumpsys package p | grep permission
-        // Better: cmd appops query-op <OP> allow
-        // OP names: FINE_LOCATION, CAMERA, RECORD_AUDIO
-        
-        let op = match perm {
-            "android.permission.ACCESS_FINE_LOCATION" => "FINE_LOCATION",
-            "android.permission.CAMERA" => "CAMERA",
-            "android.permission.RECORD_AUDIO" => "RECORD_AUDIO",
-            _ => continue
-        };
-        
-        let output = adb::run_adb_shell(app.clone(), format!("cmd appops query-op {} allow", op)).await?;
-        // Output format: "PackageName" (sometimes with uid)
-        
-        for line in output.lines() {
-            if !line.trim().is_empty() {
-                // Line might be "com.google.android.gms"
-                let pkg = line.trim().split_whitespace().next().unwrap_or("").to_string();
-                if !pkg.is_empty() {
-                    results.push(PermissionEntry {
-                        package: pkg,
-                        permission: op.to_string(),
-                        status: "Allowed".to_string()
-                    });
-                }
-            }
-        }
-    }
-    
-    Ok(results)
-}
-
-#[command]
-pub async fn revoke_permission(app: AppHandle, package: String, permission: String) -> Result<String, String> {
-    // permission is the OP name (FINE_LOCATION), map back to android permission
-    let android_perm = match permission.as_str() {
-        "FINE_LOCATION" => "android.permission.ACCESS_FINE_LOCATION",
-        "CAMERA" => "android.permission.CAMERA",
-        "RECORD_AUDIO" => "android.permission.RECORD_AUDIO",
-        _ => return Err("Unknown permission op".into())
-    };
-    
-    adb::run_adb_shell(app, format!("pm revoke {} {}", package, android_perm)).await
 }
 
 #[command]

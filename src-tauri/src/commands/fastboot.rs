@@ -138,13 +138,15 @@ pub async fn detect_ab_slots(app: AppHandle, serial: Option<String>) -> Result<b
     Ok(false)
 }
 
+
+
 #[command]
-pub async fn flash_partition(app: AppHandle, partition: String, path: String, serial: Option<String>) -> Result<String, String> {
+pub async fn flash_partition(app: AppHandle, partition: String, file_path: String, serial: Option<String>) -> Result<String, String> {
     let mut cmd = app.shell().sidecar("fastboot").map_err(|e| e.to_string())?;
     if let Some(s) = serial {
         cmd = cmd.args(["-s", &s]);
     }
-    cmd = cmd.args(["flash", &partition, &path]);
+    cmd = cmd.args(["flash", &partition, &file_path]);
 
     let output = cmd.output().await.map_err(|e| e.to_string())?;
 

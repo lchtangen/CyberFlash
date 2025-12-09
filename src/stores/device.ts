@@ -7,15 +7,17 @@ export const useDeviceStore = defineStore('device', () => {
   const serial = ref('');
   const batteryLevel = ref(0);
   const connectionType = ref<'adb' | 'fastboot' | null>(null);
+  const isBootloaderUnlocked = ref(false);
 
   function setConnected(status: boolean) {
     isConnected.value = status;
   }
 
-  function setDeviceDetails(model: string, battery: number, serialId: string = '') {
+  function setDeviceDetails(model: string, battery: number, serialId: string = '', unlocked: boolean = false) {
     deviceModel.value = model;
     batteryLevel.value = battery;
     if (serialId) serial.value = serialId;
+    isBootloaderUnlocked.value = unlocked;
   }
 
   return {
@@ -24,6 +26,7 @@ export const useDeviceStore = defineStore('device', () => {
     serial,
     batteryLevel,
     connectionType,
+    isBootloaderUnlocked,
     setConnected,
     setDeviceDetails
   };

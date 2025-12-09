@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
+import { useFlashStore } from '../../../stores/flash';
 
 interface RomMetadata {
   name: string;
@@ -10,6 +11,7 @@ interface RomMetadata {
   rom_type: string;
 }
 
+const flashStore = useFlashStore();
 const selectedFile = ref<string | null>(null);
 const metadata = ref<RomMetadata | null>(null);
 const loading = ref(false);
@@ -57,6 +59,15 @@ const processFile = async (path: string) => {
   try {
     const res = await invoke<RomMetadata>('parse_rom_file', { path });
     metadata.value = res;
+    
+    // Update global store for AI prediction
+    flashStore.selectedRom = {
+      name: res.name,
+      path: path,
+      size: res.size,
+      hash: res.hash
+    };
+
     emit('romSelected', res);
   } catch (e) {
     error.value = `Parsing failed: ${e}`;
