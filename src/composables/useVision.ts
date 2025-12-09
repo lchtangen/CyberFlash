@@ -180,7 +180,7 @@ export function useTypewriter(text: string, speed = 50) {
 }
 
 // 9. Resizable Logic
-export function useResizable(target: Ref<HTMLElement | null>) {
+export function useResizable() {
   const size = ref({ width: 400, height: 300 });
   
   // Simplified resize logic would go here

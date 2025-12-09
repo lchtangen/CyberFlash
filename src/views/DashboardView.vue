@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import DevicePanel from '../components/features/DevicePanel.vue';
-import AIChatInterface from '../components/features/AIChatInterface.vue';
-import Terminal from '../components/features/Terminal.vue';
-import CyberDeck from '../components/features/CyberDeck.vue';
+import DevicePanel from '../components/features/core/DevicePanel.vue';
+import AIChatInterface from '../components/features/ai/AIChatInterface.vue';
+import Terminal from '../components/features/system/Terminal.vue';
+import CyberDeck from '../components/features/core/CyberDeck.vue';
 import GlassCard from '../components/ui/GlassCard.vue';
 import VisionButton from '../components/ui/VisionButton.vue';
-import { useFlashStore } from '../stores/flash';
 
-const flashStore = useFlashStore();
 </script>
 
 <template>

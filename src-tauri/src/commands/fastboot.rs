@@ -47,6 +47,21 @@ pub async fn get_var_all(app: AppHandle, serial: Option<String>) -> Result<HashM
     Ok(vars)
 }
 
+pub async fn run_fastboot_cmd(app: AppHandle, args: Vec<&str>) -> Result<String, String> {
+    let output = app.shell().sidecar("fastboot")
+        .map_err(|e| e.to_string())?
+        .args(args)
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}
+
 #[command]
 pub async fn set_active_slot(app: AppHandle, slot: String, serial: Option<String>) -> Result<String, String> {
     let mut cmd = app.shell().sidecar("fastboot").map_err(|e| e.to_string())?;

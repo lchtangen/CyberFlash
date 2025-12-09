@@ -1,0 +1,52 @@
+{
+  "lists": [
+    {
+      "id": "google_pixel",
+      "name": "Google Pixel Debloat",
+      "description": "Removes Digital Wellbeing, AR Core, and analytics.",
+      "packages": [
+        "com.google.android.apps.wellbeing",
+        "com.google.ar.core",
+        "com.google.android.feedback",
+        "com.google.android.gms.location.history"
+      ]
+    },
+    {
+      "id": "samsung_oneui",
+      "name": "Samsung OneUI Debloat",
+      "description": "Removes Bixby, AR Zone, and Samsung Pass.",
+      "packages": [
+        "com.samsung.android.bixby.agent",
+        "com.samsung.android.bixby.wakeup",
+        "com.samsung.android.arzone",
+        "com.samsung.android.spass",
+        "com.samsung.android.game.gamehome",
+        "com.sec.android.app.sbrowser"
+      ]
+    },
+    {
+      "id": "xiaomi_miui",
+      "name": "Xiaomi MIUI/HyperOS Debloat",
+      "description": "Removes MSA (Ads), Mi Browser, and Analytics.",
+      "packages": [
+        "com.miui.msa.global",
+        "com.miui.analytics",
+        "com.miui.browser",
+        "com.miui.player",
+        "com.xiaomi.midrop",
+        "com.miui.yellowpage"
+      ]
+    },
+    {
+      "id": "oneplus_oxygen",
+      "name": "OnePlus OxygenOS Debloat",
+      "description": "Removes Zen Mode, OnePlus Roaming, and HeyTap.",
+      "packages": [
+        "com.oneplus.brickmode",
+        "com.heytap.cloud",
+        "com.oneplus.membership",
+        "com.oneplus.account"
+      ]
+    }
+  ]
+}

@@ -5,7 +5,6 @@ import { useDeviceStore } from '../../stores/device';
 const deviceStore = useDeviceStore();
 
 const isConnected = computed(() => deviceStore.isConnected);
-const model = computed(() => deviceStore.deviceModel || 'Unknown Device');
 const status = computed(() => deviceStore.connectionType || 'Disconnected');
 
 </script>

@@ -560,3 +560,18 @@ pub async fn run_adb_shell(app: AppHandle, command: String) -> Result<String, St
     }
 }
 
+pub async fn run_adb_command(app: AppHandle, args: Vec<String>) -> Result<String, String> {
+    let output = app.shell().sidecar("adb")
+        .map_err(|e| e.to_string())?
+        .args(&args)
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}
+

@@ -3,10 +3,14 @@ import { ref, onMounted, watch } from 'vue';
 import DashboardView from './views/DashboardView.vue';
 import FlashView from './views/FlashView.vue';
 import SettingsView from './views/SettingsView.vue';
-import AIAssistantOverlay from './components/features/AIAssistantOverlay.vue';
-import CommandPalette from './components/features/CommandPalette.vue';
-import DeviceConnectionHub from './components/features/DeviceConnectionHub.vue';
-import NotificationCenter from './components/features/NotificationCenter.vue';
+import ToolsView from './views/ToolsView.vue';
+import AIAssistantOverlay from './components/features/ai/AIAssistantOverlay.vue';
+import CommandPalette from './components/features/core/CommandPalette.vue';
+import DeviceConnectionHub from './components/features/core/DeviceConnectionHub.vue';
+import NotificationCenter from './components/features/core/NotificationCenter.vue';
+import DriverHealthCheck from './components/features/system/DriverHealthCheck.vue';
+import ContextualHelpBot from './components/features/ai/ContextualHelpBot.vue';
+import VoiceCommander from './components/features/ai/VoiceCommander.vue';
 import { useSettingsStore } from './stores/settings';
 import { useNotificationStore } from './stores/notifications';
 
@@ -69,11 +73,11 @@ onMounted(async () => {
   
   // Welcome Notification
   setTimeout(() => {
-    notificationStore.addNotification(
-      'System Online', 
-      'CyberFlash V2 is ready. Connected to local daemon.', 
-      'success'
-    );
+    notificationStore.addNotification({
+      title: 'System Online',
+      message: 'CyberFlash V2 is ready. Connected to local daemon.',
+      type: 'success'
+    });
   }, 1000);
 });
 </script>
@@ -103,6 +107,14 @@ onMounted(async () => {
         >
           <span class="material-symbols-rounded">flash_on</span>
           Flash
+        </button>
+        <button 
+          @click="currentView = 'tools'"
+          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
+          :class="currentView === 'tools' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
+        >
+          <span class="material-symbols-rounded">construction</span>
+          Tools
         </button>
         <button 
           @click="currentView = 'settings'"
@@ -154,6 +166,7 @@ onMounted(async () => {
       <div class="flex-1 overflow-y-auto p-6 custom-scrollbar relative">
         <DashboardView v-if="currentView === 'dashboard'" />
         <FlashView v-if="currentView === 'flash'" />
+        <ToolsView v-if="currentView === 'tools'" />
         <SettingsView v-if="currentView === 'settings'" />
       </div>
     </main>
@@ -161,6 +174,9 @@ onMounted(async () => {
     <!-- Overlays -->
     <AIAssistantOverlay />
     <CommandPalette />
+    <DriverHealthCheck />
+    <ContextualHelpBot />
+    <VoiceCommander />
     <NotificationCenter :is-open="isNotificationPanelOpen" @close="isNotificationPanelOpen = false" />
   </div>
 </template>
