@@ -15,6 +15,20 @@ pub fn run() {
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.maximize();
             }
+            
+            // Initialize History Database
+            match commands::history::HistoryDb::init() {
+                Ok(db) => {
+                    app.manage(db);
+                }
+                Err(e) => {
+                    eprintln!("Failed to initialize database: {}", e);
+                }
+            }
+
+            // Initialize Flash State
+            app.manage(commands::flash_as_code::FlashState::default());
+
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
@@ -33,11 +47,14 @@ pub fn run() {
             commands::adb::install_apk,
             commands::adb::push_file,
             commands::adb::pull_file,
+            commands::adb::delete_file,
+            commands::adb::create_directory,
             commands::adb::list_packages,
             commands::adb::get_storage_info,
             commands::adb::wait_for_device,
             commands::adb::wait_for_recovery,
-            commands::adb::adb_screenshot,
+            commands::adb::take_screenshot,
+            commands::adb::list_directory,
             commands::adb::adb_screen_record,
             commands::adb::check_root_status,
             commands::adb::get_display_density,
@@ -62,6 +79,7 @@ pub fn run() {
             commands::devices::oneplus::generate_op7pro_flash_config,
             commands::fastboot::detect_ab_slots,
             commands::fastboot::flash_partition,
+            commands::fastboot::flash_partition_stream,
             commands::fastboot::erase_partition,
             commands::fastboot::disable_verity,
             commands::fastboot::format_data,
@@ -77,16 +95,35 @@ pub fn run() {
             commands::usb_monitor::start_usb_monitor,
             commands::file_parser::parse_rom_file,
             commands::file_parser::verify_file_checksum,
+            commands::file_parser::verify_file_md5,
             commands::file_parser::extract_zip_file,
             commands::prop_reader::get_device_props,
             commands::wipe_logic::factory_reset,
             commands::log_parser::get_logcat_dump,
             commands::log_parser::start_log_sentinel,
             commands::log_parser::stop_log_sentinel,
+            commands::log_parser::analyze_log_with_ai,
             commands::flash_as_code::validate_flash_config,
             commands::flash_as_code::execute_flash_plan,
+            commands::flash_as_code::cancel_flash_process,
+            commands::flash_as_code::pause_flash_process,
+            commands::flash_as_code::resume_flash_process,
+            commands::flash_as_code::convert_script_to_config,
             commands::fastboot::bootloader_unlock,
+            commands::scrcpy_manager::check_scrcpy_installed,
+            commands::scrcpy_manager::start_scrcpy,
+            commands::adb::take_screenshot,
+            commands::adb::list_directory,
+            commands::scheduler::save_schedule,
+            commands::scrcpy_manager::check_scrcpy_installed,
+            commands::scrcpy_manager::start_scrcpy,
             commands::fastboot::bootloader_lock,
+            commands::hardware::test_cable_speed,
+            commands::hardware::get_power_stats,
+            commands::hardware::get_storage_health,
+            commands::hardware::get_device_config_summary,
+            commands::hardware::get_thermal_stats,
+            commands::social::fetch_rss_feed,
             commands::flash_recovery::flash_recovery,
             commands::flash_recovery::boot_recovery,
             commands::image_patcher::patch_boot_image,
@@ -98,6 +135,9 @@ pub fn run() {
             commands::sys_driver::fix_drivers,
             commands::sys_driver::check_internet_connection,
             commands::os_perm::check_permissions,
+            commands::history::add_activity,
+            commands::history::get_activity_log,
+            commands::history::clear_activity_log,
             commands::os_perm::request_permissions,
             commands::shell_stream::start_shell_stream,
             commands::automation::get_required_downloads,
@@ -108,12 +148,20 @@ pub fn run() {
             commands::context_bot::analyze_error_context,
             commands::config_gen::generate_config_from_url,
             commands::brick_prevention::check_brick_risk,
+            commands::rom_tools::get_device_inventory,
+            commands::rom_tools::extract_file_from_zip,
+            commands::rom_tools::get_gapps_url,
+            commands::rom_tools::check_firmware_compliance,
             commands::sentiment::analyze_sentiment,
             commands::ocr::translate_image,
             commands::hardware::test_cable_speed,
             commands::hardware::get_power_stats,
             commands::hardware::get_storage_health,
             commands::hardware::get_device_config_summary,
+            commands::hardware::run_screen_test,
+            commands::hardware::toggle_touch_test,
+            commands::hardware::calculate_device_health_score,
+            commands::hardware::generate_health_report,
             commands::social::fetch_community_repos,
             commands::social::generate_share_link,
             commands::social::decode_share_link,
@@ -139,7 +187,13 @@ pub fn run() {
             commands::module_manager::toggle_module,
             commands::module_manager::remove_module,
             commands::module_manager::install_module_zip,
+            commands::module_manager::get_denylist,
+            commands::module_manager::toggle_denylist,
+            commands::module_manager::backup_modules,
+            commands::module_manager::remove_all_modules,
             commands::prop_editor::get_all_props,
+            commands::prop_editor::set_prop,
+            commands::prop_editor::delete_prop,
             commands::prop_editor::generate_prop_module,
             commands::rom_tools::get_gapps_url,
             commands::rom_tools::check_firmware_compliance,
@@ -160,7 +214,13 @@ pub fn run() {
             commands::social::sync_dev_profile,
             commands::social::generate_share_link,
             commands::social::decode_share_link,
+            commands::social::download_feed_item,
+            commands::social::search_community,
+            commands::cloud_sync::backup_app_data,
+            commands::cloud_sync::restore_app_data,
             commands::system_ops::resize_partition,
+            commands::system_ops::parse_payload_bin,
+            commands::system_ops::extract_payload_partition,
             commands::system_ops::install_kernelsu,
             commands::system_ops::switch_dual_boot_slot,
             commands::system_ops::stream_payload_extraction,

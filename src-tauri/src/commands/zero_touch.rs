@@ -1,4 +1,4 @@
-use tauri::{command, AppHandle, Emitter};
+use tauri::{command, AppHandle, Emitter, Manager};
 use serde::{Serialize, Deserialize};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -24,12 +24,12 @@ pub struct ZeroTouchState {
 
 #[command]
 pub fn get_zero_touch_state() -> ZeroTouchState {
-    ZERO_TOUCH_STATE.lock().unwrap().clone()
+    ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner()).clone()
 }
 
 #[command]
 pub fn set_zero_touch_state(state: ZeroTouchState) {
-    let mut s = ZERO_TOUCH_STATE.lock().unwrap();
+    let mut s = ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner());
     // Preserve processed_devices and running state when updating config
     let old_processed = s.processed_devices.clone();
     let old_counting = s.is_counting_down;
@@ -48,7 +48,7 @@ pub async fn start_zero_touch_service(app: AppHandle) -> Result<(), String> {
             sleep(Duration::from_secs(3)).await;
 
             let (target_serial, profile_path, processed, is_enabled, is_counting_down) = {
-                let state_guard = ZERO_TOUCH_STATE.lock().unwrap();
+                let state_guard = ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner());
                 (
                     state_guard.target_device_serial.clone(),
                     state_guard.profile_path.clone(),
@@ -106,7 +106,7 @@ pub async fn start_zero_touch_service(app: AppHandle) -> Result<(), String> {
 
     // 4. Trigger Countdown
     let delay = {
-        let mut state = ZERO_TOUCH_STATE.lock().unwrap();
+        let mut state = ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner());
         state.is_counting_down = true;
         state.auto_start_delay
     };
@@ -119,7 +119,7 @@ pub async fn start_zero_touch_service(app: AppHandle) -> Result<(), String> {
         sleep(Duration::from_secs(1)).await;
         
         // Check if cancelled
-        let is_cancelled = !ZERO_TOUCH_STATE.lock().unwrap().is_counting_down;
+        let is_cancelled = !ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner()).is_counting_down;
         if is_cancelled {
             let _ = app.emit("zero-touch-cancelled", ());
             return;
@@ -131,7 +131,7 @@ pub async fn start_zero_touch_service(app: AppHandle) -> Result<(), String> {
     
     // Mark as processed
     {
-        let mut state = ZERO_TOUCH_STATE.lock().unwrap();
+        let mut state = ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner());
         state.processed_devices.push(serial.clone());
         state.is_counting_down = false;
     }
@@ -141,7 +141,7 @@ pub async fn start_zero_touch_service(app: AppHandle) -> Result<(), String> {
         Ok(content) => {
             match flash_as_code::validate_flash_config(content).await {
                 Ok(config) => {
-                    let _ = flash_as_code::execute_flash_plan(app.clone(), config).await;
+                    let _ = flash_as_code::execute_flash_plan(app.clone(), app.app_handle().state::<flash_as_code::FlashState>(), config).await;
                 },
                 Err(e) => { let _ = app.emit("zero-touch-error", e); }
             }
@@ -152,7 +152,7 @@ pub async fn start_zero_touch_service(app: AppHandle) -> Result<(), String> {
 
 #[command]
 pub fn cancel_zero_touch() {
-    let mut state = ZERO_TOUCH_STATE.lock().unwrap();
+    let mut state = ZERO_TOUCH_STATE.lock().unwrap_or_else(|e| e.into_inner());
     state.is_counting_down = false;
 }
 

@@ -11,11 +11,13 @@
     "dev:snap": "./scripts/run-dev.sh"
   },
   "dependencies": {
+    "@iconify/vue": "^5.0.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2.4.2",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-shell": "^2.3.3",
     "@vueuse/core": "^14.1.0",
+    "iconify": "^1.4.0",
     "inquirer": "^13.0.2",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",

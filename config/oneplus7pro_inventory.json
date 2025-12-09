@@ -1,0 +1,85 @@
+{
+  "device": "OnePlus 7 Pro",
+  "codename": "guacamole",
+  "firmware": [
+    {
+      "version": "OxygenOS 11.0.9.1",
+      "android_version": "11",
+      "region": "Global",
+      "url": "https://oxygenos.oneplus.net/OnePlus7ProOxygen_21.O.43_OTA_0430_all_2210121958_d4e6.zip",
+      "md5": "d4e6...",
+      "type": "Full OTA"
+    },
+    {
+      "version": "OxygenOS 12.1 (H.41)",
+      "android_version": "12",
+      "region": "Global",
+      "url": "https://oxygenos.oneplus.net/OnePlus7ProOxygen_21.P.41_OTA_0410_all_2302032100_f1a2.zip",
+      "md5": "f1a2...",
+      "type": "Full OTA"
+    }
+  ],
+  "roms": [
+    {
+      "name": "LineageOS 21",
+      "version": "21.0",
+      "android_version": "14",
+      "maintainer": "LineageOS Team",
+      "url": "https://mirrorbits.lineageos.org/full/guacamole/20240218/lineage-21.0-20240218-nightly-guacamole-signed.zip",
+      "recovery_url": "https://mirrorbits.lineageos.org/full/guacamole/20240218/lineage-21.0-20240218-recovery-guacamole.img",
+      "official": true
+    },
+    {
+      "name": "crDroid 10",
+      "version": "10.1",
+      "android_version": "14",
+      "maintainer": "gwolfu",
+      "url": "https://sourceforge.net/projects/crdroid/files/guacamole/10.x/crDroidAndroid-14.0-20240215-guacamole-v10.1.zip/download",
+      "official": true
+    },
+    {
+      "name": "PixelExperience Plus",
+      "version": "13.0",
+      "android_version": "13",
+      "maintainer": "jhenrique09",
+      "url": "https://get.pixelexperience.org/changelog/guacamole/PixelExperience_Plus_guacamole-13.0-20231115-1234-OFFICIAL.zip",
+      "official": true
+    },
+    {
+      "name": "Paranoid Android Uvite",
+      "version": "Uvite Beta 1",
+      "android_version": "14",
+      "maintainer": "AOSPA",
+      "url": "https://paranoidandroid.co/downloads/guacamole",
+      "official": true
+    }
+  ],
+  "recoveries": [
+    {
+      "name": "TWRP Official",
+      "version": "3.7.0_9-0",
+      "url": "https://dl.twrp.me/guacamole/twrp-3.7.0_9-0-guacamole.img",
+      "type": "img"
+    },
+    {
+      "name": "OrangeFox Recovery",
+      "version": "R11.1",
+      "url": "https://orangefox.download/device/guacamole",
+      "type": "zip"
+    }
+  ],
+  "tools": [
+    {
+      "name": "Magisk",
+      "version": "27.0",
+      "url": "https://github.com/topjohnwu/Magisk/releases/download/v27.0/Magisk-v27.0.apk",
+      "type": "apk"
+    },
+    {
+      "name": "KernelSU",
+      "version": "0.9.5",
+      "url": "https://github.com/tiann/KernelSU/releases/download/v0.9.5/KernelSU_v0.9.5_11210_release.apk",
+      "type": "apk"
+    }
+  ]
+}

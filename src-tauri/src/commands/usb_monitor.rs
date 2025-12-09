@@ -4,6 +4,7 @@ use std::thread;
 use std::time::Duration;
 use std::sync::atomic::{AtomicBool, Ordering};
 use serde::Serialize;
+use crate::commands::scheduler;
 
 static MONITOR_RUNNING: AtomicBool = AtomicBool::new(false);
 
@@ -32,8 +33,19 @@ pub fn start_usb_monitor(app: AppHandle) {
                     if line.trim().is_empty() { continue; }
                     let parts: Vec<&str> = line.split_whitespace().collect();
                     if parts.len() >= 2 {
+                        let serial = parts[0].to_string();
+                        
+                        // Check if this is a new device (simple logic for now)
+                        // In a real app, we'd keep a Set of known devices
+                        // For now, we just trigger the scheduler check asynchronously
+                        let app_handle = app.clone();
+                        let serial_clone = serial.clone();
+                        tauri::async_runtime::spawn(async move {
+                            scheduler::check_and_run_schedules(app_handle, serial_clone).await;
+                        });
+
                         devices.push(DeviceStatus {
-                            serial: parts[0].to_string(),
+                            serial,
                             state: parts[1].to_string(),
                             connection_type: "adb".to_string(),
                         });

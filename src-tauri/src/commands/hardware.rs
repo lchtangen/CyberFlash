@@ -271,3 +271,133 @@ pub async fn get_thermal_stats(app: AppHandle) -> Result<ThermalStats, String> {
         throttling: false,
     })
 }
+
+#[command]
+pub async fn run_screen_test(app: AppHandle) -> Result<String, String> {
+    // Open a screen test website
+    run_adb_shell(&app, "am start -a android.intent.action.VIEW -d \"https://lcdtech.info/en/tests/dead.pixel.htm\"").await?;
+    Ok("Screen test launched on device".to_string())
+}
+
+#[command]
+pub async fn toggle_touch_test(app: AppHandle, enable: bool) -> Result<String, String> {
+    let val = if enable { "1" } else { "0" };
+    run_adb_shell(&app, &format!("settings put system show_touches {}", val)).await?;
+    run_adb_shell(&app, &format!("settings put system pointer_location {}", val)).await?;
+    Ok(if enable { "Touch visualization enabled" } else { "Touch visualization disabled" }.to_string())
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HealthScore {
+    pub score: u8,
+    pub battery_health: String,
+    pub storage_health: String,
+    pub recommendation: String,
+}
+
+#[command]
+pub async fn calculate_device_health_score(app: AppHandle) -> Result<HealthScore, String> {
+    let mut score = 100;
+    let mut recommendations = Vec::new();
+
+    // 1. Battery Check
+    let power = get_power_stats(app.clone()).await.unwrap_or(PowerStats {
+        voltage_v: 0.0, current_ma: 0.0, power_w: 0.0, level_percent: 0, status: "".into(), technology: "".into(), temperature_c: 0.0
+    });
+    
+    // Simple heuristic: if capacity is low, reduce score (hard to get actual health % without root/dumpsys)
+    // Assuming we can get cycle count from dumpsys in future
+    
+    let battery_health = if power.temperature_c > 45.0 {
+        score -= 10;
+        recommendations.push("Battery is overheating. Cool down device.");
+        "Overheating"
+    } else {
+        "Good"
+    };
+
+    // 2. Storage Check
+    let storage = get_storage_health(app.clone()).await;
+    let storage_health = if let Ok(s) = storage {
+        if s.pre_eol_info != "Normal" && s.pre_eol_info != "0x01" {
+            score -= 30;
+            recommendations.push("Storage is nearing End-of-Life. Backup immediately.");
+            "Critical"
+        } else if s.life_used_a == "90-100%" || s.life_used_b == "90-100%" {
+             score -= 20;
+             recommendations.push("Storage wear is high.");
+             "Degraded"
+        } else {
+            "Good"
+        }
+    } else {
+        "Unknown"
+    };
+
+    Ok(HealthScore {
+        score,
+        battery_health: battery_health.to_string(),
+        storage_health: storage_health.to_string(),
+        recommendation: if recommendations.is_empty() { "Device is healthy.".to_string() } else { recommendations.join(" ") },
+    })
+}
+
+#[command]
+pub async fn generate_health_report(app: AppHandle) -> Result<String, String> {
+    let summary = get_device_config_summary(app.clone()).await.unwrap_or(DeviceConfigSummary {
+        device: "Unknown".into(), rom: "Unknown".into(), magisk: false, modules: vec![]
+    });
+    let score = calculate_device_health_score(app.clone()).await?;
+    let power = get_power_stats(app.clone()).await.unwrap_or(PowerStats {
+        voltage_v: 0.0, current_ma: 0.0, power_w: 0.0, level_percent: 0, status: "".into(), technology: "".into(), temperature_c: 0.0
+    });
+
+    let html = format!(
+        r#"
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>CyberFlash Health Report</title>
+            <style>
+                body {{ font-family: sans-serif; background: #121212; color: #fff; padding: 20px; }}
+                .card {{ background: #1e1e1e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }}
+                h1 {{ color: #0A84FF; }}
+                .score {{ font-size: 48px; font-weight: bold; color: #30D158; }}
+                .warning {{ color: #FFD60A; }}
+                .error {{ color: #FF453A; }}
+            </style>
+        </head>
+        <body>
+            <h1>Device Health Report</h1>
+            <div class="card">
+                <h2>Overall Score</h2>
+                <div class="score">{}</div>
+                <p>{}</p>
+            </div>
+            <div class="card">
+                <h2>Device Info</h2>
+                <p><strong>Model:</strong> {}</p>
+                <p><strong>ROM:</strong> {}</p>
+                <p><strong>Rooted:</strong> {}</p>
+            </div>
+            <div class="card">
+                <h2>Battery Stats</h2>
+                <p><strong>Level:</strong> {}%</p>
+                <p><strong>Temp:</strong> {}°C</p>
+                <p><strong>Status:</strong> {}</p>
+            </div>
+        </body>
+        </html>
+        "#,
+        score.score,
+        score.recommendation,
+        summary.device,
+        summary.rom,
+        if summary.magisk { "Yes" } else { "No" },
+        power.level_percent,
+        power.temperature_c,
+        power.status
+    );
+
+    Ok(html)
+}

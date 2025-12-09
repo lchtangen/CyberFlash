@@ -4,6 +4,7 @@ use std::time::Duration;
 use std::path::Path;
 use std::fs;
 use crate::commands::{http_client, file_parser, config, adb, fastboot, devices, flash_as_code, image_patcher};
+use tauri::Manager;
 
 #[derive(Clone, serde::Serialize)]
 struct ProgressUpdate {
@@ -255,7 +256,8 @@ async fn run_phase_4(app: &AppHandle, phase_id: u32) -> Result<String, String> {
     
     emit_progress(app, phase_id, 0, 1, "Executing Flash Plan...", 10.0);
     
-    flash_as_code::execute_flash_plan(app.clone(), config).await?;
+    // Pass the FlashState to execute_flash_plan
+    flash_as_code::execute_flash_plan(app.clone(), app.app_handle().state::<flash_as_code::FlashState>(), config).await?;
 
     Ok("Flashing Sequence Completed".to_string())
 }

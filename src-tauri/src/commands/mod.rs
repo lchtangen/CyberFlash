@@ -24,6 +24,8 @@ pub mod security;
 pub mod social;
 pub mod system_ops;
 pub mod hardware;
+pub mod scheduler;
+pub mod scrcpy_manager;
 
 
 
@@ -44,4 +46,5 @@ pub mod cloud_sync;
 pub mod multi_device;
 pub mod recovery_script;
 pub mod devices;
+pub mod history;
 

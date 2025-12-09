@@ -139,6 +139,7 @@ fn build_config_from_data(data: ScrapedData) -> FlashConfig {
         name: data.title,
         device: data.detected_device.unwrap_or("Generic Device".to_string()),
         version: "Auto-Generated".to_string(),
+        continue_on_error: false,
         steps,
     }
 }

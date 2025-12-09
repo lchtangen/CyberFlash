@@ -1,0 +1,20 @@
+{
+  "name": "Pixel Debloat",
+  "device": "auto",
+  "version": "1.0",
+  "continue_on_error": true,
+  "steps": [
+    {
+      "type": "sideload",
+      "params": {
+        "file": "debloat_script.zip"
+      }
+    },
+    {
+      "type": "reboot",
+      "params": {
+        "mode": "system"
+      }
+    }
+  ]
+}

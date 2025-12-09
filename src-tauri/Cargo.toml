@@ -48,6 +48,8 @@ pure-rust-locales = "0.8.2"
 rkyv = "0.8.12"
 base64 = "0.22.1"
 futures = "0.3.31"
+rusqlite = { version = "0.31.0", features = ["bundled"] }
 aes-gcm = "0.10.3"
 tempfile = "3.23.0"
+rss = "2.0.12"
 

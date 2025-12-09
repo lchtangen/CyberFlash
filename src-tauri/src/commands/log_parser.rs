@@ -213,3 +213,13 @@ pub async fn get_logcat_dump(app: AppHandle) -> Result<Vec<LogEntry>, String> {
     }
     Ok(entries)
 }
+
+#[command]
+pub async fn analyze_log_with_ai(log_entry: String, api_key: String) -> Result<String, String> {
+    let prompt = format!(
+        "Analyze this Android log error and suggest a fix. Be concise. Log: {}", 
+        log_entry
+    );
+    
+    crate::commands::gemini::call_gemini_api(prompt, api_key, None).await
+}

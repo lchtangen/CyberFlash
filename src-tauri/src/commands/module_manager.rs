@@ -1,4 +1,4 @@
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 use serde::{Deserialize, Serialize};
 use crate::commands::adb;
 
@@ -32,7 +32,10 @@ pub async fn list_magisk_modules(app: AppHandle) -> Result<Vec<MagiskModule>, St
         
         // Check if disabled file exists
         let disabled_check = adb::run_adb_shell(app.clone(), format!("ls /data/adb/modules/{}/disable", id)).await;
-        let enabled = disabled_check.is_err() || disabled_check.unwrap().contains("No such file");
+        let enabled = match disabled_check {
+            Ok(output) => !output.contains("No such file"),
+            Err(_) => true, // If ls fails (e.g. file not found), assume enabled
+        };
 
         let mut name = String::new();
         let mut version = String::new();
@@ -90,4 +93,47 @@ pub async fn install_module_zip(app: AppHandle, zip_path: String) -> Result<Stri
     
     let cmd = format!("magisk --install-module {}", remote_path);
     adb::run_adb_shell(app, cmd).await
+}
+
+#[command]
+pub async fn get_denylist(app: AppHandle) -> Result<Vec<String>, String> {
+    let output = adb::run_adb_shell(app, "magisk --denylist ls".into()).await?;
+    Ok(output.lines().map(|s| s.to_string()).collect())
+}
+
+#[command]
+pub async fn toggle_denylist(app: AppHandle, package: String, enable: bool) -> Result<String, String> {
+    let cmd = if enable {
+        format!("magisk --denylist add {}", package)
+    } else {
+        format!("magisk --denylist rm {}", package)
+    };
+    adb::run_adb_shell(app, cmd).await
+}
+
+#[command]
+pub async fn backup_modules(app: AppHandle) -> Result<String, String> {
+    // Strategy: 
+    // 1. su -c "tar -czf /sdcard/modules_backup.tar.gz /data/adb/modules"
+    // 2. adb pull /sdcard/modules_backup.tar.gz
+    // 3. su -c "rm /sdcard/modules_backup.tar.gz"
+    
+    let tar_cmd = "tar -czf /sdcard/modules_backup.tar.gz /data/adb/modules";
+    adb::run_adb_shell(app.clone(), format!("su -c '{}'", tar_cmd)).await?;
+    
+    let download_dir = app.path().download_dir().map_err(|e| e.to_string())?;
+    let local_path = download_dir.join(format!("magisk_modules_backup_{}.tar.gz", chrono::Local::now().format("%Y%m%d_%H%M%S")));
+    
+    adb::pull_file(app.clone(), "/sdcard/modules_backup.tar.gz".into(), local_path.to_string_lossy().to_string()).await?;
+    
+    adb::run_adb_shell(app.clone(), "rm /sdcard/modules_backup.tar.gz".into()).await?;
+    
+    Ok(local_path.to_string_lossy().to_string())
+}
+
+#[command]
+pub async fn remove_all_modules(app: AppHandle) -> Result<String, String> {
+    // Mark all modules for removal
+    let cmd = "find /data/adb/modules -maxdepth 1 -mindepth 1 -type d -exec touch {}/remove \\;";
+    adb::run_adb_shell(app, format!("su -c '{}'", cmd)).await
 }

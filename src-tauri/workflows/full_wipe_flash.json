@@ -1,0 +1,42 @@
+{
+  "name": "Full Wipe & Flash",
+  "device": "auto",
+  "version": "1.0",
+  "continue_on_error": false,
+  "steps": [
+    {
+      "type": "reboot",
+      "params": {
+        "mode": "bootloader"
+      }
+    },
+    {
+      "type": "wipe",
+      "params": {
+        "partitions": ["userdata", "cache", "metadata"]
+      }
+    },
+    {
+      "type": "flash_image",
+      "params": {
+        "partition": "boot",
+        "file": "boot.img",
+        "slot": null
+      }
+    },
+    {
+      "type": "flash_image",
+      "params": {
+        "partition": "system",
+        "file": "system.img",
+        "slot": null
+      }
+    },
+    {
+      "type": "reboot",
+      "params": {
+        "mode": "system"
+      }
+    }
+  ]
+}

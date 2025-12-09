@@ -1,8 +1,102 @@
+<template>
+  <div class="h-full flex flex-col space-y-6 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Module Manager</h2>
+        <p class="text-white/60">Manage Magisk/KernelSU modules and DenyList</p>
+      </div>
+      <div class="flex space-x-2">
+        <VisionButton 
+          @click="activeTab = 'modules'" 
+          :variant="activeTab === 'modules' ? 'primary' : 'secondary'"
+          size="sm"
+        >
+          Modules
+        </VisionButton>
+        <VisionButton 
+          @click="activeTab = 'denylist'" 
+          :variant="activeTab === 'denylist' ? 'primary' : 'secondary'"
+          size="sm"
+        >
+          DenyList
+        </VisionButton>
+      </div>
+    </div>
+
+    <!-- Modules Tab -->
+    <div v-if="activeTab === 'modules'" class="flex-1 flex flex-col min-h-0">
+      <div class="flex justify-end mb-4">
+        <VisionButton @click="installModule" variant="primary">
+          <Icon icon="mdi:plus" class="mr-2" />
+          Install from Zip
+        </VisionButton>
+      </div>
+
+      <div v-if="loading" class="flex-1 flex items-center justify-center">
+        <Icon icon="mdi:loading" class="animate-spin text-4xl text-primary" />
+      </div>
+
+      <div v-else-if="error" class="p-4 rounded-xl bg-error/10 border border-error/20 text-error">
+        {{ error }}
+        <VisionButton @click="fetchModules" variant="ghost" class="ml-2 underline">Retry</VisionButton>
+      </div>
+
+      <div v-else class="flex-1 overflow-y-auto space-y-4 custom-scrollbar pr-2">
+        <GlassCard 
+          v-for="mod in modules" 
+          :key="mod.id"
+          class="p-4 transition-all duration-300 hover:bg-surface/40"
+        >
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-white">{{ mod.name }} <span class="text-xs text-white/40 ml-2">{{ mod.version }}</span></h3>
+              <p class="text-sm text-primary mb-1">by {{ mod.author }}</p>
+              <p class="text-sm text-white/70">{{ mod.description }}</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <ToggleSwitch 
+                v-model="mod.enabled" 
+                @update:modelValue="toggle(mod)"
+              />
+              <button @click="remove(mod)" class="text-white/40 hover:text-error transition-colors">
+                <Icon icon="mdi:delete" />
+              </button>
+            </div>
+          </div>
+        </GlassCard>
+      </div>
+    </div>
+
+    <!-- DenyList Tab -->
+    <div v-else class="flex-1 flex flex-col min-h-0">
+      <div class="mb-4">
+        <GlassInput v-model="denySearch" placeholder="Search packages..." icon="search" />
+      </div>
+      
+      <div class="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2">
+        <div 
+          v-for="pkg in filteredPackages" 
+          :key="pkg"
+          class="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-surface/30"
+        >
+          <span class="text-white font-mono text-sm">{{ pkg }}</span>
+          <ToggleSwitch 
+            :modelValue="denyList.includes(pkg)"
+            @update:modelValue="(val) => toggleDeny(pkg, val)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
+import { Icon } from '@iconify/vue';
 import GlassCard from '../../ui/GlassCard.vue';
+import GlassInput from '../../ui/GlassInput.vue';
 import VisionButton from '../../ui/VisionButton.vue';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
 
@@ -15,9 +109,18 @@ interface MagiskModule {
   enabled: boolean;
 }
 
+const activeTab = ref('modules');
 const modules = ref<MagiskModule[]>([]);
+const denyList = ref<string[]>([]);
+const allPackages = ref<string[]>([]);
+const denySearch = ref('');
 const loading = ref(false);
 const error = ref<string | null>(null);
+
+const filteredPackages = computed(() => {
+  if (!denySearch.value) return allPackages.value;
+  return allPackages.value.filter(p => p.toLowerCase().includes(denySearch.value.toLowerCase()));
+});
 
 const fetchModules = async () => {
   loading.value = true;
@@ -31,107 +134,89 @@ const fetchModules = async () => {
   }
 };
 
+const fetchDenyList = async () => {
+  try {
+    const [denied, packages] = await Promise.all([
+      invoke<string[]>('get_denylist'),
+      invoke<string[]>('list_packages')
+    ]);
+    denyList.value = denied;
+    allPackages.value = packages.sort();
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 const toggle = async (mod: MagiskModule) => {
-  // Optimistic update
   const oldState = mod.enabled;
-  mod.enabled = !mod.enabled;
-  
+  // mod.enabled is already updated by v-model
   try {
     await invoke('toggle_module', { id: mod.id, enable: mod.enabled });
   } catch (e) {
-    mod.enabled = oldState; // Revert
+    mod.enabled = oldState;
     console.error(e);
   }
 };
 
 const remove = async (mod: MagiskModule) => {
-  if (!confirm(`Remove module "${mod.name}"? It will be deleted on next reboot.`)) return;
+  const confirmed = window.confirm(`Remove module "${mod.name}"? It will be deleted on next reboot.`);
+  if (!confirmed) return;
   try {
     await invoke('remove_module', { id: mod.id });
-    alert('Module marked for removal. Please reboot.');
+    modules.value = modules.value.filter(m => m.id !== mod.id);
   } catch (e) {
-    console.error(e);
+    error.value = `Failed to remove module: ${String(e)}`;
   }
 };
 
-const install = async () => {
+const installModule = async () => {
+  const selected = await open({
+    multiple: false,
+    filters: [{ name: 'Zip', extensions: ['zip'] }]
+  });
+
+  if (selected && typeof selected === 'string') {
+    loading.value = true;
+    try {
+      await invoke('install_module_zip', { zipPath: selected });
+      error.value = null;
+      await fetchModules();
+    } catch (e) {
+      error.value = `Failed to install module: ${String(e)}`;
+    } finally {
+      loading.value = false;
+    }
+  }
+};
+
+const toggleDeny = async (pkg: string, enable: boolean) => {
   try {
-    const file = await open({
-      filters: [{ name: 'Magisk Module', extensions: ['zip'] }]
-    });
-    
-    if (file) {
-      const path = Array.isArray(file) ? file[0] : file;
-      loading.value = true;
-      await invoke('install_module_zip', { zipPath: path });
-      alert('Module installed! Please reboot.');
-      fetchModules();
+    await invoke('toggle_denylist', { package: pkg, enable });
+    if (enable) {
+      denyList.value.push(pkg);
+    } else {
+      denyList.value = denyList.value.filter(p => p !== pkg);
     }
   } catch (e) {
     console.error(e);
-    alert('Install failed: ' + e);
-  } finally {
-    loading.value = false;
   }
 };
 
-onMounted(fetchModules);
+onMounted(() => {
+  fetchModules();
+  fetchDenyList();
+});
 </script>
 
-<template>
-  <GlassCard>
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-white/10 text-white">
-          <span class="material-symbols-rounded text-2xl">extension</span>
-        </div>
-        <div>
-          <h2 class="text-xl font-bold text-white">Module Manager</h2>
-          <p class="text-sm text-white/60">Manage Magisk/KernelSU modules.</p>
-        </div>
-      </div>
-      <div class="flex gap-2">
-        <VisionButton @click="fetchModules" icon="refresh" size="sm" variant="secondary" :loading="loading">Refresh</VisionButton>
-        <VisionButton @click="install" icon="add" size="sm">Install</VisionButton>
-      </div>
-    </div>
-
-    <div v-if="error" class="p-4 rounded-xl bg-error/10 border border-error/20 text-error text-sm mb-4">
-      {{ error }}
-    </div>
-
-    <div v-if="loading && modules.length === 0" class="text-center py-12 text-white/40">
-      <span class="material-symbols-rounded animate-spin text-3xl mb-2">refresh</span>
-      <p>Loading modules...</p>
-    </div>
-
-    <div v-else-if="modules.length === 0 && !error" class="text-center py-12 text-white/40">
-      <span class="material-symbols-rounded text-4xl mb-2">extension_off</span>
-      <p>No modules found or root access denied.</p>
-    </div>
-
-    <div v-else class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
-      <div 
-        v-for="mod in modules" 
-        :key="mod.id"
-        class="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-      >
-        <div class="flex justify-between items-start mb-2">
-          <div>
-            <h3 class="font-bold text-white">{{ mod.name }} <span class="text-xs font-normal text-white/40 ml-2">v{{ mod.version }}</span></h3>
-            <p class="text-xs text-primary">{{ mod.author }}</p>
-          </div>
-          <ToggleSwitch :modelValue="mod.enabled" @update:modelValue="toggle(mod)" />
-        </div>
-        
-        <p class="text-sm text-white/70 mb-3">{{ mod.description }}</p>
-        
-        <div class="flex justify-end">
-          <button @click="remove(mod)" class="text-xs text-error hover:text-error-hover flex items-center gap-1">
-            <span class="material-symbols-rounded text-sm">delete</span> Remove
-          </button>
-        </div>
-      </div>
-    </div>
-  </GlassCard>
-</template>
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+</style>

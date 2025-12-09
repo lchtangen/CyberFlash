@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 
 export const useDeviceStore = defineStore('device', () => {
@@ -9,6 +9,19 @@ export const useDeviceStore = defineStore('device', () => {
   const batteryLevel = ref(0);
   const connectionType = ref<'adb' | 'fastboot' | null>(null);
   const isBootloaderUnlocked = ref(false);
+
+  // Session Resume: Load from localStorage
+  const savedSerial = localStorage.getItem('last_device_serial');
+  if (savedSerial) {
+    serial.value = savedSerial;
+  }
+
+  // Session Resume: Save to localStorage
+  watch(serial, (newSerial) => {
+    if (newSerial) {
+      localStorage.setItem('last_device_serial', newSerial);
+    }
+  });
 
   function setConnected(status: boolean) {
     isConnected.value = status;

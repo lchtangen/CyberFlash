@@ -1,6 +1,7 @@
-use tauri::command;
+use tauri::{command, AppHandle, Manager};
 use serde::{Serialize, Deserialize};
 use reqwest::header::{AUTHORIZATION, USER_AGENT, ACCEPT};
+use tauri_plugin_shell::ShellExt;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GithubArtifact {
@@ -88,4 +89,40 @@ pub async fn list_recent_runs(token: String, owner: String, repo: String) -> Res
     }
 
     Ok(runs)
+}
+
+#[command]
+pub async fn backup_app_data(app: AppHandle, package: String) -> Result<String, String> {
+    let download_dir = app.path().download_dir().map_err(|e| e.to_string())?;
+    let backup_file = download_dir.join(format!("{}_backup.ab", package));
+    
+    // Note: This blocks until user confirms on device
+    let output = app.shell().sidecar("adb")
+        .map_err(|e| e.to_string())?
+        .args(["backup", "-f", backup_file.to_string_lossy().as_ref(), "-apk", &package])
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    if output.status.success() {
+        Ok(backup_file.to_string_lossy().to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}
+
+#[command]
+pub async fn restore_app_data(app: AppHandle, backup_path: String) -> Result<String, String> {
+    let output = app.shell().sidecar("adb")
+        .map_err(|e| e.to_string())?
+        .args(["restore", &backup_path])
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    if output.status.success() {
+        Ok("Restore initiated. Please confirm on device.".to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
 }

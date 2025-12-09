@@ -19,9 +19,11 @@ import NaturalLanguageCLI from '../components/features/ai/NaturalLanguageCLI.vue
 import SmartRomRecommender from '../components/features/ai/SmartRomRecommender.vue';
 import LogSentinel from '../components/features/system/LogSentinel.vue';
 import FlashAsCode from '../components/features/automation/FlashAsCode.vue';
+import TerminalStream from '../components/features/flash/TerminalStream.vue';
 import { useDeviceStore } from '../stores/device';
 
 const showBootloopDoctor = ref(false);
+const showTerminal = ref(true);
 const deviceStore = useDeviceStore();
 const targetRom = ref('');
 const targetAndroidVersion = ref('');
@@ -99,6 +101,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
     <!-- Main Content Area -->
     <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
+            <!-- Header -->
       <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
         <div>
           <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
@@ -109,6 +112,14 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
             {{ activeCategory === 'wizard' ? 'Guided flashing process' : 'Advanced operations' }}
           </p>
         </div>
+        <button 
+          @click="showTerminal = !showTerminal"
+          class="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/60 hover:text-white"
+          :class="{ 'text-primary bg-primary/10': showTerminal }"
+          title="Toggle Terminal Stream"
+        >
+          <span class="material-symbols-rounded">terminal</span>
+        </button>
       </div>
 
       <!-- Scrollable Content -->
@@ -163,7 +174,14 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         </div>
 
       </div>
+
+      <!-- Terminal Stream (Bottom Panel) -->
+      <div v-if="showTerminal" class="h-48 border-t border-white/10 shrink-0 animate-slide-up">
+        <TerminalStream :active="showTerminal" />
+      </div>
     </GlassCard>
+
+
   </div>
 </template>
 

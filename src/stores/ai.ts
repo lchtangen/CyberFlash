@@ -31,6 +31,7 @@ export const useAIStore = defineStore('ai', () => {
   
   const isThinking = ref(false);
   const isVisible = ref(false);
+  const apiKey = ref(''); // Add apiKey ref
   const suggestions = ref<Suggestion[]>([
     { id: '1', title: 'Scan Device', description: 'Check for connected ADB/Fastboot devices', action: 'adb_scan', icon: 'devices', type: 'action' },
     { id: '2', title: 'Analyze Logs', description: 'Scan recent logs for errors', action: 'analyze_logcat', icon: 'analytics', type: 'info' },
@@ -57,6 +58,7 @@ export const useAIStore = defineStore('ai', () => {
     messages,
     isThinking,
     isVisible,
+    apiKey, // Expose apiKey
     suggestions,
     addMessage,
     toggleVisibility,

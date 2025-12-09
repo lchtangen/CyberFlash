@@ -49,10 +49,36 @@ pub fn calculate_sha256(path: &Path) -> Result<String, String> {
     Ok(format!("{:x}", hash))
 }
 
+pub fn calculate_md5(path: &Path) -> Result<String, String> {
+    let mut file = File::open(path).map_err(|e| e.to_string())?;
+    let mut hasher = md5::Context::new();
+    std::io::copy(&mut file, &mut hasher).map_err(|e| e.to_string())?;
+    let hash = hasher.compute();
+    Ok(format!("{:x}", hash))
+}
+
 #[command]
 pub async fn verify_file_checksum(file_path: String, expected_hash: String) -> Result<bool, String> {
     let path = Path::new(&file_path);
-    let calculated = calculate_sha256(path)?;
+    // Try SHA256 first
+    if let Ok(calculated) = calculate_sha256(path) {
+        if calculated.eq_ignore_ascii_case(&expected_hash) {
+            return Ok(true);
+        }
+    }
+    // Try MD5
+    if let Ok(calculated) = calculate_md5(path) {
+        if calculated.eq_ignore_ascii_case(&expected_hash) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+#[command]
+pub async fn verify_file_md5(file_path: String, expected_hash: String) -> Result<bool, String> {
+    let path = Path::new(&file_path);
+    let calculated = calculate_md5(path)?;
     Ok(calculated.eq_ignore_ascii_case(&expected_hash))
 }
 

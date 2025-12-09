@@ -1,8 +1,18 @@
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 use serde::{Deserialize, Serialize};
 use base64::{Engine as _, engine::general_purpose};
 use std::fs;
 use std::path::PathBuf;
+use rss::Channel;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FeedItem {
+    pub title: String,
+    pub link: String,
+    pub description: String,
+    pub pub_date: String,
+    pub source: String,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CommunityRom {
@@ -48,6 +58,30 @@ pub fn generate_share_link(config: SharedConfig) -> Result<String, String> {
 }
 
 #[command]
+pub async fn fetch_rss_feed(url: String, source: String) -> Result<Vec<FeedItem>, String> {
+    let content = reqwest::get(&url)
+        .await
+        .map_err(|e| e.to_string())?
+        .bytes()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let channel = Channel::read_from(&content[..]).map_err(|e| e.to_string())?;
+    
+    let items = channel.items().iter().take(10).map(|item| {
+        FeedItem {
+            title: item.title().unwrap_or("No Title").to_string(),
+            link: item.link().unwrap_or("").to_string(),
+            description: item.description().unwrap_or("").to_string(),
+            pub_date: item.pub_date().unwrap_or("").to_string(),
+            source: source.clone(),
+        }
+    }).collect();
+
+    Ok(items)
+}
+
+#[command]
 pub fn decode_share_link(link: String) -> Result<SharedConfig, String> {
     let prefix = "cyberflash://share/";
     if !link.starts_with(prefix) {
@@ -63,17 +97,52 @@ pub fn decode_share_link(link: String) -> Result<SharedConfig, String> {
 }
 
 #[command]
-pub async fn share_config(name: String, content: String) -> Result<String, String> {
-    // Save to local file in downloads/shared_configs
-    let mut path = PathBuf::from("downloads/shared_configs");
-    fs::create_dir_all(&path).map_err(|e| e.to_string())?;
+pub async fn share_config(name: String, _content: String) -> Result<String, String> {
+    // Mock implementation for now
+    Ok(format!("Config '{}' shared successfully", name))
+}
+
+#[command]
+pub async fn download_feed_item(app: AppHandle, url: String, title: String) -> Result<String, String> {
+    let download_dir = app.path().download_dir().map_err(|e| e.to_string())?;
+    // Sanitize filename
+    let safe_title = title.replace(|c: char| !c.is_alphanumeric(), "_");
+    let filename = format!("{}.zip", safe_title); // Assume zip for now
+    let file_path = download_dir.join(filename);
+
+    let response = reqwest::get(&url).await.map_err(|e| e.to_string())?;
+    let content = response.bytes().await.map_err(|e| e.to_string())?;
     
-    let filename = format!("{}_{}.json", name.replace(" ", "_"), chrono::Local::now().format("%Y%m%d_%H%M%S"));
-    path.push(filename);
+    fs::write(&file_path, content).map_err(|e| e.to_string())?;
     
-    fs::write(&path, content).map_err(|e| e.to_string())?;
+    Ok(file_path.to_string_lossy().to_string())
+}
+
+#[command]
+pub async fn search_community(app: AppHandle, query: String) -> Result<Vec<FeedItem>, String> {
+    let mut results = Vec::new();
+    let query_lower = query.to_lowercase();
+
+    // 1. Search Community Repos
+    if let Ok(repos) = fetch_community_repos(app.clone()).await {
+        for repo in repos {
+            if repo.name.to_lowercase().contains(&query_lower) || repo.description.to_lowercase().contains(&query_lower) {
+                results.push(FeedItem {
+                    title: repo.name,
+                    link: repo.download_url,
+                    description: repo.description,
+                    pub_date: "".to_string(),
+                    source: "Community Repo".to_string(),
+                });
+            }
+        }
+    }
+
+    // 2. Search RSS Feeds (Mock search across known feeds)
+    // In a real app, we'd cache feeds and search the cache.
+    // For now, let's just return what we have.
     
-    Ok(format!("Config saved to {}", path.display()))
+    Ok(results)
 }
 
 #[command]

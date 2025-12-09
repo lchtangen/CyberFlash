@@ -68,6 +68,7 @@ pub fn generate_op7pro_flash_config(rom_type: String, path: String) -> FlashConf
         name: "OnePlus 7 Pro Flash Sequence".into(),
         device: "guacamole".into(),
         version: "1.0".into(),
+        continue_on_error: false,
         steps,
     }
 }

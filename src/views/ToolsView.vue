@@ -5,6 +5,7 @@ import SidebarItem from '../components/ui/SidebarItem.vue';
 import GlassCard from '../components/ui/GlassCard.vue';
 
 // Automation
+import WorkflowEditor from '../components/features/automation/WorkflowEditor.vue';
 import ConfigGenerator from '../components/features/automation/ConfigGenerator.vue';
 import ZeroTouchPanel from '../components/features/automation/ZeroTouchPanel.vue';
 import CloudBuildSync from '../components/features/automation/CloudBuildSync.vue';
@@ -26,21 +27,26 @@ import BootloaderLocker from '../components/features/security/BootloaderLocker.v
 import KillSwitch from '../components/features/security/KillSwitch.vue';
 
 // System
+import ScreenMirror from '../components/features/system/ScreenMirror.vue';
 import PartitionResizer from '../components/features/system/PartitionResizer.vue';
 import KernelSUInstaller from '../components/features/system/KernelSUInstaller.vue';
 import DualBootMgr from '../components/features/system/DualBootMgr.vue';
 import PayloadStreamer from '../components/features/system/PayloadStreamer.vue';
+import PayloadExtractor from '../components/features/flash/PayloadExtractor.vue';
+import FileExplorer from '../components/features/system/FileExplorer.vue';
 
 // AI
 import SentimentAnalyzer from '../components/features/ai/SentimentAnalyzer.vue';
 import PerformanceTuner from '../components/features/ai/PerformanceTuner.vue';
 import BatteryAI from '../components/features/ai/BatteryAI.vue';
 import NetworkOptimizer from '../components/features/ai/NetworkOptimizer.vue';
+import LogAnalyzerPanel from '../components/features/ai/LogAnalyzerPanel.vue';
 
 // Cloud
 import CommunityRepo from '../components/features/cloud/CommunityRepo.vue';
 import ConfigSharer from '../components/features/cloud/ConfigSharer.vue';
 import DevProfileSync from '../components/features/cloud/DevProfileSync.vue';
+import CloudSync from '../components/features/cloud/CloudSync.vue';
 
 // Utilities
 import QuickActionsGrid from '../components/features/utilities/QuickActionsGrid.vue';
@@ -123,12 +129,13 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         
         <div class="relative z-10">
           <!-- Utilities Tab (Quick Actions) -->
-        <div v-show="(!searchQuery && activeCategory === 'utilities') || searchQuery">
+        <div v-if="(!searchQuery && activeCategory === 'utilities') || searchQuery">
           <QuickActionsGrid v-if="matchesSearch(['quick', 'actions', 'utilities', 'adb', 'reboot'])" />
         </div>
 
         <!-- Automation Tab -->
-        <div v-show="(!searchQuery && activeCategory === 'automation') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+        <div v-if="(!searchQuery && activeCategory === 'automation') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+          <WorkflowEditor v-if="matchesSearch(['workflow', 'editor', 'automation', 'flash', 'code'])" class="xl:col-span-2 hover-tilt" />
           <MultiDeviceGrid v-if="matchesSearch(['multi', 'device', 'grid', 'automation'])" class="xl:col-span-2 hover-tilt" />
           <ZeroTouchPanel v-if="matchesSearch(['zero', 'touch', 'provisioning', 'automation'])" class="xl:col-span-2 hover-tilt" />
           <CloudBuildSync v-if="matchesSearch(['cloud', 'build', 'sync', 'github', 'automation'])" class="xl:col-span-2 hover-tilt" />
@@ -143,7 +150,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         </div>
 
         <!-- Security Tab -->
-        <div v-show="(!searchQuery && activeCategory === 'security') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+        <div v-if="(!searchQuery && activeCategory === 'security') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
           <PrivacyDashboard v-if="matchesSearch(['privacy', 'dashboard', 'permissions', 'security'])" class="xl:col-span-2 hover-tilt" />
           <HashVerifier v-if="matchesSearch(['hash', 'verifier', 'md5', 'sha256', 'security'])" class="hover-tilt" />
           <EFSGuard v-if="matchesSearch(['efs', 'guard', 'backup', 'imei', 'security'])" class="hover-tilt" />
@@ -153,15 +160,19 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         </div>
 
         <!-- System Tab -->
-        <div v-show="(!searchQuery && activeCategory === 'system') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+        <div v-if="(!searchQuery && activeCategory === 'system') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+          <ScreenMirror v-if="matchesSearch(['screen', 'mirror', 'scrcpy', 'display', 'system'])" class="hover-tilt" />
+          <FileExplorer v-if="matchesSearch(['file', 'explorer', 'manager', 'sdcard', 'system'])" class="xl:col-span-2 h-[500px] hover-tilt" />
           <PartitionResizer v-if="matchesSearch(['partition', 'resizer', 'system'])" class="hover-tilt" />
           <KernelSUInstaller v-if="matchesSearch(['kernelsu', 'root', 'system'])" class="hover-tilt" />
           <DualBootMgr v-if="matchesSearch(['dual', 'boot', 'slot', 'a/b', 'system'])" class="hover-tilt" />
           <PayloadStreamer v-if="matchesSearch(['payload', 'streamer', 'extract', 'system'])" class="hover-tilt" />
+          <PayloadExtractor v-if="matchesSearch(['payload', 'extractor', 'dumper', 'bin', 'system'])" class="xl:col-span-2 hover-tilt" />
         </div>
 
         <!-- AI Tab -->
-        <div v-show="(!searchQuery && activeCategory === 'ai') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+        <div v-if="(!searchQuery && activeCategory === 'ai') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+          <LogAnalyzerPanel v-if="matchesSearch(['log', 'analyzer', 'sentinel', 'ai'])" class="xl:col-span-2 h-[600px] hover-tilt" />
           <SentimentAnalyzer v-if="matchesSearch(['sentiment', 'analyzer', 'ai'])" class="hover-tilt" />
           <PerformanceTuner v-if="matchesSearch(['performance', 'tuner', 'ai'])" class="hover-tilt" />
           <BatteryAI v-if="matchesSearch(['battery', 'ai', 'health'])" class="hover-tilt" />
@@ -169,7 +180,8 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         </div>
 
         <!-- Cloud Tab -->
-        <div v-show="(!searchQuery && activeCategory === 'cloud') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+        <div v-if="(!searchQuery && activeCategory === 'cloud') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
+          <CloudSync v-if="matchesSearch(['cloud', 'sync', 'backup', 'restore'])" class="xl:col-span-2 hover-tilt" />
           <CommunityRepo v-if="matchesSearch(['community', 'repo', 'roms', 'cloud'])" class="xl:col-span-2 hover-tilt" />
           <ConfigSharer v-if="matchesSearch(['config', 'sharer', 'cloud'])" class="hover-tilt" />
           <DevProfileSync v-if="matchesSearch(['dev', 'profile', 'sync', 'cloud'])" class="hover-tilt" />

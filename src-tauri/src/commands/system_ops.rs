@@ -1,6 +1,14 @@
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 use crate::commands::{adb, fastboot};
 use std::path::Path;
+use std::process::Command;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PartitionInfo {
+    name: String,
+    size: u64,
+}
 
 #[command]
 pub async fn install_dsu(app: AppHandle, system_image_path: String, userdata_size_gb: u64) -> Result<String, String> {
@@ -132,4 +140,50 @@ pub async fn stream_payload_extraction(url: String, target_file: String) -> Resu
     tokio::time::sleep(std::time::Duration::from_secs(4)).await;
     
     Ok(format!("Extracted {} from payload.bin", target_file))
+}
+
+#[command]
+pub async fn parse_payload_bin(app: AppHandle, path: String) -> Result<Vec<PartitionInfo>, String> {
+    let script_path = app.path().resource_dir().map_err(|e| e.to_string())?
+        .join("tools/payload_helper.py");
+        
+    let output = Command::new("python3")
+        .arg(script_path)
+        .arg("list")
+        .arg(path)
+        .output()
+        .map_err(|e| e.to_string())?;
+        
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+    
+    let output_str = String::from_utf8_lossy(&output.stdout);
+    let partitions: Vec<PartitionInfo> = serde_json::from_str(&output_str)
+        .map_err(|e| format!("Failed to parse script output: {}", e))?;
+        
+    Ok(partitions)
+}
+
+#[command]
+pub async fn extract_payload_partition(app: AppHandle, payload_path: String, partition: String) -> Result<String, String> {
+    let script_path = app.path().resource_dir().map_err(|e| e.to_string())?
+        .join("tools/payload_helper.py");
+        
+    let download_dir = app.path().download_dir().map_err(|e| e.to_string())?;
+    
+    let output = Command::new("python3")
+        .arg(script_path)
+        .arg("extract")
+        .arg(payload_path)
+        .arg(&partition)
+        .arg(download_dir.to_string_lossy().to_string())
+        .output()
+        .map_err(|e| e.to_string())?;
+        
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+    
+    Ok(format!("Extracted {}.img to Downloads", partition))
 }

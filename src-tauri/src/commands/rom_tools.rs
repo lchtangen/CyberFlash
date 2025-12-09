@@ -1,8 +1,33 @@
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 use crate::commands::adb;
 use std::fs::File;
 use std::io::copy;
 use zip::ZipArchive;
+use serde_json::Value;
+
+#[command]
+pub fn get_device_inventory(app: AppHandle) -> Result<Value, String> {
+    // Try to find the config file
+    // In dev: ../config/oneplus7pro_inventory.json (relative to src-tauri)
+    // In prod: app_config_dir/oneplus7pro_inventory.json
+    
+    let dev_path = std::path::PathBuf::from("../config/oneplus7pro_inventory.json");
+    let prod_path = app.path().app_config_dir().unwrap_or_default().join("oneplus7pro_inventory.json");
+    
+    let path = if dev_path.exists() {
+        dev_path
+    } else {
+        prod_path
+    };
+
+    if !path.exists() {
+        return Err(format!("Inventory file not found at {:?}", path));
+    }
+
+    let content = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let json: Value = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+    Ok(json)
+}
 
 #[command]
 pub async fn extract_file_from_zip(zip_path: String, target_file: String, output_path: String) -> Result<String, String> {

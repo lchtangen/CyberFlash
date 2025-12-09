@@ -1,4 +1,4 @@
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Emitter};
 use tauri_plugin_shell::ShellExt;
 use std::collections::HashMap;
 
@@ -176,6 +176,54 @@ pub async fn detect_ab_slots(app: AppHandle, serial: Option<String>) -> Result<b
 }
 
 
+
+#[command]
+pub async fn flash_partition_stream(app: AppHandle, partition: String, file_path: String, serial: Option<String>) -> Result<String, String> {
+    let mut cmd = app.shell().sidecar("fastboot").map_err(|e| e.to_string())?;
+    if let Some(s) = serial {
+        cmd = cmd.args(["-s", &s]);
+    }
+    cmd = cmd.args(["flash", &partition, &file_path]);
+
+    // Estimate time
+    let file_size = std::fs::metadata(&file_path).map(|m| m.len()).unwrap_or(0);
+    let estimated_seconds = if file_size > 0 {
+        // Assume 30MB/s average write speed
+        (file_size as f64 / (30.0 * 1024.0 * 1024.0)).ceil() as u64
+    } else {
+        0
+    };
+    
+    if estimated_seconds > 0 {
+        let _ = app.emit("flash-progress-estimate", format!("Estimated time: ~{}s", estimated_seconds));
+    }
+
+    let (mut rx, _) = cmd.spawn().map_err(|e| e.to_string())?;
+
+    let mut success = false;
+    while let Some(event) = rx.recv().await {
+        match event {
+            tauri_plugin_shell::process::CommandEvent::Stdout(line) => {
+                let line_str = String::from_utf8_lossy(&line);
+                let _ = app.emit("fastboot-output", line_str);
+            }
+            tauri_plugin_shell::process::CommandEvent::Stderr(line) => {
+                 let line_str = String::from_utf8_lossy(&line);
+                 let _ = app.emit("fastboot-output", line_str);
+            }
+            tauri_plugin_shell::process::CommandEvent::Terminated(payload) => {
+                success = payload.code.unwrap_or(1) == 0;
+            }
+            _ => {}
+        }
+    }
+
+    if success {
+        Ok(format!("Flashed {} successfully", partition))
+    } else {
+        Err(format!("Failed to flash {}", partition))
+    }
+}
 
 #[command]
 pub async fn flash_partition(app: AppHandle, partition: String, file_path: String, serial: Option<String>) -> Result<String, String> {

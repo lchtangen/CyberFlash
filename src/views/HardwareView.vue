@@ -6,6 +6,8 @@ import SidebarItem from '../components/ui/SidebarItem.vue';
 import PowerMonitor from '../components/features/hardware/PowerMonitor.vue';
 import CableTester from '../components/features/hardware/CableTester.vue';
 import StorageHealth from '../components/features/hardware/StorageHealth.vue';
+import TelemetryWidget from '../components/features/hardware/TelemetryWidget.vue';
+import DiagnosticsPanel from '../components/features/hardware/DiagnosticsPanel.vue';
 import GlassCard from '../components/ui/GlassCard.vue';
 
 const activeCategory = ref('power');
@@ -15,6 +17,7 @@ const categories = [
   { id: 'cable', label: 'Cable Tester', icon: 'usb' },
   { id: 'storage', label: 'Storage Health', icon: 'hard_drive' },
   { id: 'thermal', label: 'Thermal Vision', icon: 'thermostat' },
+  { id: 'diagnostics', label: 'Diagnostics', icon: 'medical_services' },
 ];
 
 const activeCategoryLabel = computed(() => categories.find(c => c.id === activeCategory.value)?.label);
@@ -86,15 +89,16 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
 
         <!-- Thermal Tab -->
         <div v-if="activeCategory === 'thermal'" class="space-y-8 animate-slide-up">
-          <GlassCard class="h-64 flex flex-col items-center justify-center text-center p-8 hover-tilt bg-surface/30 backdrop-blur-xl border-white/10">
-            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 shadow-lg shadow-black/20 border border-white/5">
-              <span class="material-symbols-rounded text-4xl text-white/20">thermostat</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-2">Thermal Vision</h3>
-            <p class="text-white/50 max-w-md leading-relaxed">
-              Real-time thermal graph and heatmap visualization is coming in v2.1. This feature will allow you to monitor CPU and battery temperatures during intensive flash operations.
-            </p>
-          </GlassCard>
+          <div class="hover-tilt-subtle">
+            <TelemetryWidget />
+          </div>
+        </div>
+
+        <!-- Diagnostics Tab -->
+        <div v-if="activeCategory === 'diagnostics'" class="space-y-8 animate-slide-up">
+          <div class="hover-tilt-subtle">
+            <DiagnosticsPanel />
+          </div>
         </div>
 
         </div>

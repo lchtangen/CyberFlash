@@ -5,12 +5,14 @@ import SidebarItem from '../components/ui/SidebarItem.vue';
 // Components
 import CommunityHub from '../components/features/social/CommunityHub.vue';
 import ConfigShare from '../components/features/social/ConfigShare.vue';
+import CommunityFeed from '../components/features/social/CommunityFeed.vue';
 import GlassCard from '../components/ui/GlassCard.vue';
 
 const activeCategory = ref('community');
 
 const categories = [
   { id: 'community', label: 'Community Repo', icon: 'hub' },
+  { id: 'feed', label: 'News Feed', icon: 'rss_feed' },
   { id: 'share', label: 'Share Config', icon: 'share' },
   { id: 'profile', label: 'Dev Profile', icon: 'person' },
 ];
@@ -65,6 +67,13 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         <div v-if="activeCategory === 'community'" class="space-y-8 animate-slide-up">
           <div class="hover-tilt-subtle">
             <CommunityHub />
+          </div>
+        </div>
+
+        <!-- Feed Tab -->
+        <div v-if="activeCategory === 'feed'" class="space-y-8 animate-slide-up">
+          <div class="hover-tilt-subtle">
+            <CommunityFeed />
           </div>
         </div>
 

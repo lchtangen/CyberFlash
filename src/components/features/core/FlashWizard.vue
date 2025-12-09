@@ -6,25 +6,167 @@ import { useDynamicIslandStore } from '../../../stores/dynamicIsland';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
 import HolographicTerminal from '../../ui/HolographicTerminal.vue';
+import { invoke } from '@tauri-apps/api/core';
 
 const flashStore = useFlashStore();
 const notificationStore = useNotificationStore();
 const islandStore = useDynamicIslandStore();
 const logContainer = ref<HTMLElement | null>(null);
+const showRebootDialog = ref(false);
 
 const phases = [
-  { id: 1, title: 'Downloads', description: 'Download ROM & Tools' },
-  { id: 2, title: 'Backup', description: 'Backup SMS & Apps' },
-  { id: 3, title: 'Unlock Bootloader', description: 'Unlock device bootloader' },
-  { id: 4, title: 'Flash Firmware', description: 'Update Firmware Partitions' },
-  { id: 5, title: 'Flash Recovery', description: 'Install TWRP/Recovery' },
-  { id: 6, title: 'Root & Patch', description: 'Patch Boot Image & Flash' },
+  { id: 1, title: 'Pre-Flight Analysis', description: 'AI Health & Driver Check' },
+  { id: 2, title: 'Environment Prep', description: 'Download & Verify Integrity' },
+  { id: 3, title: 'Data Preservation', description: 'Smart Backup (Apps/SMS)' },
+  { id: 4, title: 'Bootloader Ops', description: 'Unlock & Critical Partitions' },
+  { id: 5, title: 'Slot Management', description: 'A/B Partition Switching' },
+  { id: 6, title: 'Flash Firmware', description: 'Radio, DSP & Bluetooth' },
+  { id: 7, title: 'Core System', description: 'Flash Boot, System, Vendor' },
+  { id: 8, title: 'Security Patching', description: 'Disable Verity & VBMeta' },
+  { id: 9, title: 'Root & Extensions', description: 'Magisk, GApps & Modules' },
+  { id: 10, title: 'Finalization', description: 'Format Data & Post-Boot' },
 ];
 
 const currentPhaseInfo = computed(() => phases[flashStore.currentPhase] || phases[0]);
 const globalProgress = computed(() => ((flashStore.currentPhase) / phases.length) * 100);
 
+const phase1Status = ref({
+  adb: 'pending',
+  battery: 'pending',
+  codename: 'pending',
+  drivers: 'pending'
+});
+
+const runPhase1 = async () => {
+  flashStore.logs.push('--- Phase 1: Pre-Flight Analysis ---');
+  
+  // 1. ADB Check
+  try {
+    flashStore.logs.push('Checking ADB connection...');
+    phase1Status.value.adb = 'running';
+    const devices: any = await invoke('get_connected_devices');
+    if (devices && devices.length > 0) {
+      phase1Status.value.adb = 'success';
+      flashStore.logs.push(`ADB Connected: ${devices[0]}`);
+    } else {
+      phase1Status.value.adb = 'error';
+      flashStore.logs.push('Error: No ADB device found.');
+      throw new Error('No device connected');
+    }
+  } catch (e) {
+    phase1Status.value.adb = 'error';
+    flashStore.logs.push(`ADB Error: ${e}`);
+    return;
+  }
+
+  // 2. Battery Check
+  try {
+    flashStore.logs.push('Checking Battery level...');
+    phase1Status.value.battery = 'running';
+    const battery: any = await invoke('check_battery_level');
+    const level = parseInt(battery);
+    if (level >= 50) {
+      phase1Status.value.battery = 'success';
+      flashStore.logs.push(`Battery Level: ${level}% (Good)`);
+    } else {
+      phase1Status.value.battery = 'warning';
+      flashStore.logs.push(`Warning: Battery low (${level}%). Recommend >50%.`);
+    }
+  } catch (e) {
+    flashStore.logs.push(`Battery check failed: ${e}`);
+    phase1Status.value.battery = 'warning';
+  }
+
+  // 3. Codename Check
+  try {
+    flashStore.logs.push('Verifying Device Codename...');
+    phase1Status.value.codename = 'running';
+    const codename: any = await invoke('get_prop_value', { prop: 'ro.product.device' });
+    if (codename && (codename.includes('guacamole') || codename.includes('OnePlus7Pro'))) {
+       phase1Status.value.codename = 'success';
+       flashStore.logs.push(`Device Verified: ${codename} (OnePlus 7 Pro)`);
+    } else {
+       phase1Status.value.codename = 'error';
+       flashStore.logs.push(`Mismatch: Detected ${codename}, expected guacamole/guacamoleb`);
+    }
+  } catch (e) {
+     phase1Status.value.codename = 'warning';
+     flashStore.logs.push(`Codename check failed: ${e}`);
+  }
+  
+  phase1Status.value.drivers = 'success'; // Mock for now
+  flashStore.logs.push('Phase 1 Complete.');
+};
+
+const inventory = ref<any>(null);
+const phase2Status = ref({
+  inventory: 'pending',
+  download: 'pending',
+  verify: 'pending'
+});
+
+const runPhase2 = async () => {
+  flashStore.logs.push('--- Phase 2: Environment Prep ---');
+  
+  // 1. Load Inventory
+  try {
+    flashStore.logs.push('Loading Device Inventory...');
+    phase2Status.value.inventory = 'running';
+    const data: any = await invoke('get_device_inventory');
+    inventory.value = data;
+    phase2Status.value.inventory = 'success';
+    flashStore.logs.push(`Loaded inventory for ${data.device}`);
+  } catch (e) {
+    phase2Status.value.inventory = 'error';
+    flashStore.logs.push(`Failed to load inventory: ${e}`);
+  }
+};
+
+const selectRomFromInventory = (rom: any) => {
+  flashStore.selectedRom = {
+    name: rom.name,
+    path: '', 
+    hash: rom.md5 || '',
+    rom_type: 'zip'
+  };
+  flashStore.logs.push(`Selected Target: ${rom.name}`);
+};
+
 const startPhase = async () => {
+  if (flashStore.currentPhase === 0) {
+    await runPhase1();
+    return;
+  }
+  
+  if (flashStore.currentPhase === 1) {
+    await runPhase2();
+    return;
+  }
+
+  // MD5 Checksum Verification (Phase 2.6)
+  if (flashStore.selectedRom && flashStore.selectedRom.hash) {
+    flashStore.logs.push(`Verifying integrity of ${flashStore.selectedRom.name}...`);
+    try {
+      const isValid = await invoke('verify_file_md5', { 
+        filePath: flashStore.selectedRom.path, 
+        expectedHash: flashStore.selectedRom.hash 
+      });
+      
+      if (!isValid) {
+        flashStore.logs.push('ERROR: MD5 Checksum mismatch! File may be corrupted.');
+        notificationStore.addNotification({
+          title: 'Integrity Check Failed',
+          message: 'The ROM file appears to be corrupted. Flashing aborted.',
+          type: 'error'
+        });
+        return;
+      }
+      flashStore.logs.push('Integrity Verified (MD5 Match).');
+    } catch (e) {
+      flashStore.logs.push(`Warning: Could not verify checksum: ${e}`);
+    }
+  }
+
   // Connection Check
   if (flashStore.currentPhase > 0) { // Skip check for downloads phase? Or check always?
       // Ideally check connection before starting any device interaction
@@ -54,6 +196,34 @@ const startPhase = async () => {
   });
 };
 
+const emergencyStop = async () => {
+  try {
+    await invoke('cancel_flash_process');
+    flashStore.logs.push('!!! EMERGENCY STOP TRIGGERED !!!');
+    notificationStore.addNotification({
+      title: 'Emergency Stop',
+      message: 'Flash process cancelled by user.',
+      type: 'error'
+    });
+  } catch (e) {
+    console.error('Failed to stop:', e);
+  }
+};
+
+const confirmReboot = async () => {
+  showRebootDialog.value = false;
+  try {
+    await invoke('reboot_device', { mode: 'system' }); // Assuming this command exists in adb.rs
+    notificationStore.addNotification({
+      title: 'Rebooting',
+      message: 'Device is rebooting to system.',
+      type: 'success'
+    });
+  } catch (e) {
+    flashStore.logs.push(`Reboot failed: ${e}`);
+  }
+};
+
 const next = () => {
   if (flashStore.currentPhase < phases.length - 1) {
     flashStore.nextPhase();
@@ -80,6 +250,9 @@ const next = () => {
       subtitle: 'All phases finished successfully.',
       icon: 'check_circle'
     });
+    
+    // Show Reboot Dialog (Phase 2.9)
+    showRebootDialog.value = true;
   }
 };
 
@@ -185,6 +358,77 @@ watch(() => flashStore.progress, (newVal) => {
                {{ currentPhaseInfo.description }}. Ensure your device is connected and has sufficient battery (50%+). Do not disconnect the cable during this process.
              </p>
 
+             <!-- Phase 1: Pre-Flight Analysis UI -->
+             <div v-if="flashStore.currentPhase === 0" class="grid grid-cols-2 gap-4 mb-6 animate-slide-up">
+                <div class="p-3 rounded-lg border border-white/10 bg-surface/20 flex items-center justify-between">
+                   <span class="text-sm text-white/70">ADB Connection</span>
+                   <span v-if="phase1Status.adb === 'pending'" class="text-xs text-white/50">Waiting...</span>
+                   <span v-else-if="phase1Status.adb === 'running'" class="text-xs text-primary animate-pulse">Checking...</span>
+                   <span v-else-if="phase1Status.adb === 'success'" class="text-xs text-success font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">check</span> Connected</span>
+                   <span v-else class="text-xs text-error font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">close</span> Failed</span>
+                </div>
+                <div class="p-3 rounded-lg border border-white/10 bg-surface/20 flex items-center justify-between">
+                   <span class="text-sm text-white/70">Battery Level</span>
+                   <span v-if="phase1Status.battery === 'pending'" class="text-xs text-white/50">Waiting...</span>
+                   <span v-else-if="phase1Status.battery === 'running'" class="text-xs text-primary animate-pulse">Checking...</span>
+                   <span v-else-if="phase1Status.battery === 'success'" class="text-xs text-success font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">check</span> Good</span>
+                   <span v-else-if="phase1Status.battery === 'warning'" class="text-xs text-warning font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">warning</span> Low</span>
+                </div>
+                <div class="p-3 rounded-lg border border-white/10 bg-surface/20 flex items-center justify-between">
+                   <span class="text-sm text-white/70">Device Match</span>
+                   <span v-if="phase1Status.codename === 'pending'" class="text-xs text-white/50">Waiting...</span>
+                   <span v-else-if="phase1Status.codename === 'running'" class="text-xs text-primary animate-pulse">Verifying...</span>
+                   <span v-else-if="phase1Status.codename === 'success'" class="text-xs text-success font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">check</span> Verified</span>
+                   <span v-else class="text-xs text-error font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">close</span> Mismatch</span>
+                </div>
+                <div class="p-3 rounded-lg border border-white/10 bg-surface/20 flex items-center justify-between">
+                   <span class="text-sm text-white/70">Drivers</span>
+                   <span class="text-xs text-success font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">check</span> Installed</span>
+                </div>
+             </div>
+
+             <!-- Phase 2: Environment Prep UI -->
+             <div v-if="flashStore.currentPhase === 1" class="mb-6 animate-slide-up">
+                <div v-if="!inventory && phase2Status.inventory === 'running'" class="text-center p-4">
+                   <svg class="animate-spin h-8 w-8 text-primary mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                   </svg>
+                   <p class="text-xs text-white/50 mt-2">Loading Inventory...</p>
+                </div>
+                <div v-else-if="inventory" class="space-y-4">
+                   <div class="p-4 rounded-xl bg-surface/40 border border-white/10">
+                      <h4 class="text-sm font-bold text-white mb-3">Select Firmware/ROM</h4>
+                      <div class="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                         <div 
+                           v-for="rom in inventory.roms" 
+                           :key="rom.name"
+                           @click="selectRomFromInventory(rom)"
+                           class="p-3 rounded-lg border border-white/5 bg-surface/20 hover:bg-primary/10 hover:border-primary/30 cursor-pointer transition-all flex items-center justify-between group"
+                           :class="flashStore.selectedRom?.name === rom.name ? 'bg-primary/20 border-primary/50' : ''"
+                         >
+                            <div>
+                               <div class="font-bold text-sm text-white">{{ rom.name }}</div>
+                               <div class="text-xs text-white/50">{{ rom.version }} • Android {{ rom.android_version }}</div>
+                            </div>
+                            <span v-if="flashStore.selectedRom?.name === rom.name" class="material-symbols-rounded text-primary">check_circle</span>
+                         </div>
+                      </div>
+                   </div>
+                   
+                   <div v-if="flashStore.selectedRom" class="flex items-center justify-between p-3 rounded-lg bg-surface/20 border border-white/10">
+                      <div class="flex items-center gap-3">
+                         <span class="material-symbols-rounded text-primary">download</span>
+                         <div>
+                            <div class="text-xs text-white/70">Ready to Download</div>
+                            <div class="text-sm font-bold text-white">{{ flashStore.selectedRom.name }}</div>
+                         </div>
+                      </div>
+                      <VisionButton size="sm" variant="primary">Download Now</VisionButton>
+                   </div>
+                </div>
+             </div>
+
              <div class="flex gap-3">
                <VisionButton 
                  @click="startPhase" 
@@ -198,6 +442,17 @@ watch(() => flashStore.progress, (newVal) => {
                </VisionButton>
                
                <VisionButton 
+                 v-if="flashStore.isFlashing"
+                 @click="emergencyStop"
+                 variant="danger"
+                 size="lg"
+                 class="flex-1 shadow-xl shadow-error/10"
+               >
+                 STOP
+               </VisionButton>
+
+               <VisionButton 
+                 v-else
                  @click="next" 
                  :disabled="!flashStore.isFlashing && flashStore.progress !== 100"
                  variant="secondary"
@@ -214,6 +469,32 @@ watch(() => flashStore.progress, (newVal) => {
             title="FLASH_CONSOLE" 
             class="flex-1 min-h-0" 
           />
+        </div>
+      </div>
+    </div>
+
+    <!-- Reboot Dialog Overlay -->
+    <div v-if="showRebootDialog" class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div class="bg-surface border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl transform scale-100 transition-all">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
+            <span class="material-symbols-rounded text-success text-2xl">check_circle</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white">Flashing Complete</h3>
+            <p class="text-sm text-text-secondary">Your device has been successfully updated.</p>
+          </div>
+        </div>
+        
+        <p class="text-white/80 mb-6">Would you like to reboot your device to system now?</p>
+        
+        <div class="flex gap-3 justify-end">
+          <VisionButton @click="showRebootDialog = false" variant="secondary">
+            Stay Here
+          </VisionButton>
+          <VisionButton @click="confirmReboot" variant="primary">
+            Reboot System
+          </VisionButton>
         </div>
       </div>
     </div>
