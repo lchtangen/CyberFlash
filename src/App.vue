@@ -39,7 +39,7 @@ const navGroups = [
   {
     title: 'Overview',
     items: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', color: 'text-blue-400' }
     ]
   },
   {
@@ -51,16 +51,16 @@ const navGroups = [
   {
     title: 'Toolbox',
     items: [
-      { id: 'tools', label: 'Tools & Utilities', icon: 'construction' },
-      { id: 'hardware', label: 'Hardware Diagnostics', icon: 'memory' },
-      { id: 'social', label: 'Community Hub', icon: 'groups' },
+      { id: 'tools', label: 'Tools & Utilities', icon: 'construction', color: 'text-orange-400' },
+      { id: 'hardware', label: 'Hardware Diagnostics', icon: 'memory', color: 'text-purple-400' },
+      { id: 'social', label: 'Community Hub', icon: 'groups', color: 'text-cyan-400' },
       { id: 'lab', label: 'Experimental Lab', icon: 'science', variant: 'warning' }
     ]
   },
   {
     title: 'System',
     items: [
-      { id: 'settings', label: 'Settings', icon: 'settings' }
+      { id: 'settings', label: 'Settings', icon: 'settings', color: 'text-gray-400' }
     ]
   }
 ];
@@ -91,6 +91,15 @@ const applyTheme = () => {
   
   // 6. Accent Color (Primary)
   root.style.setProperty('--color-primary', settingsStore.accentColor);
+  
+  // Convert Hex to RGB for Tailwind Opacity Support
+  const hex = settingsStore.accentColor.replace('#', '');
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    root.style.setProperty('--color-primary-rgb', `${r} ${g} ${b}`);
+  }
   
   // 7. Animation Speed
   const speedMap: Record<string, string> = { 'slow': '0.5s', 'normal': '0.3s', 'fast': '0.15s' };
@@ -131,13 +140,20 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen mesh-gradient-bg text-text-primary font-sans overflow-hidden relative flex">
     <!-- Sidebar -->
-    <aside class="w-64 bg-surface/30 backdrop-blur-xl border-r border-white/10 flex flex-col z-20">
-      <div class="p-6 border-b border-white/10">
-        <h1 class="text-xl font-bold tracking-tight text-white">CyberFlash</h1>
-        <p class="text-xs text-text-secondary mt-1">Version 2.0.1</p>
+        <!-- Sidebar -->
+    <aside class="w-72 m-3 mr-0 rounded-2xl border border-white/10 bg-surface/40 backdrop-blur-2xl flex flex-col shadow-2xl shadow-black/50 z-20 overflow-hidden transition-all duration-500 hover:bg-surface/50">
+      <div class="p-6 flex items-center gap-3 border-b border-white/5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 relative group cursor-pointer overflow-hidden">
+           <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+           <span class="material-symbols-rounded text-white text-2xl drop-shadow-md">bolt</span>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white tracking-tight leading-none">CyberFlash</h1>
+          <span class="text-[10px] font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">V2.5 PRO</span>
+        </div>
       </div>
       
-      <nav class="flex-1 p-4 space-y-6 overflow-y-auto custom-scrollbar">
+      <nav class="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
         <div v-for="group in navGroups" :key="group.title" class="space-y-2">
           <div class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{{ group.title }}</div>
           <SidebarItem 
@@ -146,20 +162,32 @@ onMounted(async () => {
             :icon="item.icon"
             :label="item.label"
             :active="currentView === item.id"
-            :variant="item.variant as any"
+            :variant="item.variant"
             :description="item.description"
+            :color="item.color"
             @click="currentView = item.id"
           />
         </div>
       </nav>
       
-      <div class="p-4 border-t border-white/10">
-        <div class="flex items-center gap-3 px-2">
-          <div class="w-2 h-2 rounded-full bg-success shadow-[0_0_8px_rgba(48,209,88,0.6)]"></div>
-          <span class="text-xs font-medium text-text-secondary">System Online</span>
+      <div class="p-4 border-t border-white/5 bg-black/20">
+        <div class="flex items-center gap-3 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+          <div class="relative">
+             <div class="w-2 h-2 rounded-full bg-success shadow-[0_0_8px_rgba(48,209,88,0.6)] group-hover:animate-pulse"></div>
+             <div class="absolute inset-0 w-2 h-2 rounded-full bg-success animate-ping opacity-20"></div>
+          </div>
+          <div class="flex flex-col">
+             <span class="text-xs font-medium text-white/80 group-hover:text-white transition-colors">System Online</span>
+             <span class="text-[10px] text-white/30">Ready for operations</span>
+          </div>
         </div>
       </div>
     </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 m-3 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl flex flex-col relative overflow-hidden shadow-2xl shadow-black/50 z-10">
+      <!-- Top Bar -->
+      <header class="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-white/5 backdrop-blur-md z-10">
 
     <!-- Main Content -->
     <main class="flex-1 relative overflow-hidden flex flex-col bg-background">

@@ -14,7 +14,7 @@ export default {
         'surface-light': '#2C2C2E',
         
         primary: {
-          DEFAULT: 'var(--color-primary)', // Dynamic Primary
+          DEFAULT: 'rgb(var(--color-primary-rgb) / <alpha-value>)', // Dynamic Primary with Opacity Support
           hover: '#0077ED', // We might want to make this dynamic too, but for now static is safer
           dim: 'rgba(10, 132, 255, 0.1)',
         },
@@ -58,8 +58,14 @@ export default {
         'neon-blue': '0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3)',
         'neon-purple': '0 0 10px rgba(112, 0, 255, 0.5), 0 0 20px rgba(112, 0, 255, 0.3)',
       },
+      keyframes: {
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'shimmer': 'shimmer 1.5s infinite',
       }
     },
   },

@@ -46,6 +46,26 @@ export function useTheme() {
         glowSecondary: 'rgba(0, 200, 83, 0.6)',
       }
     },
+    'minimalist': {
+      name: 'Minimalist',
+      colors: {
+        primary: '#FFFFFF',
+        primaryHover: '#E0E0E0',
+        primaryDim: 'rgba(255, 255, 255, 0.1)',
+        secondary: '#9E9E9E',
+        secondaryHover: '#BDBDBD',
+        secondaryDim: 'rgba(158, 158, 158, 0.1)',
+        accent: '#757575',
+        accentHover: '#9E9E9E',
+        background: '#000000',
+        surface: '#121212',
+        shadowPrimary: 'rgba(255, 255, 255, 0.2)',
+        shadowSecondary: 'rgba(158, 158, 158, 0.2)',
+        shadowAccent: 'rgba(117, 117, 117, 0.2)',
+        glowPrimary: 'rgba(255, 255, 255, 0.3)',
+        glowSecondary: 'rgba(158, 158, 158, 0.3)',
+      }
+    },
     'electric-violet': {
       name: 'Electric Violet',
       colors: {

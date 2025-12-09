@@ -5,7 +5,7 @@ import { invoke } from '@tauri-apps/api/core';
 export const useSettingsStore = defineStore('settings', () => {
   // --- General & UI ---
   const theme = ref<'light' | 'dark' | 'system'>('dark');
-  const accentColor = ref('blue');
+  const accentColor = ref('#0A84FF');
   const enableAnimations = ref(true);
   const glassOpacity = ref(80); // 0-100
   const soundEffects = ref(true);

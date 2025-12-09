@@ -15,6 +15,7 @@
   
   /* Colors (can be overridden by JS) */
   --color-primary: #0A84FF;
+  --color-primary-rgb: 10 132 255;
 }
 
 body {

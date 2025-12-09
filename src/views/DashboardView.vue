@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue';
 import SidebarItem from '../components/ui/SidebarItem.vue';
 import DevicePanel from '../components/features/core/DevicePanel.vue';
+import TelemetryWidget from '../components/features/core/TelemetryWidget.vue';
+import RecentActivity from '../components/features/core/RecentActivity.vue';
+import CommunityFeed from '../components/features/core/CommunityFeed.vue';
 import AIChatInterface from '../components/features/ai/AIChatInterface.vue';
 import Terminal from '../components/features/system/Terminal.vue';
 import GlassCard from '../components/ui/GlassCard.vue';
@@ -84,37 +87,48 @@ const refreshSystem = async () => {
       <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/40">
         
         <!-- Overview Tab -->
-        <div v-if="activeCategory === 'overview'" class="space-y-8 animate-slide-up">
-           <!-- Device Status (Hero) -->
-            <div class="hover-tilt-subtle transition-transform duration-500">
-              <DevicePanel />
+        <div v-if="activeCategory === 'overview'" class="space-y-6 animate-slide-up">
+           
+           <!-- Top Row: Device Status & Telemetry -->
+           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Device Status (Hero) -->
+              <div class="lg:col-span-2 hover-tilt-subtle transition-transform duration-500">
+                <DevicePanel />
+              </div>
+              <!-- Live Telemetry -->
+              <div class="lg:col-span-1">
+                <TelemetryWidget />
+              </div>
+           </div>
+
+            <!-- Middle Row: Quick Actions / Features -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <GlassCard 
+                  v-for="feat in features" 
+                  :key="feat.id"
+                  class="group cursor-pointer hover:bg-surface/40 transition-all duration-500 border-white/5 hover:border-primary/30 hover-tilt ring-1 ring-white/5 hover:ring-primary/20"
+                  @click="emit('navigate', feat.id)"
+                  noPadding
+              >
+                  <div class="flex flex-col h-full justify-between p-5 relative overflow-hidden">
+                    <!-- Glow Effect -->
+                    <div class="absolute -right-10 -top-10 w-24 h-24 bg-primary/20 blur-[40px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                    <div class="relative z-10">
+                        <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300 shadow-lg shadow-black/20">
+                          <span class="material-symbols-rounded text-2xl" :class="feat.color">{{ feat.icon }}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white group-hover:text-primary transition-colors tracking-tight">{{ feat.title }}</h3>
+                        <p class="text-xs text-white/50 mt-1 leading-relaxed line-clamp-2">{{ feat.desc }}</p>
+                    </div>
+                  </div>
+              </GlassCard>
             </div>
 
-            <!-- Feature Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <GlassCard 
-                v-for="feat in features" 
-                :key="feat.id"
-                class="group cursor-pointer hover:bg-surface/40 transition-all duration-500 border-white/5 hover:border-primary/30 hover-tilt ring-1 ring-white/5 hover:ring-primary/20"
-                @click="emit('navigate', feat.id)"
-            >
-                <div class="flex flex-col h-full justify-between p-4 relative overflow-hidden">
-                  <!-- Glow Effect -->
-                  <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/20 blur-[50px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                  <div class="mb-4 relative z-10">
-                      <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300 shadow-lg shadow-black/20">
-                        <span class="material-symbols-rounded text-3xl" :class="feat.color">{{ feat.icon }}</span>
-                      </div>
-                      <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors tracking-tight">{{ feat.title }}</h3>
-                      <p class="text-sm text-white/60 mt-2 leading-relaxed">{{ feat.desc }}</p>
-                  </div>
-                  <div class="flex items-center text-xs font-bold text-white/30 group-hover:text-primary transition-colors uppercase tracking-wider relative z-10">
-                      <span>Launch Module</span>
-                      <span class="material-symbols-rounded text-sm ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                  </div>
-                </div>
-            </GlassCard>
+            <!-- Bottom Row: Activity & Community -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <RecentActivity />
+              <CommunityFeed />
             </div>
         </div>
 

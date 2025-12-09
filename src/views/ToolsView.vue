@@ -42,15 +42,19 @@ import CommunityRepo from '../components/features/cloud/CommunityRepo.vue';
 import ConfigSharer from '../components/features/cloud/ConfigSharer.vue';
 import DevProfileSync from '../components/features/cloud/DevProfileSync.vue';
 
-const activeCategory = ref('automation');
+// Utilities
+import QuickActionsGrid from '../components/features/utilities/QuickActionsGrid.vue';
+
+const activeCategory = ref('utilities');
 const searchQuery = ref('');
 
 const categories = [
-  { id: 'automation', label: 'Automation', icon: 'smart_toy' },
-  { id: 'security', label: 'Security', icon: 'security' },
-  { id: 'system', label: 'System Ops', icon: 'settings_system_daydream' },
-  { id: 'ai', label: 'AI Tools', icon: 'psychology' },
-  { id: 'cloud', label: 'Social & Cloud', icon: 'cloud' },
+  { id: 'utilities', label: 'Quick Actions', icon: 'bolt', color: 'text-yellow-400' },
+  { id: 'automation', label: 'Automation', icon: 'smart_toy', color: 'text-blue-400' },
+  { id: 'security', label: 'Security', icon: 'security', color: 'text-red-400' },
+  { id: 'system', label: 'System Ops', icon: 'settings_system_daydream', color: 'text-purple-400' },
+  { id: 'ai', label: 'AI Tools', icon: 'psychology', color: 'text-pink-400' },
+  { id: 'cloud', label: 'Social & Cloud', icon: 'cloud', color: 'text-cyan-400' },
 ];
 
 // Helper to check if a tool matches search
@@ -90,6 +94,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
           :key="cat.id"
           :icon="cat.icon"
           :label="cat.label"
+          :color="cat.color"
           :active="activeCategory === cat.id && !searchQuery"
           @click="activeCategory = cat.id; searchQuery = ''"
         />
@@ -114,6 +119,11 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
       <!-- Scrollable Content -->
       <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
         
+        <!-- Utilities Tab (Quick Actions) -->
+        <div v-show="(!searchQuery && activeCategory === 'utilities') || searchQuery">
+          <QuickActionsGrid v-if="matchesSearch(['quick', 'actions', 'utilities', 'adb', 'reboot'])" />
+        </div>
+
         <!-- Automation Tab -->
         <div v-show="(!searchQuery && activeCategory === 'automation') || searchQuery" class="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-slide-up">
           <MultiDeviceGrid v-if="matchesSearch(['multi', 'device', 'grid', 'automation'])" class="xl:col-span-2 hover-tilt" />

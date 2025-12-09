@@ -41,6 +41,9 @@ const classes = computed(() => {
   <button :class="classes" :disabled="disabled || loading">
     <!-- Glow Effect for Primary/Secondary -->
     <div v-if="variant === 'primary' || variant === 'secondary'" class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+    
+    <!-- Shimmer Effect -->
+    <div v-if="variant === 'primary' && !loading" class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-10 pointer-events-none"></div>
 
     <!-- Loading Spinner -->
     <span v-if="loading" class="absolute inset-0 flex items-center justify-center bg-inherit">

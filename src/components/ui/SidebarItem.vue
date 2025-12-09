@@ -3,8 +3,9 @@ defineProps<{
   icon: string;
   label: string;
   active?: boolean;
-  variant?: 'default' | 'primary';
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
   description?: string;
+  color?: string; // Optional custom color class (e.g., 'text-purple-400')
 }>();
 
 defineEmits<{
@@ -15,29 +16,37 @@ defineEmits<{
 <template>
   <button 
     @click="$emit('click')"
-    class="w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-3 group relative overflow-hidden"
+    class="w-full text-left px-3 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-3 group relative overflow-hidden"
     :class="[
       active 
-        ? (variant === 'primary' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-surface/30 backdrop-blur-md text-white border border-white/10 shadow-lg shadow-black/20') 
-        : 'text-text-secondary hover:bg-surface/20 hover:backdrop-blur-sm hover:text-white'
+        ? (variant === 'primary' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/10 backdrop-blur-md text-white shadow-lg shadow-black/10 border border-white/5') 
+        : 'text-text-secondary hover:bg-white/5 hover:text-white hover:translate-x-1'
     ]"
   >
     <!-- Active Indicator (Left Bar) -->
     <div 
       v-if="active && variant !== 'primary'" 
-      class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"
+      class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-colors duration-300"
+      :class="color ? color.replace('text-', 'bg-') : 'bg-primary'"
     ></div>
 
     <!-- Icon -->
     <div 
-      class="w-8 h-8 rounded-md flex items-center justify-center transition-colors"
+      class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300"
       :class="[
         active 
-          ? (variant === 'primary' ? 'bg-white/20' : 'bg-white/5') 
-          : 'bg-white/5 group-hover:bg-white/10'
+          ? (variant === 'primary' ? 'bg-white/20 scale-110' : 'bg-white/10 scale-110') 
+          : 'bg-white/5 group-hover:bg-white/10 group-hover:scale-105'
       ]"
     >
-      <span class="material-symbols-rounded text-lg" :class="{ 'animate-pulse': variant === 'primary' && active }">{{ icon }}</span>
+      <span 
+        class="material-symbols-rounded text-[18px] transition-colors duration-300" 
+        :class="[
+          { 'animate-pulse': variant === 'primary' && active },
+          active && variant !== 'primary' && !color ? 'text-primary' : '',
+          color ? color : ''
+        ]"
+      >{{ icon }}</span>
     </div>
 
     <!-- Text -->

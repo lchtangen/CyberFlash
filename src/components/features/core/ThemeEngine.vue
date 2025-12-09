@@ -47,7 +47,7 @@ onMounted(() => {
           <button 
             v-for="(preset, key) in presets" 
             :key="key"
-            @click="applyTheme(key as string)"
+            @click="settingsStore.accentColor = preset.colors.primary"
             class="px-3 py-2 rounded-lg border transition-all text-left flex items-center gap-2"
             :class="settingsStore.accentColor === preset.colors.primary ? 'bg-white/10 border-primary text-white' : 'bg-white/5 border-white/10 text-text-secondary hover:bg-white/10'"
           >
