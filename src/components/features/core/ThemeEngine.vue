@@ -6,7 +6,7 @@ import { useTheme } from '../../../composables/useTheme';
 
 const settingsStore = useSettingsStore();
 const notificationStore = useNotificationStore();
-const { presets, applyTheme } = useTheme();
+const { presets } = useTheme();
 
 const resetTheme = () => {
   settingsStore.$reset();

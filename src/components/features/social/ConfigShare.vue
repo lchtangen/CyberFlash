@@ -38,15 +38,12 @@
           <div class="flex-grow bg-black/30 rounded-lg border border-white/10 p-3 font-mono text-xs text-primary truncate select-all">
             {{ generatedLink }}
           </div>
-          <VisionButton @click="copyLink" variant="secondary">
-            <i class="fas fa-copy"></i>
-          </VisionButton>
+          <VisionButton @click="copyLink" variant="secondary" icon="content_copy" />
         </div>
       </div>
 
       <div class="flex justify-center pt-4">
-        <VisionButton size="lg" @click="generateLink" :loading="loading">
-          <i class="fas fa-share-alt mr-2"></i>
+        <VisionButton size="lg" @click="generateLink" :loading="loading" icon="share">
           Generate Link
         </VisionButton>
       </div>
@@ -59,6 +56,7 @@ import { ref, onMounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import GlassCard from '@/components/ui/GlassCard.vue';
 import VisionButton from '@/components/ui/VisionButton.vue';
+import { useNotificationStore } from '../../../stores/notifications';
 
 interface DeviceConfig {
   device: string;
@@ -76,6 +74,7 @@ const config = ref<DeviceConfig>({
 
 const generatedLink = ref<string | null>(null);
 const loading = ref(false);
+const notificationStore = useNotificationStore();
 
 onMounted(async () => {
   try {
@@ -94,16 +93,24 @@ const generateLink = async () => {
     generatedLink.value = link;
   } catch (e) {
     console.error(e);
-    // toast.error("Failed to generate link");
+    notificationStore.addNotification({
+      title: 'Error',
+      message: 'Failed to generate link',
+      type: 'error'
+    });
   } finally {
     loading.value = false;
   }
 };
 
-const copyLink = async () => {
+const copyLink = () => {
   if (generatedLink.value) {
-    await navigator.clipboard.writeText(generatedLink.value);
-    // toast.success("Link copied to clipboard");
+    navigator.clipboard.writeText(generatedLink.value);
+    notificationStore.addNotification({
+      title: 'Copied',
+      message: 'Link copied to clipboard',
+      type: 'success'
+    });
   }
 };
 </script>

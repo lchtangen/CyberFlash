@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAIStore } from '../../../stores/ai';
-import { useNotificationStore } from '../../../stores/notifications';
+import { useDynamicIslandStore } from '../../../stores/dynamicIsland';
 
 const isOpen = ref(false);
 const searchQuery = ref('');
 const aiStore = useAIStore();
-const notificationStore = useNotificationStore();
+const islandStore = useDynamicIslandStore();
 
 const commands = [
   { id: 'flash', label: 'Flash ROM', icon: 'system_update', shortcut: '⌘F', action: () => console.log('Flash') },
@@ -34,12 +34,13 @@ const handleKeydown = (e: KeyboardEvent) => {
 
 const executeCommand = (cmd: any) => {
   cmd.action();
-  notificationStore.addNotification({
-    title: 'Command Executed',
-    message: `Running: ${cmd.label}`,
+  islandStore.showNotification({
+    id: 'cmd-exec',
     type: 'info',
-    duration: 2000
-  });
+    title: 'Command Executed',
+    subtitle: `Running: ${cmd.label}`,
+    icon: 'terminal'
+  }, 2000);
   isOpen.value = false;
   searchQuery.value = '';
 };
@@ -61,21 +62,24 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isOpen = false"></div>
     
     <!-- Modal Content -->
-    <div class="relative w-full max-w-lg bg-surface/90 border border-white/10 ring-1 ring-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
-      <div class="p-4 border-b border-white/10 flex items-center gap-2">
-        <span class="material-symbols-rounded text-white/50">search</span>
+    <div class="relative w-full max-w-lg bg-surface/30 border border-white/10 ring-1 ring-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-2xl">
+      <!-- Mesh Background -->
+      <div class="absolute inset-0 mesh-gradient-bg opacity-30 pointer-events-none"></div>
+
+      <div class="relative z-10 p-4 border-b border-white/10 flex items-center gap-3 bg-white/5">
+        <span class="material-symbols-rounded text-primary animate-pulse">search</span>
         <input 
           v-model="searchQuery" 
           placeholder="Type a command or ask AI..." 
-          class="flex-1 bg-transparent text-white placeholder-white/30 focus:outline-none text-lg"
+          class="flex-1 bg-transparent text-white placeholder-white/30 focus:outline-none text-lg font-medium"
           autofocus
         />
-        <button @click="isOpen = false" class="text-white/30 hover:text-white transition-colors">
-          <span class="material-symbols-rounded">close</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono text-white/30 border border-white/10 px-1.5 py-0.5 rounded">ESC</span>
+        </div>
       </div>
       
-      <div class="p-2 space-y-1 max-h-[300px] overflow-y-auto custom-scrollbar">
+      <div class="relative z-10 p-2 space-y-1 max-h-[300px] overflow-y-auto custom-scrollbar">
         <!-- Commands -->
         <button
           v-for="cmd in filteredCommands"

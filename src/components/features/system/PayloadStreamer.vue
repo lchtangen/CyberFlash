@@ -4,11 +4,20 @@ import { invoke } from '@tauri-apps/api/core';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
 import GlassInput from '../../ui/GlassInput.vue';
+import GlassSelect from '../../ui/GlassSelect.vue';
 
 const url = ref('');
 const targetFile = ref('boot.img');
 const loading = ref(false);
 const result = ref<string | null>(null);
+
+const targetOptions = [
+  { value: 'boot.img', label: 'boot.img' },
+  { value: 'init_boot.img', label: 'init_boot.img' },
+  { value: 'vendor_boot.img', label: 'vendor_boot.img' },
+  { value: 'recovery.img', label: 'recovery.img' },
+  { value: 'dtbo.img', label: 'dtbo.img' }
+];
 
 const stream = async () => {
   if (!url.value) return;
@@ -32,35 +41,32 @@ const stream = async () => {
 
 <template>
   <GlassCard class="h-full flex flex-col">
-    <div class="flex items-center space-x-3 mb-6">
-      <div class="p-2 rounded-lg bg-orange-500/20 text-orange-400">
-        <span class="material-symbols-rounded text-xl">stream</span>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="p-3 rounded-xl bg-warning/20 text-warning">
+        <span class="material-symbols-rounded text-2xl">stream</span>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-white">Payload Streamer</h3>
-        <p class="text-xs text-text-secondary">Extract images without full download</p>
+        <h2 class="text-xl font-bold text-white">Payload Streamer</h2>
+        <p class="text-sm text-white/60">Extract images without full download</p>
       </div>
     </div>
 
-    <div class="space-y-4 flex-1">
+    <div class="space-y-6 flex-1">
       <GlassInput 
         v-model="url" 
         label="ROM URL (payload.bin inside zip)" 
-        placeholder="https://..." 
+        placeholder="https://example.com/rom.zip" 
+        icon="link"
       />
       
-      <div class="space-y-2">
-        <label class="text-xs font-medium text-text-secondary ml-1">Target File</label>
-        <select v-model="targetFile" class="w-full bg-surface/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary/50">
-          <option value="boot.img">boot.img</option>
-          <option value="init_boot.img">init_boot.img</option>
-          <option value="vendor_boot.img">vendor_boot.img</option>
-          <option value="recovery.img">recovery.img</option>
-          <option value="dtbo.img">dtbo.img</option>
-        </select>
-      </div>
+      <GlassSelect
+        v-model="targetFile"
+        label="Target File"
+        :options="targetOptions"
+        icon="description"
+      />
 
-      <div v-if="result" class="p-3 rounded-lg bg-success/10 border border-success/20 text-success text-sm">
+      <div v-if="result" class="p-3 rounded-lg text-sm" :class="result.includes('Error') ? 'bg-error/10 border border-error/20 text-error' : 'bg-success/10 border border-success/20 text-success'">
         {{ result }}
       </div>
     </div>
@@ -70,6 +76,7 @@ const stream = async () => {
         @click="stream" 
         :loading="loading"
         :disabled="!url"
+        icon="cloud_download"
         class="w-full"
       >
         Stream Extract

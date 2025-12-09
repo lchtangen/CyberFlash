@@ -38,13 +38,13 @@ const handleSave = async () => {
 <template>
   <div class="flex h-full gap-6 overflow-hidden">
     <!-- Sidebar Navigation -->
-    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
-      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
+      <div class="p-5 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
         <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-          <span class="material-symbols-rounded text-primary">settings</span>
+          <span class="material-symbols-rounded text-primary drop-shadow-[0_0_8px_rgba(10,132,255,0.5)]">settings</span>
           Settings
         </h2>
-        <p class="text-xs text-text-secondary mt-1">Configure CyberFlash</p>
+        <p class="text-xs text-text-secondary mt-1 font-medium tracking-wide">Configure CyberFlash</p>
       </div>
       
       <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
@@ -58,7 +58,7 @@ const handleSave = async () => {
         />
       </div>
       
-      <div class="p-4 border-t border-white/10 bg-white/5 backdrop-blur-md">
+      <div class="p-4 border-t border-white/10 bg-surface/30 backdrop-blur-xl">
         <div class="flex items-center gap-3 p-2 rounded-xl bg-black/20 border border-white/5">
           <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xs shadow-lg">
             CF
@@ -72,15 +72,15 @@ const handleSave = async () => {
     </GlassCard>
 
     <!-- Main Content Area -->
-    <GlassCard noPadding class="flex-1 flex flex-col overflow-hidden relative">
+    <GlassCard noPadding class="flex-1 flex flex-col overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/30 backdrop-blur-xl z-10">
         <div>
-          <h3 class="text-xl font-bold text-white flex items-center gap-2">
+          <h3 class="text-xl font-bold text-white flex items-center gap-2 tracking-tight">
             {{ activeCategoryLabel }}
-            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider">Config</span>
+            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider shadow-[0_0_10px_rgba(10,132,255,0.3)]">Config</span>
           </h3>
-          <p class="text-sm text-text-secondary mt-1">Manage your {{ activeCategoryLabel?.toLowerCase() }} preferences</p>
+          <p class="text-sm text-text-secondary mt-1 font-medium">Manage your {{ activeCategoryLabel?.toLowerCase() }} preferences</p>
         </div>
         <div class="flex items-center gap-3">
           <button 
@@ -95,9 +95,12 @@ const handleSave = async () => {
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+        <!-- Mesh Background -->
+        <div class="absolute inset-0 mesh-gradient-bg opacity-20 pointer-events-none"></div>
         
-        <!-- General Settings -->
+        <div class="relative z-10">
+          <!-- General Settings -->
         <div v-if="activeCategory === 'general'" class="space-y-8 animate-slide-up">
           <section>
             <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -356,6 +359,7 @@ const handleSave = async () => {
           </section>
         </div>
 
+        </div>
       </div>
     </GlassCard>
   </div>

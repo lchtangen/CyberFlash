@@ -2,6 +2,10 @@
 import { ref, onMounted, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useNotificationStore } from '../../../stores/notifications';
+import GlassCard from '../../ui/GlassCard.vue';
+import VisionButton from '../../ui/VisionButton.vue';
+import GlassInput from '../../ui/GlassInput.vue';
+import GlassSelect from '../../ui/GlassSelect.vue';
 
 interface LogEntry {
   level: string;
@@ -14,6 +18,13 @@ const loading = ref(false);
 const filterLevel = ref('All');
 const searchQuery = ref('');
 const notificationStore = useNotificationStore();
+
+const levelOptions = [
+  { value: 'All', label: 'All Levels' },
+  { value: 'Error', label: 'Errors' },
+  { value: 'Warning', label: 'Warnings' },
+  { value: 'Info', label: 'Info' }
+];
 
 const fetchLogs = async () => {
   loading.value = true;
@@ -60,45 +71,51 @@ onMounted(fetchLogs);
 </script>
 
 <template>
-  <div class="bg-surface/30 border border-white/10 rounded-xl p-4 backdrop-blur-md flex flex-col h-[400px]">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-        <span class="material-symbols-rounded text-warning">bug_report</span>
-        Log Analyst
-      </h3>
-      <div class="flex gap-2">
-        <button @click="fetchLogs" class="p-2 hover:bg-white/10 rounded-lg text-white transition-colors flex items-center justify-center">
-          <span class="material-symbols-rounded text-sm" :class="{ 'animate-spin': loading }">refresh</span>
-        </button>
+  <GlassCard class="flex flex-col h-[500px]">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-warning/20 text-warning">
+          <span class="material-symbols-rounded text-xl">bug_report</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">Log Analyst</h3>
+          <p class="text-xs text-white/60">Analyze system logs (Logcat)</p>
+        </div>
       </div>
+      <VisionButton 
+        @click="fetchLogs" 
+        :loading="loading"
+        variant="secondary"
+        icon="refresh"
+        class="!p-2"
+      />
     </div>
 
     <!-- Filters -->
-    <div class="flex gap-2 mb-4">
-      <select v-model="filterLevel" class="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-primary/50">
-        <option value="All">All Levels</option>
-        <option value="Error">Errors</option>
-        <option value="Warning">Warnings</option>
-        <option value="Info">Info</option>
-      </select>
-      <input 
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <GlassSelect
+        v-model="filterLevel"
+        :options="levelOptions"
+        class="col-span-1"
+      />
+      <GlassInput 
         v-model="searchQuery" 
-        type="text" 
         placeholder="Search logs..." 
-        class="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-primary/50"
-      >
+        icon="search"
+        class="col-span-2"
+      />
     </div>
 
     <!-- Log Window -->
-    <div class="flex-1 overflow-y-auto custom-scrollbar bg-black/40 rounded-lg p-2 font-mono text-[10px] space-y-1">
-      <div v-if="loading" class="text-center py-8 text-text-muted">Loading logs...</div>
-      <div v-else-if="filteredLogs.length === 0" class="text-center py-8 text-text-muted">No logs found.</div>
+    <div class="flex-1 overflow-y-auto custom-scrollbar bg-black/40 rounded-xl p-3 font-mono text-[10px] space-y-1 border border-white/5">
+      <div v-if="loading" class="text-center py-8 text-white/40">Loading logs...</div>
+      <div v-else-if="filteredLogs.length === 0" class="text-center py-8 text-white/40">No logs found.</div>
       
-      <div v-for="(log, i) in filteredLogs" :key="i" class="flex gap-2 hover:bg-white/5 p-0.5 rounded">
-        <span class="w-8 font-bold shrink-0" :class="getLevelColor(log.level)">{{ log.level[0] }}</span>
-        <span class="w-24 text-text-secondary truncate shrink-0" :title="log.tag">{{ log.tag }}</span>
+      <div v-for="(log, i) in filteredLogs" :key="i" class="flex gap-2 hover:bg-white/5 p-1 rounded transition-colors">
+        <span class="w-6 font-bold shrink-0 text-center" :class="getLevelColor(log.level)">{{ log.level[0] }}</span>
+        <span class="w-24 text-white/60 truncate shrink-0" :title="log.tag">{{ log.tag }}</span>
         <span class="text-gray-300 break-all">{{ log.message }}</span>
       </div>
     </div>
-  </div>
+  </GlassCard>
 </template>

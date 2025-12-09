@@ -46,6 +46,7 @@ pub fn run() {
             commands::adb::run_adb_shell,
             commands::fastboot::get_fastboot_devices,
             commands::fastboot::get_var_all,
+            commands::fastboot::get_partition_layout,
             commands::fastboot::set_active_slot,
             commands::fastboot::check_bootloader_unlocked,
             commands::fastboot::detect_ab_slots,

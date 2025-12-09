@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
 const rotation = ref({ x: 0, y: 0 });
 const container = ref<HTMLElement | null>(null);

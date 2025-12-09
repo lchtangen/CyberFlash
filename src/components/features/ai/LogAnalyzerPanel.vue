@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import GlassCard from '../../ui/GlassCard.vue';
 import GlassInput from '../../ui/GlassInput.vue';
-
-const emit = defineEmits<{
-  (e: 'close'): void;
-}>();
 
 const logs = ref<string[]>([]);
 const searchQuery = ref('');
@@ -70,8 +64,6 @@ onMounted(() => {
 onUnmounted(() => {
   stopLogcat();
 });
-
-import { computed } from 'vue';
 </script>
 
 <template>

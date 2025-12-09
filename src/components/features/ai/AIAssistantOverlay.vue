@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useAIStore } from '../../../stores/ai';
 import AIChatInterface from './AIChatInterface.vue';
 import ContextAnalysisPanel from './ContextAnalysisPanel.vue';
 import LogAnalyzerPanel from './LogAnalyzerPanel.vue';
 import FlashGuidePanel from './FlashGuidePanel.vue';
 import AISettingsPanel from './AISettingsPanel.vue';
-import GlassCard from '../../ui/GlassCard.vue';
 
 const aiStore = useAIStore();
 const isMenuOpen = ref(false);

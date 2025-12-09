@@ -11,6 +11,7 @@ import AIAssistantOverlay from './components/features/ai/AIAssistantOverlay.vue'
 import CommandPalette from './components/features/core/CommandPalette.vue';
 import SmartContextBar from './components/features/core/SmartContextBar.vue';
 import NotificationCenter from './components/features/core/NotificationCenter.vue';
+import DynamicIsland from './components/features/core/DynamicIsland.vue';
 import DriverHealthCheck from './components/features/system/DriverHealthCheck.vue';
 import SidebarItem from './components/ui/SidebarItem.vue';
 import { useSettingsStore } from './stores/settings';
@@ -49,20 +50,16 @@ onUnmounted(() => {
   if (unlisten.value) unlisten.value();
 });
 
-const handleDockAction = async (action: string) => {
-  if (action === 'reboot_device') {
-    try {
-      await invoke('adb_reboot', { mode: 'system' });
-      notificationStore.addNotification({ title: 'Rebooting', message: 'Device is restarting...', type: 'info' });
-    } catch (e) {
-      notificationStore.addNotification({ title: 'Reboot Failed', message: String(e), type: 'error' });
-    }
-  } else if (action === 'toggle_logs') {
-    notificationStore.addNotification({ title: 'Logs', message: 'Log view toggled', type: 'info' });
-  }
-};
+interface NavItem {
+  id: string;
+  label: string;
+  icon: string;
+  color?: string;
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+  description?: string;
+}
 
-const navGroups = [
+const navGroups: { title: string; items: NavItem[] }[] = [
   {
     title: 'Overview',
     items: [
@@ -166,9 +163,9 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen mesh-gradient-bg text-text-primary font-sans overflow-hidden relative flex">
+    <DynamicIsland />
     <!-- Sidebar -->
-        <!-- Sidebar -->
-    <aside class="w-72 m-3 mr-0 rounded-2xl border border-white/10 bg-surface/40 backdrop-blur-2xl flex flex-col shadow-2xl shadow-black/50 z-20 overflow-hidden transition-all duration-500 hover:bg-surface/50">
+    <aside class="w-72 m-3 mr-0 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-2xl flex flex-col shadow-2xl shadow-black/50 z-20 overflow-hidden transition-all duration-500 hover:bg-surface/40">
       <div class="p-6 flex items-center gap-3 border-b border-white/5">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 relative group cursor-pointer overflow-hidden">
            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -214,12 +211,16 @@ onMounted(async () => {
     <!-- Main Content -->
     <main class="flex-1 m-3 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl flex flex-col relative overflow-hidden shadow-2xl shadow-black/50 z-10">
       <!-- Top Bar -->
-      <header class="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-white/5 backdrop-blur-md z-10">
+      <header class="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-transparent z-10">
         <div class="flex items-center gap-4">
-          <h2 class="text-lg font-medium text-white capitalize">{{ currentView }}</h2>
+          <h2 class="text-lg font-medium text-white capitalize tracking-wide">{{ currentView }}</h2>
         </div>
         
-        <SmartContextBar />
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl pointer-events-none">
+          <div class="pointer-events-auto">
+            <SmartContextBar />
+          </div>
+        </div>
         
         <div class="flex items-center gap-4">
           <button 

@@ -1,4 +1,4 @@
-import { watch, onMounted } from 'vue';
+import { watch } from 'vue';
 import { useSettingsStore } from '../stores/settings';
 
 export function useTheme() {

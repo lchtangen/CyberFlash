@@ -21,13 +21,13 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
 <template>
   <div class="flex h-full gap-6 overflow-hidden">
     <!-- Sidebar Navigation -->
-    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
-      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
+      <div class="p-5 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
         <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-          <span class="material-symbols-rounded text-secondary">hub</span>
+          <span class="material-symbols-rounded text-secondary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">hub</span>
           Social Hub
         </h2>
-        <p class="text-xs text-text-secondary mt-1">Connect & Share</p>
+        <p class="text-xs text-text-secondary mt-1 font-medium tracking-wide">Connect & Share</p>
       </div>
       
       <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
@@ -43,22 +43,25 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
     </GlassCard>
 
     <!-- Main Content Area -->
-    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/30 backdrop-blur-xl z-10">
         <div>
           <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             {{ activeCategoryLabel }}
-            <span class="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-bold border border-secondary/20 uppercase tracking-wider">Global</span>
+            <span class="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-bold border border-secondary/20 uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.3)]">Global</span>
           </h2>
-          <p class="text-sm text-text-secondary mt-1">Community interactions and resources</p>
+          <p class="text-sm text-text-secondary mt-1 font-medium">Community interactions and resources</p>
         </div>
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+        <!-- Mesh Background -->
+        <div class="absolute inset-0 mesh-gradient-bg opacity-20 pointer-events-none"></div>
         
-        <!-- Community Tab -->
+        <div class="relative z-10">
+          <!-- Community Tab -->
         <div v-if="activeCategory === 'community'" class="space-y-8 animate-slide-up">
           <div class="hover-tilt-subtle">
             <CommunityHub />
@@ -73,10 +76,11 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         </div>
 
         <!-- Profile Tab -->
+                <!-- Profile Tab -->
         <div v-if="activeCategory === 'profile'" class="space-y-8 animate-slide-up">
-          <GlassCard class="p-8 max-w-2xl mx-auto hover-tilt">
+          <GlassCard class="p-8 max-w-2xl mx-auto hover-tilt bg-surface/30 backdrop-blur-xl border-white/10">
             <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-              <span class="material-symbols-rounded text-warning">star</span>
+              <span class="material-symbols-rounded text-warning drop-shadow-glow">star</span>
               Dev Spotlight
             </h3>
             <div class="flex items-center gap-6 mb-6">
@@ -91,12 +95,13 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
             <p class="text-sm text-white/70 mb-8 leading-relaxed">
               Keeping legacy devices alive since 2016. Support the project!
             </p>
-            <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm transition-all duration-300 border border-white/5 font-medium hover:scale-[1.02] active:scale-95">
+            <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm transition-all duration-300 border border-white/5 font-medium hover:scale-[1.02] active:scale-95 shadow-lg">
               View Full Profile
             </button>
           </GlassCard>
         </div>
 
+        </div>
       </div>
     </GlassCard>
   </div>

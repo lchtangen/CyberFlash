@@ -12,6 +12,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const hapticFeedback = ref(false);
   const compactMode = ref(false);
   const showTerminalOverlay = ref(true);
+  const themePreset = ref('cyber-cyan');
 
   // --- Appearance Customization ---
   const blurStrength = ref('xl'); // none, sm, md, lg, xl, 2xl, 3xl
@@ -168,6 +169,7 @@ export const useSettingsStore = defineStore('settings', () => {
     aiEnabled, geminiApiKey, effectiveGeminiApiKey, aiModel, autoAnalyzeLogs, suggestNextSteps,
     hardwareAcceleration, processPriority, maxConcurrentDownloads, cacheSizeLimit, autoClearCache, lowSpecMode, backgroundProcessing, networkTimeout, compressionLevel, useGpuRendering,
     // Actions
-    toggleTheme, updateTheme, saveSettings, loadSettings
+    toggleTheme, updateTheme, saveSettings, loadSettings,
+    themePreset
   };
 });

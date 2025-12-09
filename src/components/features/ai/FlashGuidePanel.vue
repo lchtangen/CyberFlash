@@ -2,10 +2,6 @@
 import { ref } from 'vue';
 import GlassCard from '../../ui/GlassCard.vue';
 
-const emit = defineEmits<{
-  (e: 'close'): void;
-}>();
-
 interface Guide {
   id: string;
   title: string;

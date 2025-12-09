@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useSystemStore } from '../../../stores/system';
 import { useNotificationStore } from '../../../stores/notifications';
+import VisionButton from '../../ui/VisionButton.vue';
 
 interface DriverStatus {
   platform: string;
@@ -166,28 +167,25 @@ const close = () => {
             <code class="flex-1 bg-black/50 p-3 rounded-lg text-xs font-mono text-white/90 break-all border border-white/10">
               {{ fixResult }}
             </code>
-            <button @click="copyCommand" class="p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white" title="Copy">
-              <span class="material-symbols-rounded text-sm">content_copy</span>
-            </button>
+            <VisionButton @click="copyCommand" variant="secondary" icon="content_copy" class="!p-3" />
           </div>
         </div>
 
         <div class="flex justify-end gap-3 pt-2">
-          <button 
+          <VisionButton 
             @click="close" 
-            class="px-4 py-2 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+            variant="secondary"
           >
             Ignore
-          </button>
-          <button 
+          </VisionButton>
+          <VisionButton 
             @click="fixDrivers" 
-            :disabled="fixing || (status.adb_installed && status.fastboot_installed && status.udev_rules_ok)"
-            class="px-6 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+            :loading="fixing"
+            :disabled="status.adb_installed && status.fastboot_installed && status.udev_rules_ok"
+            icon="auto_fix_high"
           >
-            <span v-if="fixing" class="material-symbols-rounded animate-spin">sync</span>
-            <span v-else class="material-symbols-rounded">auto_fix_high</span>
-            {{ fixing ? 'Fixing...' : 'Auto-Fix Issues' }}
-          </button>
+            Auto-Fix Issues
+          </VisionButton>
         </div>
       </div>
     </div>

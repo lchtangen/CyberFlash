@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
+import GlassSelect from '../../ui/GlassSelect.vue';
+import GlassTextarea from '../../ui/GlassTextarea.vue';
 
 interface DebloatList {
   id: string;
@@ -22,6 +24,8 @@ const selectedListId = ref<string>('');
 const customPackages = ref<string>('');
 const isProcessing = ref(false);
 const results = ref<BatchOpResult[]>([]);
+
+const listOptions = computed(() => lists.value.map(l => ({ label: l.name, value: l.id })));
 
 onMounted(async () => {
   try {
@@ -79,25 +83,26 @@ const runDebloat = async () => {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="space-y-4">
         <div>
-          <label class="text-xs text-white/60 mb-2 block">Select Preset</label>
-          <select v-model="selectedListId" class="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-primary/50">
-            <option v-for="list in lists" :key="list.id" :value="list.id">
-              {{ list.name }}
-            </option>
-          </select>
-          <p class="text-xs text-white/40 mt-2" v-if="selectedListId">
+          <GlassSelect 
+            v-model="selectedListId" 
+            :options="listOptions" 
+            label="Select Preset" 
+            icon="list"
+          />
+          <p class="text-xs text-white/40 mt-2 ml-1" v-if="selectedListId">
             {{ lists.find(l => l.id === selectedListId)?.description }}
           </p>
         </div>
 
         <div>
-          <label class="text-xs text-white/60 mb-2 block">Custom Packages (One per line)</label>
-          <textarea 
+          <GlassTextarea 
             v-model="customPackages"
-            class="w-full h-32 bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm font-mono outline-none focus:border-primary/50 resize-none"
+            label="Custom Packages (One per line)"
             placeholder="com.example.bloatware"
-          ></textarea>
+            :rows="8"
+          />
         </div>
+
 
         <VisionButton 
           @click="runDebloat" 

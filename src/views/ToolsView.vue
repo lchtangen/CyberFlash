@@ -175,6 +175,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
           <DevProfileSync v-if="matchesSearch(['dev', 'profile', 'sync', 'cloud'])" class="hover-tilt" />
         </div>
 
+        </div>
       </div>
     </GlassCard>
   </div>

@@ -2,6 +2,43 @@ use tauri::{command, AppHandle};
 use tauri_plugin_shell::ShellExt;
 use std::collections::HashMap;
 
+#[derive(serde::Serialize)]
+pub struct PartitionLayout {
+    pub slot_count: u8,
+    pub current_slot: String,
+    pub is_ab: bool,
+    pub is_dynamic: bool,
+    pub is_vab: bool, // Virtual A/B
+    pub has_super: bool,
+}
+
+#[command]
+pub async fn get_partition_layout(app: AppHandle, serial: Option<String>) -> Result<PartitionLayout, String> {
+    let vars = get_var_all(app, serial).await?;
+    
+    let slot_count = vars.get("slot-count").and_then(|v| v.parse::<u8>().ok()).unwrap_or(0);
+    let current_slot = vars.get("current-slot").cloned().unwrap_or_default();
+    let is_ab = slot_count > 0;
+    
+    // Check for dynamic partitions
+    // Usually indicated by 'super' partition existence or 'is-logical' vars
+    let has_super = vars.contains_key("partition-size:super");
+    let is_dynamic = has_super || vars.keys().any(|k| k.starts_with("is-logical"));
+    
+    // Check for Virtual A/B
+    // snapshot-merge-status is a good indicator for VAB
+    let is_vab = vars.contains_key("snapshot-merge-status");
+
+    Ok(PartitionLayout {
+        slot_count,
+        current_slot,
+        is_ab,
+        is_dynamic,
+        is_vab,
+        has_super,
+    })
+}
+
 #[command]
 pub async fn get_fastboot_devices(app: AppHandle) -> Result<Vec<String>, String> {
     let output = app.shell().sidecar("fastboot")

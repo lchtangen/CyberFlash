@@ -1,84 +1,123 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
+import GlassSelect from '../../ui/GlassSelect.vue';
 import GlassInput from '../../ui/GlassInput.vue';
 
-const partition = ref('userdata');
-const size = ref('');
-const loading = ref(false);
-const result = ref<string | null>(null);
-const error = ref<string | null>(null);
+const selectedPartition = ref('userdata');
+const newSize = ref<number | string>('');
+const isResizing = ref(false);
+const message = ref<string | null>(null);
 
-const resize = async () => {
-  if (!size.value) return;
+const partitions = [
+  { value: 'userdata', label: 'Userdata' },
+  { value: 'system', label: 'System' },
+  { value: 'vendor', label: 'Vendor' },
+  { value: 'product', label: 'Product' }
+];
+
+const resizePartition = async () => {
+  const size = Number(newSize.value);
+  if (!size || size <= 0) {
+    message.value = 'Invalid size.';
+    return;
+  }
   
-  loading.value = true;
-  result.value = null;
-  error.value = null;
+  isResizing.value = true;
+  message.value = null;
   
   try {
-    const res = await invoke<string>('resize_partition', { 
-      partition: partition.value, 
-      sizeMb: parseInt(size.value) 
+    await invoke('resize_partition', { 
+      partition: selectedPartition.value, 
+      sizeMb: size 
     });
-    result.value = res;
-  } catch (err: any) {
-    error.value = err.toString();
+    message.value = `Successfully resized ${selectedPartition.value} to ${size}MB.`;
+  } catch (e) {
+    message.value = 'Error: ' + e;
   } finally {
-    loading.value = false;
+    isResizing.value = false;
   }
 };
+
+// Visual representation of resize (mock)
+const sizePercentage = computed(() => {
+  // Just a visual mock, assuming max 128GB for visualization
+  const max = 128000; 
+  const val = Number(newSize.value) || 0;
+  return Math.min((val / max) * 100, 100);
+});
 </script>
 
 <template>
-  <GlassCard class="h-full flex flex-col">
-    <div class="flex items-center space-x-3 mb-6">
-      <div class="p-2 rounded-lg bg-red-500/20 text-red-400">
-        <span class="material-symbols-rounded text-xl">aspect_ratio</span>
+  <GlassCard>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="p-3 rounded-xl bg-warning/20 text-warning">
+        <span class="material-symbols-rounded text-2xl">pie_chart</span>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-white">Partition Resizer</h3>
-        <p class="text-xs text-text-secondary">Dynamic partition resizing (Dangerous)</p>
+        <h2 class="text-xl font-bold text-white">Partition Resizer</h2>
+        <p class="text-sm text-white/60">Modify partition tables safely.</p>
       </div>
     </div>
 
-    <div class="space-y-4 flex-1">
-      <div class="p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning text-xs">
-        <span class="font-bold">WARNING:</span> This operation can cause data loss. Ensure you have a backup. Device must be in Recovery mode.
+    <div class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <GlassSelect
+          v-model="selectedPartition"
+          label="Target Partition"
+          :options="partitions"
+          icon="storage"
+        />
+        
+        <GlassInput
+          v-model="newSize"
+          label="New Size (MB)"
+          type="number"
+          placeholder="e.g. 64000"
+          icon="straighten"
+        />
       </div>
 
-      <div class="space-y-2">
-        <label class="text-xs font-medium text-text-secondary ml-1">Partition</label>
-        <select v-model="partition" class="w-full bg-surface/50 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-primary/50">
-          <option value="userdata">userdata</option>
-          <option value="system">system</option>
-          <option value="vendor">vendor</option>
-        </select>
+      <!-- Visual Feedback -->
+      <div class="p-4 rounded-xl bg-surface/50 border border-white/5">
+        <div class="flex justify-between text-xs text-white/60 mb-2">
+          <span>0 MB</span>
+          <span>128 GB (Max)</span>
+        </div>
+        <div class="h-4 bg-white/10 rounded-full overflow-hidden relative">
+          <div 
+            class="absolute top-0 left-0 h-full bg-gradient-to-r from-warning to-error transition-all duration-500"
+            :style="{ width: `${sizePercentage}%` }"
+          ></div>
+        </div>
+        <div class="mt-2 text-center text-xs font-mono text-warning">
+          Projected: {{ ((Number(newSize) || 0) / 1024).toFixed(2) }} GB
+        </div>
       </div>
 
-      <GlassInput 
-        v-model="size" 
-        label="New Size (MB)" 
-        placeholder="e.g., 64000" 
-        type="number"
-      />
+      <div class="p-3 rounded-lg bg-error/10 border border-error/20 text-error text-xs flex items-start gap-2">
+        <span class="material-symbols-rounded text-sm mt-0.5">warning</span>
+        <span>
+          <b>Warning:</b> Resizing partitions can lead to data loss. 
+          Ensure you have a full backup before proceeding.
+        </span>
+      </div>
 
-      <div v-if="error" class="text-error text-sm">{{ error }}</div>
-      <div v-if="result" class="text-success text-sm">{{ result }}</div>
-    </div>
-
-    <div class="mt-6">
       <VisionButton 
-        @click="resize" 
-        :loading="loading"
-        :disabled="!size"
+        @click="resizePartition" 
+        :loading="isResizing" 
         variant="danger"
+        icon="aspect_ratio" 
         class="w-full"
       >
         Resize Partition
       </VisionButton>
+
+      <div v-if="message" class="p-3 rounded-lg text-center text-xs font-bold" :class="message.includes('Error') ? 'bg-error/20 text-error' : 'bg-success/20 text-success'">
+        {{ message }}
+      </div>
     </div>
   </GlassCard>
 </template>

@@ -3,6 +3,10 @@ import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { save } from '@tauri-apps/plugin-dialog';
 import { useNotificationStore } from '../../../stores/notifications';
+import GlassCard from '../../ui/GlassCard.vue';
+import VisionButton from '../../ui/VisionButton.vue';
+import GlassInput from '../../ui/GlassInput.vue';
+import ToggleSwitch from '../../ui/ToggleSwitch.vue';
 
 const backupPath = ref('');
 const isBackingUp = ref(false);
@@ -72,69 +76,75 @@ const startBackup = async () => {
 </script>
 
 <template>
-  <div class="bg-surface/30 border border-white/10 rounded-xl p-6 backdrop-blur-md">
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-        <span class="material-symbols-rounded">backup</span>
+  <GlassCard>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="p-3 rounded-xl bg-primary/20 text-primary">
+        <span class="material-symbols-rounded text-2xl">backup</span>
       </div>
       <div>
-        <h3 class="text-lg font-bold text-white">Backup Manager</h3>
-        <p class="text-xs text-text-secondary">Save data before flashing</p>
+        <h3 class="text-xl font-bold text-white">Backup Manager</h3>
+        <p class="text-sm text-white/60">Save data before flashing</p>
       </div>
     </div>
 
-    <div class="space-y-3 mb-6">
-      <label class="flex items-center gap-3 p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-white/5 transition-colors">
-        <input v-model="options.apk" type="checkbox" class="w-4 h-4 rounded border-white/20 text-primary focus:ring-primary bg-transparent">
+    <div class="space-y-4 mb-6">
+      <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
         <div>
           <div class="text-sm text-white font-medium">Include APKs</div>
-          <div class="text-xs text-text-muted">Backup app installers (-apk)</div>
+          <div class="text-xs text-white/50">Backup app installers (-apk)</div>
         </div>
-      </label>
+        <ToggleSwitch v-model="options.apk" />
+      </div>
 
-      <label class="flex items-center gap-3 p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-white/5 transition-colors">
-        <input v-model="options.shared" type="checkbox" class="w-4 h-4 rounded border-white/20 text-primary focus:ring-primary bg-transparent">
+      <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
         <div>
           <div class="text-sm text-white font-medium">Shared Storage</div>
-          <div class="text-xs text-text-muted">SD Card contents (-shared)</div>
+          <div class="text-xs text-white/50">SD Card contents (-shared)</div>
         </div>
-      </label>
-      
-      <label class="flex items-center gap-3 p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-white/5 transition-colors">
-        <input v-model="options.system" type="checkbox" class="w-4 h-4 rounded border-white/20 text-primary focus:ring-primary bg-transparent">
+        <ToggleSwitch v-model="options.shared" />
+      </div>
+
+      <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
         <div>
           <div class="text-sm text-white font-medium">System Apps</div>
-          <div class="text-xs text-text-muted">Include system packages (-system)</div>
+          <div class="text-xs text-white/50">Include system packages (-system)</div>
         </div>
-      </label>
+        <ToggleSwitch v-model="options.system" />
+      </div>
     </div>
 
-    <div class="flex gap-2">
-      <button 
-        @click="selectBackupLocation"
-        class="px-4 py-3 bg-white/10 rounded-lg hover:bg-white/20 text-white transition-colors flex items-center justify-center"
-        title="Select Save Location"
-      >
-        <span class="material-symbols-rounded text-sm">folder</span>
-      </button>
-      
-      <button 
-        @click="startBackup"
-        :disabled="!backupPath || isBackingUp"
-        class="flex-1 py-3 rounded-lg font-bold transition-all duration-200 flex items-center justify-center gap-2"
-        :class="isBackingUp ? 'bg-surface/50 text-text-muted cursor-not-allowed' : 'bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20'"
-      >
-        <span v-if="isBackingUp" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-        {{ isBackingUp ? 'Backing up...' : 'Start Backup' }}
-      </button>
-    </div>
-    
-    <div v-if="backupPath" class="mt-2 text-xs text-text-muted truncate px-1">
-      Save to: {{ backupPath }}
-    </div>
+    <div class="space-y-4">
+      <div class="flex gap-2 items-end">
+        <GlassInput 
+          v-model="backupPath"
+          label="Backup Location"
+          placeholder="/path/to/backup.ab"
+          icon="save"
+          class="flex-1"
+        />
+        <VisionButton 
+          @click="selectBackupLocation" 
+          variant="secondary"
+          icon="folder_open"
+          class="mb-[2px]"
+        >
+          Browse
+        </VisionButton>
+      </div>
 
-    <div v-if="message" class="mt-3 text-xs text-center font-mono p-2 rounded bg-black/20" :class="message.includes('Error') ? 'text-error' : 'text-success'">
-      {{ message }}
+      <VisionButton 
+        @click="startBackup" 
+        :loading="isBackingUp"
+        :disabled="!backupPath"
+        icon="cloud_upload"
+        class="w-full"
+      >
+        Start Backup
+      </VisionButton>
+
+      <div v-if="message" class="p-3 rounded-lg text-center text-xs font-bold" :class="message.includes('Error') ? 'bg-error/20 text-error' : 'bg-success/20 text-success'">
+        {{ message }}
+      </div>
     </div>
-  </div>
+  </GlassCard>
 </template>

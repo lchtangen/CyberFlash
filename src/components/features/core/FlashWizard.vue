@@ -2,12 +2,14 @@
 import { useFlashStore } from '../../../stores/flash';
 import { computed, watch, ref, nextTick } from 'vue';
 import { useNotificationStore } from '../../../stores/notifications';
+import { useDynamicIslandStore } from '../../../stores/dynamicIsland';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
 import HolographicTerminal from '../../ui/HolographicTerminal.vue';
 
 const flashStore = useFlashStore();
 const notificationStore = useNotificationStore();
+const islandStore = useDynamicIslandStore();
 const logContainer = ref<HTMLElement | null>(null);
 
 const phases = [
@@ -26,6 +28,20 @@ const globalProgress = computed(() => ((flashStore.currentPhase) / phases.length
 
 const startPhase = () => {
   flashStore.startFlash();
+  
+  // Update Dynamic Island
+  islandStore.setActivity({
+    id: 'flashing',
+    type: 'process',
+    icon: 'auto_fix_high',
+    title: `Phase ${flashStore.currentPhase + 1}: ${currentPhaseInfo.value.title}`,
+    subtitle: 'Processing...',
+    progress: 0,
+    color: 'text-primary',
+    bg: 'bg-primary/20',
+    border: 'border-primary/30'
+  });
+
   notificationStore.addNotification({
     title: `Phase ${flashStore.currentPhase + 1} Started`,
     message: currentPhaseInfo.value.title,
@@ -36,6 +52,29 @@ const startPhase = () => {
 const next = () => {
   if (flashStore.currentPhase < phases.length - 1) {
     flashStore.nextPhase();
+    
+    // Update Island for next phase
+    islandStore.setActivity({
+      id: 'flashing',
+      type: 'process',
+      icon: 'auto_fix_high',
+      title: `Phase ${flashStore.currentPhase + 1}: ${currentPhaseInfo.value.title}`,
+      subtitle: 'Processing...',
+      progress: 0,
+      color: 'text-primary',
+      bg: 'bg-primary/20',
+      border: 'border-primary/30'
+    });
+  } else {
+    // Finished
+    islandStore.clearActivity();
+    islandStore.showNotification({
+      id: 'flash-complete',
+      type: 'success',
+      title: 'Flash Complete',
+      subtitle: 'All phases finished successfully.',
+      icon: 'check_circle'
+    });
   }
 };
 
@@ -49,6 +88,11 @@ watch(() => flashStore.logs.length, async () => {
 
 // Watch for phase completion
 watch(() => flashStore.progress, (newVal) => {
+  // Update Island Progress
+  if (islandStore.activeActivity?.id === 'flashing') {
+    islandStore.updateProgress(newVal);
+  }
+
   if (newVal === 100) {
     notificationStore.addNotification({
       title: 'Phase Complete',

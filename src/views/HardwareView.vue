@@ -97,6 +97,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
           </GlassCard>
         </div>
 
+        </div>
       </div>
     </GlassCard>
   </div>

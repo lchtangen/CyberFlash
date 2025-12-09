@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useDynamicIslandStore } from '../../../stores/dynamicIsland';
 import GlassCard from '../../ui/GlassCard.vue';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
+
+const islandStore = useDynamicIslandStore();
 
 // Mock State
 const wirelessAdb = ref(false);
@@ -14,15 +17,45 @@ const logDuration = ref('10s');
 const pkgName = ref('');
 
 const reboot = (mode: string) => {
+  islandStore.showNotification({
+    id: 'reboot',
+    type: 'process',
+    title: `Rebooting to ${mode}...`,
+    subtitle: 'Waiting for device',
+    icon: 'restart_alt',
+    bg: 'bg-warning/20',
+    border: 'border-warning/30',
+    color: 'text-warning'
+  }, 4000);
   console.log(`Rebooting to ${mode}`);
 };
 
 const runShell = () => {
+  islandStore.showNotification({
+    id: 'shell',
+    type: 'process',
+    title: 'Executing Shell Command',
+    subtitle: shellCmd.value,
+    icon: 'terminal',
+    bg: 'bg-white/10',
+    border: 'border-white/20',
+    color: 'text-white'
+  }, 2000);
   console.log(`Running: ${shellCmd.value}`);
   shellCmd.value = '';
 };
 
 const syncClipboard = (direction: 'get' | 'set') => {
+  islandStore.showNotification({
+    id: 'clipboard',
+    type: 'success',
+    title: 'Clipboard Synced',
+    subtitle: direction === 'get' ? 'Copied from device' : 'Sent to device',
+    icon: 'content_paste',
+    bg: 'bg-success/20',
+    border: 'border-success/30',
+    color: 'text-success'
+  }, 2000);
   console.log(`Clipboard ${direction}`);
 };
 

@@ -2,7 +2,11 @@
 import { ref, onUnmounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { open } from '@tauri-apps/plugin-dialog';
 import { useNotificationStore } from '../../../stores/notifications';
+import GlassCard from '../../ui/GlassCard.vue';
+import VisionButton from '../../ui/VisionButton.vue';
+import GlassInput from '../../ui/GlassInput.vue';
 
 const filePath = ref('');
 const isFlashing = ref(false);
@@ -11,6 +15,23 @@ const logs = ref<string[]>([]);
 const notificationStore = useNotificationStore();
 
 const unlisten = ref<() => void>();
+
+const selectFile = async () => {
+  try {
+    const selected = await open({
+      multiple: false,
+      filters: [{
+        name: 'OTA Packages',
+        extensions: ['zip']
+      }]
+    });
+    if (selected && typeof selected === 'string') {
+      filePath.value = selected;
+    }
+  } catch (e) {
+    console.error('File selection failed', e);
+  }
+};
 
 const startSideload = async () => {
   if (!filePath.value) return;
@@ -51,43 +72,51 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="bg-surface/30 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+  <GlassCard>
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-        <span class="material-symbols-rounded">system_update</span>
+      <div class="p-3 rounded-xl bg-primary/20 text-primary">
+        <span class="material-symbols-rounded text-2xl">system_update</span>
       </div>
       <div>
         <h3 class="text-xl font-bold text-white">ADB Sideload</h3>
-        <p class="text-sm text-text-secondary">Flash OTA zips directly via ADB</p>
+        <p class="text-sm text-white/60">Flash OTA zips directly via ADB</p>
       </div>
     </div>
 
-    <div class="space-y-4">
-      <div class="relative">
-        <input 
+    <div class="space-y-6">
+      <div class="flex gap-2 items-end">
+        <GlassInput 
           v-model="filePath"
-          type="text" 
+          label="OTA Package"
           placeholder="/path/to/update.zip"
-          class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary/50 focus:outline-none transition-colors"
+          icon="folder_zip"
+          class="flex-1"
         />
-        <button class="absolute right-2 top-2 p-1.5 bg-white/10 rounded hover:bg-white/20 text-white transition-colors flex items-center justify-center">
-          <span class="material-symbols-rounded text-sm">folder_open</span>
-        </button>
+        <VisionButton 
+          @click="selectFile" 
+          variant="secondary"
+          icon="folder_open"
+          class="mb-[2px]"
+        >
+          Browse
+        </VisionButton>
       </div>
 
-      <button 
+      <VisionButton 
         @click="startSideload"
-        :disabled="!filePath || isFlashing"
-        class="w-full py-3 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-2"
-        :class="isFlashing ? 'bg-surface/50 text-text-muted cursor-not-allowed' : 'bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20'"
+        :loading="isFlashing"
+        :disabled="!filePath"
+        icon="send_to_mobile"
+        class="w-full"
       >
-        <span v-if="isFlashing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-        {{ isFlashing ? 'Sideloading...' : 'Start Sideload' }}
-      </button>
+        Start Sideload
+      </VisionButton>
 
-      <div v-if="logs.length > 0" class="bg-black/40 rounded-lg p-3 h-32 overflow-y-auto font-mono text-xs text-gray-300 custom-scrollbar">
-        <div v-for="(log, i) in logs" :key="i">{{ log }}</div>
+      <div v-if="logs.length > 0" class="bg-black/40 rounded-xl p-4 h-48 overflow-y-auto font-mono text-xs text-gray-300 custom-scrollbar border border-white/5">
+        <div v-for="(log, i) in logs" :key="i" class="mb-1">
+          <span class="text-primary mr-2">➜</span>{{ log }}
+        </div>
       </div>
     </div>
-  </div>
+  </GlassCard>
 </template>

@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue';
 
 const isScanning = ref(true);
 const isAuthenticated = ref(false);
-const scanLine = ref<HTMLElement | null>(null);
 
 onMounted(() => {
   setTimeout(() => {

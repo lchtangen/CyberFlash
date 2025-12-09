@@ -10,7 +10,6 @@ const deviceStore = useDeviceStore();
 const notificationStore = useNotificationStore();
 
 const isConnected = computed(() => deviceStore.isConnected);
-const statusText = computed(() => isConnected.value ? 'Online' : 'Offline');
 
 watch(isConnected, (newVal) => {
   if (newVal) {
@@ -48,10 +47,13 @@ const reboot = async (mode: string) => {
 </script>
 
 <template>
-  <GlassCard class="relative overflow-hidden min-h-[320px] flex flex-col group">
+  <GlassCard class="relative overflow-hidden min-h-[320px] flex flex-col group hover-tilt">
     <!-- Background Effects -->
     <div v-if="isConnected" class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-50 transition-opacity duration-500"></div>
     <div v-else class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-20 animate-pulse"></div>
+    
+    <!-- Scanning Grid Animation (When Disconnected) -->
+    <div v-if="!isConnected" class="absolute inset-0 bg-[url('/grid.svg')] opacity-10 animate-[pulse_4s_infinite]"></div>
 
     <div class="relative z-10 flex flex-col h-full justify-between">
       <div>

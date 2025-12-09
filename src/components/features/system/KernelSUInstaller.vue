@@ -1,19 +1,47 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-dialog';
 import GlassCard from '../../ui/GlassCard.vue';
 import VisionButton from '../../ui/VisionButton.vue';
+import GlassInput from '../../ui/GlassInput.vue';
 
 const method = ref('direct');
 const loading = ref(false);
 const result = ref<string | null>(null);
+const bootImagePath = ref('');
+
+const selectBootImage = async () => {
+  try {
+    const selected = await open({
+      multiple: false,
+      filters: [{
+        name: 'Boot Images',
+        extensions: ['img']
+      }]
+    });
+    if (selected && typeof selected === 'string') {
+      bootImagePath.value = selected;
+    }
+  } catch (e) {
+    console.error('File selection failed', e);
+  }
+};
 
 const install = async () => {
+  if (method.value === 'patch' && !bootImagePath.value) {
+    result.value = "Please select a boot image to patch.";
+    return;
+  }
+
   loading.value = true;
   result.value = null;
   
   try {
-    const res = await invoke<string>('install_kernelsu', { method: method.value });
+    const res = await invoke<string>('install_kernelsu', { 
+      method: method.value,
+      filePath: method.value === 'patch' ? bootImagePath.value : undefined
+    });
     result.value = res;
   } catch (err: any) {
     result.value = `Error: ${err}`;
@@ -60,12 +88,23 @@ const install = async () => {
         <p v-if="method === 'direct'">
           Directly flashes KernelSU to the current boot partition. Requires unlocked bootloader.
         </p>
-        <p v-else>
-          Patches a selected boot.img file which you can then flash manually.
-        </p>
+        <div v-else class="space-y-3">
+          <p>Patches a selected boot.img file which you can then flash manually.</p>
+          <div class="flex gap-2">
+            <GlassInput 
+              v-model="bootImagePath" 
+              placeholder="Select boot.img..." 
+              readonly 
+              class="flex-1"
+            />
+            <VisionButton @click="selectBootImage" variant="secondary">
+              Browse
+            </VisionButton>
+          </div>
+        </div>
       </div>
 
-      <div v-if="result" class="p-3 rounded-lg bg-white/5 text-sm text-white">
+      <div v-if="result" class="p-3 rounded-lg bg-white/5 text-sm text-white break-all">
         {{ result }}
       </div>
     </div>
@@ -76,7 +115,7 @@ const install = async () => {
         :loading="loading"
         class="w-full"
       >
-        Install KernelSU
+        {{ method === 'direct' ? 'Install KernelSU' : 'Patch Boot Image' }}
       </VisionButton>
     </div>
   </GlassCard>

@@ -3,8 +3,7 @@
     <div class="flex items-center justify-between">
       <h2 class="text-2xl font-bold text-white">Community Repository</h2>
       <div class="flex gap-2">
-        <VisionButton variant="secondary" @click="refreshRepo">
-          <i class="fas fa-sync-alt mr-2" :class="{ 'animate-spin': loading }"></i>
+        <VisionButton variant="secondary" @click="refreshRepo" icon="refresh" :loading="loading">
           Refresh
         </VisionButton>
       </div>
@@ -23,7 +22,7 @@
 
     <div v-else-if="error" class="p-6 rounded-xl bg-error/10 border border-error/20 text-error">
       <div class="flex items-center gap-3">
-        <i class="fas fa-exclamation-triangle text-xl"></i>
+        <span class="material-symbols-rounded text-xl">warning</span>
         <span>{{ error }}</span>
       </div>
       <VisionButton class="mt-4" variant="secondary" @click="refreshRepo">Retry</VisionButton>
@@ -44,23 +43,22 @@
               <p class="text-sm text-white/60">{{ rom.version }} • {{ rom.device }}</p>
             </div>
             <div class="flex items-center gap-1 text-xs text-success bg-success/10 px-2 py-1 rounded-full">
-              <i class="fas fa-thumbs-up"></i>
+              <span class="material-symbols-rounded text-sm">thumb_up</span>
               <span>{{ rom.likes }}</span>
             </div>
           </div>
 
-          <p class="text-sm text-white/70 mb-6 flex-grow">
+          <p class="text-sm text-white/70 mb-6 flex-grow line-clamp-3">
             {{ rom.description }}
           </p>
 
           <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
             <div class="flex items-center gap-2 text-xs text-white/50">
-              <i class="fas fa-user-circle"></i>
+              <span class="material-symbols-rounded text-sm">person</span>
               <span>{{ rom.author }}</span>
             </div>
-            <VisionButton size="sm" @click="openUrl(rom.download_url)">
+            <VisionButton size="sm" @click="openUrl(rom.download_url)" icon="open_in_new">
               Download
-              <i class="fas fa-external-link-alt ml-2"></i>
             </VisionButton>
           </div>
         </div>
@@ -107,7 +105,5 @@ const openUrl = async (url: string) => {
   await open(url);
 };
 
-onMounted(() => {
-  refreshRepo();
-});
+onMounted(refreshRepo);
 </script>

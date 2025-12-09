@@ -2,13 +2,6 @@
 import { ref } from 'vue';
 import GlassCard from '../../ui/GlassCard.vue';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
-import { useSettingsStore } from '../../../stores/settings';
-
-const emit = defineEmits<{
-  (e: 'close'): void;
-}>();
-
-const settingsStore = useSettingsStore();
 
 // Local state for UI demonstration (some might map to store later)
 const autoAnalyze = ref(true);
