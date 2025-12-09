@@ -19,7 +19,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
 </script>
 
 <template>
-  <div class="flex h-full gap-6 overflow-hidden p-6">
+  <div class="flex h-full gap-6 overflow-hidden">
     <!-- Sidebar Navigation -->
     <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
       <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">

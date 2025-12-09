@@ -70,7 +70,7 @@ const clearHistory = () => {
         class="pointer-events-auto relative overflow-hidden rounded-2xl border backdrop-blur-xl shadow-2xl p-4 transition-all duration-300 group cursor-pointer hover:scale-[1.02]"
         :class="[
           getColorClass(notification.type),
-          'bg-surface/80 border-white/10'
+          'bg-surface/80 border-white/10 ring-1 ring-white/10'
         ]"
       >
         <!-- Glass Reflection Effect -->
@@ -115,7 +115,7 @@ const clearHistory = () => {
   <Transition name="panel">
     <div 
       v-if="isOpen"
-      class="fixed top-16 right-6 bottom-6 w-96 z-50 flex flex-col bg-surface/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+      class="fixed top-16 right-6 bottom-6 w-96 z-50 flex flex-col bg-surface/90 backdrop-blur-2xl border border-white/10 ring-1 ring-white/10 rounded-2xl shadow-2xl overflow-hidden"
     >
       <!-- Header -->
       <div class="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">

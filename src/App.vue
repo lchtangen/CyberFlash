@@ -199,7 +199,6 @@ onMounted(async () => {
     </main>
 
     <!-- Overlays -->
-    <!-- Overlays -->
     <AIAssistantOverlay />
     <CommandPalette />
     <DriverHealthCheck />

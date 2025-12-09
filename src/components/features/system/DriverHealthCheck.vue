@@ -102,9 +102,9 @@ const close = () => {
 
 <template>
   <div v-if="showModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-xl">
-    <div class="bg-surface/90 border border-white/10 rounded-2xl p-6 max-w-lg w-full shadow-2xl backdrop-blur-md">
+    <div class="bg-surface/80 border border-white/10 ring-1 ring-white/10 rounded-2xl p-6 max-w-lg w-full shadow-2xl backdrop-blur-xl">
       <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-        <span class="i-lucide-alert-triangle text-warning"></span>
+        <span class="material-symbols-rounded text-warning">warning</span>
         System Health Check
       </h2>
       
@@ -128,7 +128,9 @@ const close = () => {
                 <span :class="status.adb_installed ? 'text-success' : 'text-error'" class="text-sm font-medium">
                   {{ status.adb_installed ? 'Installed' : 'Missing' }}
                 </span>
-                <span :class="status.adb_installed ? 'i-lucide-check-circle text-success' : 'i-lucide-x-circle text-error'"></span>
+                <span class="material-symbols-rounded text-lg" :class="status.adb_installed ? 'text-success' : 'text-error'">
+                  {{ status.adb_installed ? 'check_circle' : 'cancel' }}
+                </span>
               </div>
             </div>
             <div class="flex justify-between items-center">
@@ -137,7 +139,9 @@ const close = () => {
                 <span :class="status.fastboot_installed ? 'text-success' : 'text-error'" class="text-sm font-medium">
                   {{ status.fastboot_installed ? 'Installed' : 'Missing' }}
                 </span>
-                <span :class="status.fastboot_installed ? 'i-lucide-check-circle text-success' : 'i-lucide-x-circle text-error'"></span>
+                <span class="material-symbols-rounded text-lg" :class="status.fastboot_installed ? 'text-success' : 'text-error'">
+                  {{ status.fastboot_installed ? 'check_circle' : 'cancel' }}
+                </span>
               </div>
             </div>
             <div v-if="status.platform === 'linux'" class="flex justify-between items-center">
@@ -146,7 +150,9 @@ const close = () => {
                 <span :class="status.udev_rules_ok ? 'text-success' : 'text-error'" class="text-sm font-medium">
                   {{ status.udev_rules_ok ? 'Configured' : 'Missing' }}
                 </span>
-                <span :class="status.udev_rules_ok ? 'i-lucide-check-circle text-success' : 'i-lucide-x-circle text-error'"></span>
+                <span class="material-symbols-rounded text-lg" :class="status.udev_rules_ok ? 'text-success' : 'text-error'">
+                  {{ status.udev_rules_ok ? 'check_circle' : 'cancel' }}
+                </span>
               </div>
             </div>
           </div>
@@ -161,7 +167,7 @@ const close = () => {
               {{ fixResult }}
             </code>
             <button @click="copyCommand" class="p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white" title="Copy">
-              <span class="i-lucide-copy"></span>
+              <span class="material-symbols-rounded text-sm">content_copy</span>
             </button>
           </div>
         </div>
@@ -178,8 +184,8 @@ const close = () => {
             :disabled="fixing || (status.adb_installed && status.fastboot_installed && status.udev_rules_ok)"
             class="px-6 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
           >
-            <span v-if="fixing" class="i-lucide-loader-2 animate-spin"></span>
-            <span v-else class="i-lucide-wand-2"></span>
+            <span v-if="fixing" class="material-symbols-rounded animate-spin">sync</span>
+            <span v-else class="material-symbols-rounded">auto_fix_high</span>
             {{ fixing ? 'Fixing...' : 'Auto-Fix Issues' }}
           </button>
         </div>

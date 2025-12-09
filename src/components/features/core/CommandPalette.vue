@@ -61,7 +61,7 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isOpen = false"></div>
     
     <!-- Modal Content -->
-    <div class="relative w-full max-w-lg bg-surface/90 border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
+    <div class="relative w-full max-w-lg bg-surface/90 border border-white/10 ring-1 ring-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
       <div class="p-4 border-b border-white/10 flex items-center gap-2">
         <span class="material-symbols-rounded text-white/50">search</span>
         <input 

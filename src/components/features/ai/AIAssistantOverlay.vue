@@ -3,6 +3,9 @@ import { ref, computed } from 'vue';
 import { useAIStore } from '../../../stores/ai';
 import AIChatInterface from './AIChatInterface.vue';
 import ContextAnalysisPanel from './ContextAnalysisPanel.vue';
+import LogAnalyzerPanel from './LogAnalyzerPanel.vue';
+import FlashGuidePanel from './FlashGuidePanel.vue';
+import AISettingsPanel from './AISettingsPanel.vue';
 import GlassCard from '../../ui/GlassCard.vue';
 
 const aiStore = useAIStore();
@@ -60,41 +63,23 @@ const menuItems = [
              @switch-to-chat="selectFeature('chat')"
            />
 
-           <!-- 3. Log Analyzer (Placeholder) -->
-           <GlassCard v-else-if="activeFeature === 'logs'" noPadding class="h-full flex flex-col">
-             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-               <h3 class="font-bold text-white">Log Analyzer</h3>
-               <button @click="closeWindow" class="text-white/50 hover:text-white"><span class="material-symbols-rounded">close</span></button>
-             </div>
-             <div class="flex-1 flex flex-col items-center justify-center p-8 text-center opacity-50">
-               <span class="material-symbols-rounded text-6xl mb-4">analytics</span>
-               <p>Log Analysis Module Coming Soon</p>
-             </div>
-           </GlassCard>
+           <!-- 3. Log Analyzer -->
+           <LogAnalyzerPanel 
+             v-else-if="activeFeature === 'logs'" 
+             @close="closeWindow"
+           />
 
-           <!-- 4. Flash Guide (Placeholder) -->
-           <GlassCard v-else-if="activeFeature === 'guide'" noPadding class="h-full flex flex-col">
-             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-               <h3 class="font-bold text-white">Flash Guide</h3>
-               <button @click="closeWindow" class="text-white/50 hover:text-white"><span class="material-symbols-rounded">close</span></button>
-             </div>
-             <div class="flex-1 flex flex-col items-center justify-center p-8 text-center opacity-50">
-               <span class="material-symbols-rounded text-6xl mb-4">menu_book</span>
-               <p>Interactive Guides Coming Soon</p>
-             </div>
-           </GlassCard>
+           <!-- 4. Flash Guide -->
+           <FlashGuidePanel 
+             v-else-if="activeFeature === 'guide'" 
+             @close="closeWindow"
+           />
 
-           <!-- 5. Settings (Placeholder) -->
-           <GlassCard v-else-if="activeFeature === 'settings'" noPadding class="h-full flex flex-col">
-             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-               <h3 class="font-bold text-white">AI Settings</h3>
-               <button @click="closeWindow" class="text-white/50 hover:text-white"><span class="material-symbols-rounded">close</span></button>
-             </div>
-             <div class="flex-1 flex flex-col items-center justify-center p-8 text-center opacity-50">
-               <span class="material-symbols-rounded text-6xl mb-4">settings_suggest</span>
-               <p>AI Configuration Coming Soon</p>
-             </div>
-           </GlassCard>
+           <!-- 5. Settings -->
+           <AISettingsPanel 
+             v-else-if="activeFeature === 'settings'" 
+             @close="closeWindow"
+           />
 
         </div>
       </div>

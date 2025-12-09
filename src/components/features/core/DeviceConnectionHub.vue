@@ -63,7 +63,7 @@ onUnmounted(() => {
 
 <template>
   <div 
-    class="flex items-center gap-3 px-4 py-2 rounded-xl bg-surface/30 border border-white/10 backdrop-blur-md transition-all duration-300 hover:bg-surface/50 shadow-lg"
+    class="flex items-center gap-3 px-4 py-2 rounded-xl bg-surface/30 border border-white/10 ring-1 ring-white/5 backdrop-blur-xl transition-all duration-300 hover:bg-surface/50 shadow-lg"
     :class="statusGlow"
   >
     <!-- Status Indicator -->
