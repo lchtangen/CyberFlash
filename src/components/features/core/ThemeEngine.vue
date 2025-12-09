@@ -1,45 +1,12 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { onMounted } from 'vue';
 import { useSettingsStore } from '../../../stores/settings';
 import { useNotificationStore } from '../../../stores/notifications';
+import { useTheme } from '../../../composables/useTheme';
 
 const settingsStore = useSettingsStore();
 const notificationStore = useNotificationStore();
-
-// Local state for UI controls (mapped to store)
-// We use the store directly in v-model for simplicity and reactivity
-
-const applyTheme = () => {
-  const root = document.documentElement;
-  
-  // 1. Glass Opacity
-  root.style.setProperty('--glass-opacity', (settingsStore.glassOpacity / 100).toString());
-  
-  // 2. Blur Strength
-  const blurMap: Record<string, string> = {
-    'none': '0px', 'sm': '4px', 'md': '12px', 'lg': '16px', 'xl': '24px', '2xl': '40px', '3xl': '64px'
-  };
-  root.style.setProperty('--blur-strength', blurMap[settingsStore.blurStrength] || '20px');
-  
-  // 3. Border Radius
-  const radiusMap: Record<string, string> = {
-    'sm': '0.25rem', 'md': '0.5rem', 'lg': '0.75rem', 'xl': '1rem', '2xl': '1.5rem', 'full': '9999px'
-  };
-  root.style.setProperty('--radius-panel', radiusMap[settingsStore.borderRadius] || '1rem');
-  
-  // 4. Font Scale
-  root.style.setProperty('--font-scale', (settingsStore.fontSizeScale / 100).toString());
-  
-  // 5. Mesh Gradient Visibility
-  root.style.setProperty('--mesh-opacity', settingsStore.showMeshGradient ? '1' : '0');
-  
-  // 6. Accent Color (Primary)
-  root.style.setProperty('--color-primary', settingsStore.accentColor);
-  
-  // 7. Animation Speed
-  const speedMap: Record<string, string> = { 'slow': '0.5s', 'normal': '0.3s', 'fast': '0.15s' };
-  root.style.setProperty('--transition-speed', speedMap[settingsStore.animationSpeed] || '0.3s');
-};
+const { presets, applyTheme } = useTheme();
 
 const resetTheme = () => {
   settingsStore.$reset();
@@ -50,66 +17,43 @@ const resetTheme = () => {
   });
 };
 
-// Watch for changes in store and apply immediately
-watch(
-  () => [
-    settingsStore.glassOpacity,
-    settingsStore.blurStrength,
-    settingsStore.borderRadius,
-    settingsStore.fontSizeScale,
-    settingsStore.showMeshGradient,
-    settingsStore.accentColor,
-    settingsStore.animationSpeed
-  ],
-  applyTheme,
-  { deep: true }
-);
-
 onMounted(() => {
-  applyTheme(); // Apply on load
+  // Theme is already initialized in App.vue, but we can re-apply here if needed
+  // or just rely on the store reactivity which is set up in App.vue
 });
-
-const colors = [
-  { name: 'Blue', value: '#0A84FF' },
-  { name: 'Purple', value: '#BF5AF2' },
-  { name: 'Pink', value: '#FF375F' },
-  { name: 'Red', value: '#FF453A' },
-  { name: 'Orange', value: '#FF9F0A' },
-  { name: 'Yellow', value: '#FFD60A' },
-  { name: 'Green', value: '#30D158' },
-  { name: 'Teal', value: '#64D2FF' },
-];
 </script>
 
 <template>
   <div class="bg-surface/30 border border-white/10 rounded-xl p-6 backdrop-blur-md">
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-500">
+      <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
         <span class="material-symbols-rounded">palette</span>
       </div>
       <div>
         <h3 class="text-lg font-bold text-white">Theme Engine</h3>
-        <p class="text-xs text-text-secondary">Customize Appearance</p>
+        <p class="text-xs text-text-secondary">Control Center</p>
       </div>
     </div>
 
     <div class="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
       
-      <!-- 1. Accent Color -->
+      <!-- 1. Theme Preset -->
       <div>
         <div class="flex justify-between items-center mb-2">
-          <label class="text-xs text-text-secondary font-medium uppercase tracking-wider">Accent Color</label>
+          <label class="text-xs text-text-secondary font-medium uppercase tracking-wider">Theme Preset</label>
           <button @click="resetTheme" class="text-[10px] text-text-muted hover:text-white transition-colors">Reset Default</button>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <button 
-            v-for="color in colors" 
-            :key="color.name"
-            @click="settingsStore.accentColor = color.value"
-            class="w-6 h-6 rounded-full border border-white/20 transition-transform hover:scale-110"
-            :style="{ backgroundColor: color.value }"
-            :class="{ 'ring-2 ring-white ring-offset-2 ring-offset-black': settingsStore.accentColor === color.value }"
-          ></button>
+            v-for="(preset, key) in presets" 
+            :key="key"
+            @click="applyTheme(key as string)"
+            class="px-3 py-2 rounded-lg border transition-all text-left flex items-center gap-2"
+            :class="settingsStore.accentColor === preset.colors.primary ? 'bg-white/10 border-primary text-white' : 'bg-white/5 border-white/10 text-text-secondary hover:bg-white/10'"
+          >
+            <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: preset.colors.primary }"></div>
+            <span class="text-xs font-medium">{{ preset.name }}</span>
+          </button>
         </div>
       </div>
 
