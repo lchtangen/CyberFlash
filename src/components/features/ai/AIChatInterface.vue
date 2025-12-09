@@ -142,8 +142,11 @@ const formatMessage = (text: string) => {
     </div>
     
     <!-- Chat Area -->
-    <div class="flex-1 overflow-hidden relative bg-gradient-to-b from-transparent to-black/20">
-      <div ref="chatContainer" class="h-full overflow-y-auto custom-scrollbar p-5 space-y-6 scroll-smooth pb-24">
+    <div class="flex-1 overflow-hidden relative bg-surface/30">
+      <!-- Mesh Background -->
+      <div class="absolute inset-0 mesh-gradient-bg opacity-20 pointer-events-none"></div>
+
+      <div ref="chatContainer" class="h-full overflow-y-auto custom-scrollbar p-5 space-y-6 scroll-smooth pb-24 relative z-10">
         
         <!-- Empty State -->
         <div v-if="aiStore.messages.length === 0" class="h-full flex flex-col items-center justify-center text-center p-6 opacity-0 animate-fade-in" style="animation-fill-mode: forwards;">
@@ -187,11 +190,11 @@ const formatMessage = (text: string) => {
 
           <!-- Bubble -->
           <div 
-            class="max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm border backdrop-blur-md"
+            class="max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-lg backdrop-blur-xl border transition-all duration-300"
             :class="[
               msg.role === 'ai' 
-                ? 'bg-white/10 text-white rounded-tl-none border-white/5' 
-                : 'bg-primary/20 text-white rounded-tr-none border-primary/20'
+                ? 'bg-white/5 text-white rounded-tl-none border-white/10 hover:bg-white/10' 
+                : 'bg-primary/20 text-white rounded-tr-none border-primary/20 hover:bg-primary/30'
             ]"
           >
             <div v-html="formatMessage(msg.content)" class="prose prose-invert prose-sm max-w-none"></div>

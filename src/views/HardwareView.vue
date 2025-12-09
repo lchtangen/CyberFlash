@@ -23,13 +23,13 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
 <template>
   <div class="flex h-full gap-6 overflow-hidden">
     <!-- Sidebar Navigation -->
-    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
-      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
+      <div class="p-5 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
         <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-          <span class="material-symbols-rounded text-success">memory</span>
+          <span class="material-symbols-rounded text-success drop-shadow-[0_0_8px_rgba(48,209,88,0.5)]">memory</span>
           Hardware
         </h2>
-        <p class="text-xs text-text-secondary mt-1">Diagnostics & Health</p>
+        <p class="text-xs text-text-secondary mt-1 font-medium tracking-wide">Diagnostics & Health</p>
       </div>
       
       <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
@@ -45,22 +45,25 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
     </GlassCard>
 
     <!-- Main Content Area -->
-    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/30 backdrop-blur-xl z-10">
         <div>
           <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             {{ activeCategoryLabel }}
-            <span class="px-2 py-0.5 rounded-full bg-success/20 text-success text-[10px] font-bold border border-success/20 uppercase tracking-wider">Real-time</span>
+            <span class="px-2 py-0.5 rounded-full bg-success/20 text-success text-[10px] font-bold border border-success/20 uppercase tracking-wider shadow-[0_0_10px_rgba(48,209,88,0.3)]">Real-time</span>
           </h2>
-          <p class="text-sm text-text-secondary mt-1">Real-time hardware analysis</p>
+          <p class="text-sm text-text-secondary mt-1 font-medium">Real-time hardware analysis</p>
         </div>
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+        <!-- Mesh Background -->
+        <div class="absolute inset-0 mesh-gradient-bg opacity-20 pointer-events-none"></div>
         
-        <!-- Power Tab -->
+        <div class="relative z-10">
+          <!-- Power Tab -->
         <div v-if="activeCategory === 'power'" class="space-y-8 animate-slide-up">
           <div class="hover-tilt-subtle">
             <PowerMonitor />
@@ -83,12 +86,12 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
 
         <!-- Thermal Tab -->
         <div v-if="activeCategory === 'thermal'" class="space-y-8 animate-slide-up">
-          <GlassCard class="h-64 flex flex-col items-center justify-center text-center p-8 hover-tilt">
-            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 shadow-lg shadow-black/20">
+          <GlassCard class="h-64 flex flex-col items-center justify-center text-center p-8 hover-tilt bg-surface/30 backdrop-blur-xl border-white/10">
+            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 shadow-lg shadow-black/20 border border-white/5">
               <span class="material-symbols-rounded text-4xl text-white/20">thermostat</span>
             </div>
             <h3 class="text-lg font-bold text-white mb-2">Thermal Vision</h3>
-            <p class="text-white/50 max-w-md">
+            <p class="text-white/50 max-w-md leading-relaxed">
               Real-time thermal graph and heatmap visualization is coming in v2.1. This feature will allow you to monitor CPU and battery temperatures during intensive flash operations.
             </p>
           </GlassCard>

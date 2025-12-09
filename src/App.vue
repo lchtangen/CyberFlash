@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, onUnmounted } from 'vue';
 import DashboardView from './views/DashboardView.vue';
 import FlashView from './views/FlashView.vue';
 import SettingsView from './views/SettingsView.vue';
@@ -9,18 +9,45 @@ import HardwareView from './views/HardwareView.vue';
 import LabView from './views/LabView.vue';
 import AIAssistantOverlay from './components/features/ai/AIAssistantOverlay.vue';
 import CommandPalette from './components/features/core/CommandPalette.vue';
-import DeviceConnectionHub from './components/features/core/DeviceConnectionHub.vue';
+import SmartContextBar from './components/features/core/SmartContextBar.vue';
 import NotificationCenter from './components/features/core/NotificationCenter.vue';
 import DriverHealthCheck from './components/features/system/DriverHealthCheck.vue';
 import SidebarItem from './components/ui/SidebarItem.vue';
 import { useSettingsStore } from './stores/settings';
 import { useNotificationStore } from './stores/notifications';
+import { useDeviceStore } from './stores/device';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 
 const currentView = ref('dashboard');
 const isNotificationPanelOpen = ref(false);
 const settingsStore = useSettingsStore();
 const notificationStore = useNotificationStore();
+const deviceStore = useDeviceStore();
+const unlisten = ref<() => void>();
+
+onMounted(async () => {
+  // Start the backend monitor
+  await invoke('start_usb_monitor');
+
+  // Listen for updates
+  unlisten.value = await listen<any[]>('device-status-update', (event) => {
+    const devices = event.payload;
+    if (devices.length > 0) {
+      const activeDevice = devices[0];
+      deviceStore.setConnected(true);
+      deviceStore.connectionType = activeDevice.connection_type;
+      deviceStore.deviceModel = activeDevice.serial;
+    } else {
+      deviceStore.setConnected(false);
+      deviceStore.connectionType = null;
+    }
+  });
+});
+
+onUnmounted(() => {
+  if (unlisten.value) unlisten.value();
+});
 
 const handleDockAction = async (action: string) => {
   if (action === 'reboot_device') {
@@ -188,16 +215,11 @@ onMounted(async () => {
     <main class="flex-1 m-3 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl flex flex-col relative overflow-hidden shadow-2xl shadow-black/50 z-10">
       <!-- Top Bar -->
       <header class="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-white/5 backdrop-blur-md z-10">
-
-    <!-- Main Content -->
-    <main class="flex-1 relative overflow-hidden flex flex-col bg-background">
-      <!-- Top Bar -->
-      <header class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-surface/50 backdrop-blur-md z-10">
         <div class="flex items-center gap-4">
           <h2 class="text-lg font-medium text-white capitalize">{{ currentView }}</h2>
         </div>
         
-        <DeviceConnectionHub />
+        <SmartContextBar />
         
         <div class="flex items-center gap-4">
           <button 
@@ -219,13 +241,17 @@ onMounted(async () => {
       </header>
       
       <div class="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar relative">
-        <DashboardView v-if="currentView === 'dashboard'" @navigate="currentView = $event" />
-        <FlashView v-if="currentView === 'flash'" />
-        <ToolsView v-if="currentView === 'tools'" />
-        <SocialView v-if="currentView === 'social'" />
-        <HardwareView v-if="currentView === 'hardware'" />
-        <LabView v-if="currentView === 'lab'" />
-        <SettingsView v-if="currentView === 'settings'" />
+        <Transition name="page-transition" mode="out-in">
+          <div :key="currentView" class="h-full">
+            <DashboardView v-if="currentView === 'dashboard'" @navigate="currentView = $event" />
+            <FlashView v-if="currentView === 'flash'" />
+            <ToolsView v-if="currentView === 'tools'" />
+            <SocialView v-if="currentView === 'social'" />
+            <HardwareView v-if="currentView === 'hardware'" />
+            <LabView v-if="currentView === 'lab'" />
+            <SettingsView v-if="currentView === 'settings'" />
+          </div>
+        </Transition>
       </div>
     </main>
 

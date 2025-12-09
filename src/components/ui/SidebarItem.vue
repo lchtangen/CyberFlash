@@ -19,7 +19,7 @@ defineEmits<{
     class="w-full text-left px-3 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-3 group relative overflow-hidden"
     :class="[
       active 
-        ? (variant === 'primary' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/10 backdrop-blur-md text-white shadow-lg shadow-black/10 border border-white/5') 
+        ? (variant === 'primary' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-surface/50 backdrop-blur-xl text-white shadow-lg shadow-black/20 border border-white/10') 
         : 'text-text-secondary hover:bg-white/5 hover:text-white hover:translate-x-1'
     ]"
   >
