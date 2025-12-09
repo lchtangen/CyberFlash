@@ -6,6 +6,7 @@ import SettingsView from './views/SettingsView.vue';
 import ToolsView from './views/ToolsView.vue';
 import SocialView from './views/SocialView.vue';
 import HardwareView from './views/HardwareView.vue';
+import LabView from './views/LabView.vue';
 import AIAssistantOverlay from './components/features/ai/AIAssistantOverlay.vue';
 import CommandPalette from './components/features/core/CommandPalette.vue';
 import DeviceConnectionHub from './components/features/core/DeviceConnectionHub.vue';
@@ -52,7 +53,8 @@ const navGroups = [
     items: [
       { id: 'tools', label: 'Tools & Utilities', icon: 'construction' },
       { id: 'hardware', label: 'Hardware Diagnostics', icon: 'memory' },
-      { id: 'social', label: 'Community Hub', icon: 'groups' }
+      { id: 'social', label: 'Community Hub', icon: 'groups' },
+      { id: 'lab', label: 'Experimental Lab', icon: 'science', variant: 'warning' }
     ]
   },
   {
@@ -194,6 +196,7 @@ onMounted(async () => {
         <ToolsView v-if="currentView === 'tools'" />
         <SocialView v-if="currentView === 'social'" />
         <HardwareView v-if="currentView === 'hardware'" />
+        <LabView v-if="currentView === 'lab'" />
         <SettingsView v-if="currentView === 'settings'" />
       </div>
     </main>
