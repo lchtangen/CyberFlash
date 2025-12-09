@@ -1,5 +1,6 @@
 use tauri::command;
 use serde::Serialize;
+use crate::commands::gemini::call_gemini_api;
 
 #[derive(Serialize)]
 pub struct ContextHelp {
@@ -10,7 +11,7 @@ pub struct ContextHelp {
 }
 
 #[command]
-pub async fn analyze_error_context(error_message: String, _current_view: String) -> Result<ContextHelp, String> {
+pub async fn analyze_error_context(error_message: String, _current_view: String, api_key: Option<String>) -> Result<ContextHelp, String> {
     let err_lower = error_message.to_lowercase();
     
     // 1. Status 7 (Assert Failed)
@@ -73,7 +74,26 @@ pub async fn analyze_error_context(error_message: String, _current_view: String)
         });
     }
 
-    // Fallback for unknown errors
+    // Fallback: Ask Gemini if API key is present
+    if let Some(key) = api_key {
+        if !key.is_empty() {
+            let prompt = format!(
+                "Analyze this Android flashing error and provide a short explanation and suggestion. Error: {}", 
+                error_message
+            );
+            
+            if let Ok(response) = call_gemini_api(prompt, key, None).await {
+                return Ok(ContextHelp {
+                    title: "AI Analysis".to_string(),
+                    explanation: response,
+                    suggestion: "See the AI explanation above.".to_string(),
+                    confidence: 80,
+                });
+            }
+        }
+    }
+
+    // Final Fallback
     Ok(ContextHelp {
         title: "Unknown Error".to_string(),
         explanation: format!("I don't have a specific fix for '{}' in my local database.", error_message),

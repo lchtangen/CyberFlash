@@ -23,10 +23,9 @@ struct Candidate {
     content: Content,
 }
 
-#[command]
-pub async fn ask_gemini(prompt: String, api_key: String, model: Option<String>) -> Result<String, String> {
+pub async fn call_gemini_api(prompt: String, api_key: String, model: Option<String>) -> Result<String, String> {
     if api_key.is_empty() {
-        return Err("API Key is missing. Please configure it in Settings.".to_string());
+        return Err("API Key is missing.".to_string());
     }
 
     let model_name = model.unwrap_or_else(|| "gemini-1.5-flash".to_string());
@@ -67,4 +66,29 @@ pub async fn ask_gemini(prompt: String, api_key: String, model: Option<String>) 
     }
 
     Err("No response generated.".to_string())
+}
+
+#[command]
+pub async fn ask_gemini(prompt: String, api_key: String, model: Option<String>, context: Option<String>) -> Result<String, String> {
+    let system_instruction = "You are CyberFlash AI, an expert Android Flashing Assistant. 
+    Your goal is to help users flash Custom ROMs, recover bricked devices, and use ADB/Fastboot tools safely.
+    
+    Guidelines:
+    1. Be concise, technical, and safety-conscious.
+    2. Always warn about data loss before suggesting wipe commands.
+    3. If the user asks to flash, verify battery level (if known) is >30%.
+    4. Use standard ADB/Fastboot syntax.
+    5. If the device is offline, guide the user to enable USB Debugging.
+    6. Do not hallucinate features not present in standard Android tools.
+    
+    Current Device Context:
+    ";
+
+    let full_prompt = if let Some(ctx) = context {
+        format!("{}\n{}\n\nUser Query: {}", system_instruction, ctx, prompt)
+    } else {
+        format!("{}\nNo device connected.\n\nUser Query: {}", system_instruction, prompt)
+    };
+
+    call_gemini_api(full_prompt, api_key, model).await
 }

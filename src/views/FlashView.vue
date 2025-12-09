@@ -1,33 +1,25 @@
 <script setup lang="ts">
-import DevicePanel from '../components/features/core/DevicePanel.vue';
+import { ref, computed } from 'vue';
+import SidebarItem from '../components/ui/SidebarItem.vue';
+
+// Components
 import FlashWizard from '../components/features/core/FlashWizard.vue';
 import RomSelector from '../components/features/core/RomSelector.vue';
-import SlotManager from '../components/features/system/SlotManager.vue';
-import PartitionVisualizer from '../components/features/system/PartitionVisualizer.vue';
 import SideloadAssistant from '../components/features/system/SideloadAssistant.vue';
-import DeviceFingerprinter from '../components/features/security/DeviceFingerprinter.vue';
-import FactoryResetSafe from '../components/features/system/FactoryResetSafe.vue';
 import BackupManager from '../components/features/system/BackupManager.vue';
 import LogAnalyst from '../components/features/system/LogAnalyst.vue';
-import BootloaderUnlockFlow from '../components/features/security/BootloaderUnlockFlow.vue';
-import RecoveryInstaller from '../components/features/system/RecoveryInstaller.vue';
-import MagiskInjector from '../components/features/automation/MagiskInjector.vue';
 import DownloadCenter from '../components/features/cloud/DownloadCenter.vue';
-import ThemeEngine from '../components/features/core/ThemeEngine.vue';
 import DriverHealthCheck from '../components/features/system/DriverHealthCheck.vue';
 import PermissionGate from '../components/features/security/PermissionGate.vue';
 import AppUpdater from '../components/features/cloud/AppUpdater.vue';
-import LiveTerminal from '../components/features/system/LiveTerminal.vue';
 import AIGuardian from '../components/features/ai/AIGuardian.vue';
-import PredictiveScoreCard from '../components/features/ai/PredictiveScoreCard.vue';
-import LogSentinel from '../components/features/system/LogSentinel.vue';
-import FlashAsCode from '../components/features/automation/FlashAsCode.vue';
+import BrickGuardian from '../components/features/security/BrickGuardian.vue';
 import VisualBootloopDoctor from '../components/features/system/VisualBootloopDoctor.vue';
 import NaturalLanguageCLI from '../components/features/ai/NaturalLanguageCLI.vue';
 import SmartRomRecommender from '../components/features/ai/SmartRomRecommender.vue';
-import BrickGuardian from '../components/features/security/BrickGuardian.vue';
+import LogSentinel from '../components/features/system/LogSentinel.vue';
+import FlashAsCode from '../components/features/automation/FlashAsCode.vue';
 import { useDeviceStore } from '../stores/device';
-import { ref } from 'vue';
 
 const showBootloopDoctor = ref(false);
 const deviceStore = useDeviceStore();
@@ -36,15 +28,30 @@ const targetAndroidVersion = ref('');
 
 const handleRomSelection = (metadata: any) => {
   targetRom.value = metadata.name;
-  // Simple heuristic for version from name
   if (metadata.name.includes('14') || metadata.name.includes('21')) targetAndroidVersion.value = '14';
   else if (metadata.name.includes('13') || metadata.name.includes('20')) targetAndroidVersion.value = '13';
   else targetAndroidVersion.value = 'unknown';
 };
+
+const activeCategory = ref('wizard');
+
+const categories = [
+  { id: 'wizard', label: 'Flash Wizard', icon: 'auto_fix_high' },
+  { id: 'roms', label: 'ROM Selector', icon: 'install_mobile' },
+  { id: 'cli', label: 'Smart CLI', icon: 'terminal' },
+  { id: 'fac', label: 'Flash-as-Code', icon: 'code' },
+  { id: 'sideload', label: 'Sideload', icon: 'system_update' },
+  { id: 'backup', label: 'Backup & Restore', icon: 'backup' },
+  { id: 'logs', label: 'Log Analysis', icon: 'bug_report' },
+  { id: 'downloads', label: 'Downloads', icon: 'download' },
+];
+
+const activeCategoryLabel = computed(() => categories.find(c => c.id === activeCategory.value)?.label);
 </script>
 
 <template>
-  <div class="p-6 h-full flex flex-col overflow-y-auto custom-scrollbar">
+  <div class="flex h-full gap-6 overflow-hidden p-6">
+    <!-- Global Guards (Hidden) -->
     <DriverHealthCheck />
     <PermissionGate />
     <AppUpdater />
@@ -56,73 +63,93 @@ const handleRomSelection = (metadata: any) => {
       :targetAndroidVersion="targetAndroidVersion" 
     />
     <VisualBootloopDoctor :is-open="showBootloopDoctor" @close="showBootloopDoctor = false" />
-    
-    <header class="mb-8 flex justify-between items-end">
-      <div>
-        <h2 class="text-2xl font-bold text-white tracking-tight">Flash Firmware</h2>
-        <p class="text-text-secondary text-sm">Install new ROMs safely</p>
+
+    <!-- Sidebar Navigation -->
+    <div class="w-64 flex-shrink-0 bg-surface/30 border border-white/10 rounded-2xl backdrop-blur-xl flex flex-col overflow-hidden">
+      <div class="p-4 border-b border-white/10">
+        <h2 class="text-lg font-bold text-white tracking-tight">Operations</h2>
+        <p class="text-xs text-text-secondary">Flash & Manage</p>
       </div>
-      <button @click="showBootloopDoctor = true" class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-white transition-colors flex items-center gap-2">
-        <span class="i-lucide-eye"></span>
-        Bootloop Doctor
-      </button>
-    </header>
-
-    <div class="flex-1 flex gap-6">
-      <div class="flex-1 flex flex-col gap-6">
-        <!-- Natural Language CLI -->
-        <NaturalLanguageCLI />
-
-        <!-- Wizard -->
-        <FlashWizard />
-
-        <!-- Flash-as-Code -->
-        <FlashAsCode />
-        
-        <!-- ROM Selection -->
-        <RomSelector @romSelected="handleRomSelection" />
-
-        <!-- Smart ROM Recommender -->
-        <SmartRomRecommender />
-
-        <!-- Download Center -->
-        <DownloadCenter />
-
-        <!-- Backup Manager -->
-        <BackupManager />
-
-        <!-- Sideload Assistant -->
-        <SideloadAssistant />
-
-        <!-- Log Analyst -->
-        <LogSentinel />
-        <LogAnalyst />
-        
-        <!-- Live Terminal -->
-        <LiveTerminal />
+      
+      <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+        <SidebarItem 
+          v-for="cat in categories" 
+          :key="cat.id"
+          :icon="cat.icon"
+          :label="cat.label"
+          :active="activeCategory === cat.id"
+          @click="activeCategory = cat.id"
+        />
       </div>
 
-      <!-- Sidebar -->
-      <div class="w-80 space-y-6">
-        <DevicePanel />
+      <div class="p-4 border-t border-white/10">
+        <button 
+          @click="showBootloopDoctor = true"
+          class="w-full py-2 px-3 bg-error/10 hover:bg-error/20 border border-error/20 rounded-lg text-xs font-bold text-error transition-colors flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-rounded text-sm">medical_services</span>
+          Bootloop Doctor
+        </button>
+      </div>
+    </div>
 
-        <PredictiveScoreCard />
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 bg-surface/30 border border-white/10 rounded-2xl backdrop-blur-xl overflow-hidden">
+      <!-- Header -->
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+        <div>
+          <h2 class="text-xl font-bold text-white tracking-tight">{{ activeCategoryLabel }}</h2>
+          <p class="text-sm text-text-secondary">
+            {{ activeCategory === 'wizard' ? 'Guided flashing process' : 'Advanced operations' }}
+          </p>
+        </div>
+      </div>
 
-        <DeviceFingerprinter />
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
         
-        <BootloaderUnlockFlow />
+        <!-- Wizard Tab -->
+        <div v-if="activeCategory === 'wizard'" class="space-y-6">
+          <FlashWizard />
+        </div>
 
-        <RecoveryInstaller />
+        <!-- ROMs Tab -->
+        <div v-if="activeCategory === 'roms'" class="space-y-6">
+          <SmartRomRecommender />
+          <RomSelector @romSelected="handleRomSelection" />
+        </div>
 
-        <MagiskInjector />
+        <!-- CLI Tab -->
+        <div v-if="activeCategory === 'cli'" class="space-y-6">
+          <NaturalLanguageCLI />
+        </div>
 
-        <SlotManager />
+        <!-- FaC Tab -->
+        <div v-if="activeCategory === 'fac'" class="space-y-6">
+          <FlashAsCode />
+        </div>
 
-        <PartitionVisualizer />
+        <!-- Sideload Tab -->
+        <div v-if="activeCategory === 'sideload'" class="space-y-6">
+          <SideloadAssistant />
+        </div>
 
-        <FactoryResetSafe />
+        <!-- Backup Tab -->
+        <div v-if="activeCategory === 'backup'" class="space-y-6">
+          <BackupManager />
+        </div>
 
-        <ThemeEngine />
+        <!-- Logs Tab -->
+        <div v-if="activeCategory === 'logs'" class="space-y-6">
+          <LogSentinel />
+          <LogAnalyst />
+        </div>
+
+        <!-- Downloads Tab -->
+        <div v-if="activeCategory === 'downloads'" class="space-y-6">
+          <DownloadCenter />
+        </div>
+
       </div>
     </div>
   </div>

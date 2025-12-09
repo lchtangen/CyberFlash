@@ -31,9 +31,6 @@ pub async fn generate_config_from_url(url: String) -> Result<String, String> {
 }
 
 async fn fetch_url_content(url: &str) -> Result<String, reqwest::Error> {
-    // In a real production build, we would use:
-    // reqwest::get(url).await?.text().await
-    
     // For this demo/environment, we'll return a mock XDA thread HTML if the URL is a placeholder,
     // otherwise try a real fetch.
     if url.contains("mock-xda") {

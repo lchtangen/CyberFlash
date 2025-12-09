@@ -13,6 +13,7 @@ import NotificationCenter from './components/features/core/NotificationCenter.vu
 import DriverHealthCheck from './components/features/system/DriverHealthCheck.vue';
 import ContextualHelpBot from './components/features/ai/ContextualHelpBot.vue';
 import VoiceCommander from './components/features/ai/VoiceCommander.vue';
+import SidebarItem from './components/ui/SidebarItem.vue';
 import { useSettingsStore } from './stores/settings';
 import { useNotificationStore } from './stores/notifications';
 
@@ -20,6 +21,35 @@ const currentView = ref('dashboard');
 const isNotificationPanelOpen = ref(false);
 const settingsStore = useSettingsStore();
 const notificationStore = useNotificationStore();
+
+const navGroups = [
+  {
+    title: 'Overview',
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' }
+    ]
+  },
+  {
+    title: 'Operations',
+    items: [
+      { id: 'flash', label: 'Flash Firmware', icon: 'flash_on', variant: 'primary', description: 'Start New Process' }
+    ]
+  },
+  {
+    title: 'Toolbox',
+    items: [
+      { id: 'tools', label: 'Tools & Utilities', icon: 'construction' },
+      { id: 'hardware', label: 'Hardware Diagnostics', icon: 'memory' },
+      { id: 'social', label: 'Community Hub', icon: 'groups' }
+    ]
+  },
+  {
+    title: 'System',
+    items: [
+      { id: 'settings', label: 'Settings', icon: 'settings' }
+    ]
+  }
+];
 
 const applyTheme = () => {
   const root = document.documentElement;
@@ -93,55 +123,20 @@ onMounted(async () => {
         <p class="text-xs text-text-secondary mt-1">Version 2.0.1</p>
       </div>
       
-      <nav class="flex-1 p-4 space-y-2">
-        <button 
-          @click="currentView = 'dashboard'"
-          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
-          :class="currentView === 'dashboard' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded">dashboard</span>
-          Dashboard
-        </button>
-        <button 
-          @click="currentView = 'flash'"
-          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
-          :class="currentView === 'flash' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded">flash_on</span>
-          Flash
-        </button>
-        <button 
-          @click="currentView = 'tools'"
-          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
-          :class="currentView === 'tools' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded">construction</span>
-          Tools
-        </button>
-        <button 
-          @click="currentView = 'social'"
-          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
-          :class="currentView === 'social' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded">groups</span>
-          Social
-        </button>
-        <button 
-          @click="currentView = 'hardware'"
-          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
-          :class="currentView === 'hardware' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded">memory</span>
-          Hardware
-        </button>
-        <button 
-          @click="currentView = 'settings'"
-          class="w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 font-medium"
-          :class="currentView === 'settings' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded">settings</span>
-          Settings
-        </button>
+      <nav class="flex-1 p-4 space-y-6 overflow-y-auto custom-scrollbar">
+        <div v-for="group in navGroups" :key="group.title" class="space-y-2">
+          <div class="px-3 text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{{ group.title }}</div>
+          <SidebarItem 
+            v-for="item in group.items"
+            :key="item.id"
+            :icon="item.icon"
+            :label="item.label"
+            :active="currentView === item.id"
+            :variant="item.variant as any"
+            :description="item.description"
+            @click="currentView = item.id"
+          />
+        </div>
       </nav>
       
       <div class="p-4 border-t border-white/10">
@@ -182,7 +177,7 @@ onMounted(async () => {
       </header>
       
       <div class="flex-1 overflow-y-auto p-6 custom-scrollbar relative">
-        <DashboardView v-if="currentView === 'dashboard'" />
+        <DashboardView v-if="currentView === 'dashboard'" @navigate="currentView = $event" />
         <FlashView v-if="currentView === 'flash'" />
         <ToolsView v-if="currentView === 'tools'" />
         <SocialView v-if="currentView === 'social'" />

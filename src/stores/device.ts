@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
 
 export const useDeviceStore = defineStore('device', () => {
   const isConnected = ref(false);
@@ -20,6 +21,25 @@ export const useDeviceStore = defineStore('device', () => {
     isBootloaderUnlocked.value = unlocked;
   }
 
+  async function scanDevices() {
+    try {
+      const devices = await invoke<string[]>('get_connected_devices');
+      if (devices && devices.length > 0) {
+        isConnected.value = true;
+        serial.value = devices[0];
+        connectionType.value = 'adb';
+        // Ideally fetch more info here
+      } else {
+        isConnected.value = false;
+        serial.value = '';
+        connectionType.value = null;
+      }
+    } catch (e) {
+      console.error('Failed to scan devices:', e);
+      isConnected.value = false;
+    }
+  }
+
   return {
     isConnected,
     deviceModel,
@@ -28,6 +48,7 @@ export const useDeviceStore = defineStore('device', () => {
     connectionType,
     isBootloaderUnlocked,
     setConnected,
-    setDeviceDetails
+    setDeviceDetails,
+    scanDevices
   };
 });

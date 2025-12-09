@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useSettingsStore } from '../../../stores/settings';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
 import ThemeEngine from './ThemeEngine.vue';
+import SidebarItem from '../../ui/SidebarItem.vue';
 
 const settings = useSettingsStore();
 const activeCategory = ref('general');
@@ -43,19 +44,14 @@ const handleSave = async () => {
       </div>
       
       <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
-        <button 
+        <SidebarItem 
           v-for="cat in categories" 
           :key="cat.id"
+          :icon="cat.icon"
+          :label="cat.label"
+          :active="activeCategory === cat.id"
           @click="activeCategory = cat.id"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left group relative overflow-hidden"
-          :class="activeCategory === cat.id ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:bg-white/5 hover:text-white'"
-        >
-          <span class="material-symbols-rounded transition-transform duration-300 group-hover:scale-110" :class="activeCategory === cat.id ? 'text-white' : 'text-text-secondary group-hover:text-white'">{{ cat.icon }}</span>
-          <span class="font-medium">{{ cat.label }}</span>
-          
-          <!-- Active Indicator -->
-          <div v-if="activeCategory === cat.id" class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white/50 rounded-l-full"></div>
-        </button>
+        />
       </div>
       
       <div class="p-4 border-t border-white/10 bg-white/5">

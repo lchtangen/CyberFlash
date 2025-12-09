@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useNotificationStore } from '../../../stores/notifications';
 import { useAIStore } from '../../../stores/ai';
+import { useSettingsStore } from '../../../stores/settings';
 
 interface ContextHelp {
   title: string;
@@ -13,6 +14,7 @@ interface ContextHelp {
 
 const notificationStore = useNotificationStore();
 const aiStore = useAIStore();
+const settingsStore = useSettingsStore();
 
 const isOpen = ref(false);
 const isAnalyzing = ref(false);
@@ -44,7 +46,8 @@ const analyzeError = async () => {
   try {
     analysisResult.value = await invoke<ContextHelp>('analyze_error_context', {
       errorMessage: latestError.value.message,
-      currentView: 'FlashView' // We could make this dynamic if needed
+      currentView: 'FlashView',
+      apiKey: settingsStore.effectiveGeminiApiKey
     });
   } catch (e) {
     console.error(e);

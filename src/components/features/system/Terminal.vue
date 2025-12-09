@@ -32,24 +32,49 @@ watch(() => flashStore.logs.length, async () => {
 </script>
 
 <template>
-  <div class="h-64 font-mono text-sm flex flex-col bg-black/40 border border-white/10 rounded-xl backdrop-blur-md shadow-inner overflow-hidden">
+  <div class="h-full font-mono text-sm flex flex-col bg-[#0D0D0D] border border-white/10 rounded-xl backdrop-blur-md shadow-2xl overflow-hidden relative group">
     <!-- Header -->
-    <div class="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-white/5">
+    <div class="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-white/5 select-none">
       <div class="flex items-center gap-2">
-        <span class="material-symbols-rounded text-xs text-text-secondary">terminal</span>
-        <span class="text-[10px] text-text-secondary uppercase tracking-wider font-bold">Terminal Output</span>
+        <div class="flex gap-1.5">
+          <div class="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
+        </div>
       </div>
+      <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-50">
+        <span class="material-symbols-rounded text-xs">terminal</span>
+        <span class="text-[10px] uppercase tracking-wider font-bold">cyberflash-cli — bash</span>
+      </div>
+      <div class="text-[10px] text-text-muted opacity-50">80x24</div>
     </div>
 
     <!-- Logs Area -->
-    <div ref="terminalRef" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-1">
-      <div v-for="log in logs" :key="log.id" class="flex gap-3 hover:bg-white/5 p-0.5 rounded transition-colors group">
-        <span class="text-text-muted select-none shrink-0 text-[10px] pt-1 opacity-50 group-hover:opacity-100 transition-opacity">{{ log.timestamp }}</span>
-        <span :class="getColor(log.level)" class="break-all leading-relaxed">{{ log.message }}</span>
+    <div ref="terminalRef" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-1 relative">
+      <!-- Welcome Message -->
+      <div v-if="logs.length === 0" class="text-text-muted mb-4">
+        <p>CyberFlash v2.0.0 (x86_64-unknown-linux-gnu)</p>
+        <p>Type "help" for assistance.</p>
+        <br>
       </div>
-      <div v-if="logs.length === 0" class="h-full flex flex-col items-center justify-center text-text-muted italic opacity-30">
-        <span class="material-symbols-rounded text-3xl mb-2">code_blocks</span>
-        <span>// System Ready. Waiting for commands...</span>
+
+      <div v-for="log in logs" :key="log.id" class="flex gap-3 hover:bg-white/5 p-0.5 -mx-2 px-2 rounded transition-colors group/line">
+        <span class="text-text-muted select-none shrink-0 text-[10px] pt-0.5 opacity-30 group-hover/line:opacity-100 transition-opacity font-mono">{{ log.timestamp }}</span>
+        <div class="flex-1 break-all leading-relaxed">
+           <span v-if="log.level === 'info'" class="text-primary mr-2">➜</span>
+           <span v-else-if="log.level === 'success'" class="text-success mr-2">✔</span>
+           <span v-else-if="log.level === 'error'" class="text-error mr-2">✖</span>
+           <span :class="getColor(log.level)">{{ log.message }}</span>
+        </div>
+      </div>
+
+      <!-- Active Prompt Line -->
+      <div class="flex items-center gap-2 mt-2 text-white/90">
+        <span class="text-success font-bold">user@cyberflash</span>
+        <span class="text-text-muted">:</span>
+        <span class="text-primary font-bold">~</span>
+        <span class="text-text-muted">$</span>
+        <span class="w-2 h-4 bg-white/50 animate-pulse"></span>
       </div>
     </div>
   </div>

@@ -1,4 +1,5 @@
 use tauri::{command, AppHandle, Emitter};
+use tauri_plugin_shell::ShellExt;
 use serde::{Serialize, Deserialize};
 use std::sync::{Arc, Mutex};
 use tokio::task;
@@ -19,6 +20,21 @@ pub struct DeviceResult {
     pub message: String,
 }
 
+async fn run_adb(app: &AppHandle, args: &[&str]) -> Result<String, String> {
+    let output = app.shell().sidecar("adb")
+        .map_err(|e| e.to_string())?
+        .args(args)
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}
+
 #[command]
 pub async fn execute_batch_action(app: AppHandle, serials: Vec<String>, action: String) -> Result<BatchJob, String> {
     let job_id = uuid::Uuid::new_v4().to_string();
@@ -31,12 +47,27 @@ pub async fn execute_batch_action(app: AppHandle, serials: Vec<String>, action: 
         let app_handle = app.clone();
 
         let handle = task::spawn(async move {
-            // Simulate action execution
-            // In real app, call adb/fastboot commands here
-            tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-            
-            let success = true; // Mock success
-            let message = format!("Action {} completed on {}", action_clone, serial);
+            let (success, message) = match action_clone.as_str() {
+                "reboot" => {
+                    match run_adb(&app_handle, &["-s", &serial, "reboot"]).await {
+                        Ok(_) => (true, "Rebooted".to_string()),
+                        Err(e) => (false, e),
+                    }
+                },
+                "reboot-bootloader" => {
+                    match run_adb(&app_handle, &["-s", &serial, "reboot", "bootloader"]).await {
+                        Ok(_) => (true, "Rebooted to bootloader".to_string()),
+                        Err(e) => (false, e),
+                    }
+                },
+                "reboot-recovery" => {
+                    match run_adb(&app_handle, &["-s", &serial, "reboot", "recovery"]).await {
+                        Ok(_) => (true, "Rebooted to recovery".to_string()),
+                        Err(e) => (false, e),
+                    }
+                },
+                _ => (false, format!("Unsupported action: {}", action_clone))
+            };
 
             let result = DeviceResult {
                 serial: serial.clone(),

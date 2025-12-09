@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -86,6 +86,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const autoAnalyzeLogs = ref(true);
   const suggestNextSteps = ref(true);
 
+  const effectiveGeminiApiKey = computed(() => {
+    return geminiApiKey.value || import.meta.env.VITE_GEMINI_API_KEY || '';
+  });
+
   // --- Performance & Optimization (New) ---
   const hardwareAcceleration = ref(true);
   const processPriority = ref('high'); // normal, high, realtime
@@ -161,7 +165,7 @@ export const useSettingsStore = defineStore('settings', () => {
     wipeData, wipeCache, disableVerity, disableEncryption, flashMagisk, magiskVersion, flashGapps, rebootAfterFlash, bootToRecovery,
     checkUpdates, sendStats, downloadRegion, bandwidthLimit, proxyEnabled, proxyAddress,
     verboseLogging, saveLogsToFile, mockMode,
-    aiEnabled, geminiApiKey, aiModel, autoAnalyzeLogs, suggestNextSteps,
+    aiEnabled, geminiApiKey, effectiveGeminiApiKey, aiModel, autoAnalyzeLogs, suggestNextSteps,
     hardwareAcceleration, processPriority, maxConcurrentDownloads, cacheSizeLimit, autoClearCache, lowSpecMode, backgroundProcessing, networkTimeout, compressionLevel, useGpuRendering,
     // Actions
     toggleTheme, updateTheme, saveSettings, loadSettings

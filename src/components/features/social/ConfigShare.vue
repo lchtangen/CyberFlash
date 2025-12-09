@@ -55,27 +55,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, onMounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import GlassCard from '@/components/ui/GlassCard.vue';
 import VisionButton from '@/components/ui/VisionButton.vue';
 
-// Mock data - in real app, this would come from a store
-const config = reactive({
-  device: 'OnePlus 7 Pro',
-  rom: 'LineageOS 21',
-  gapps: 'MindTheGapps',
-  magisk: true,
-  modules: ['SafetyNet Fix', 'AOSP Mods']
+interface DeviceConfig {
+  device: string;
+  rom: string;
+  magisk: boolean;
+  modules: string[];
+}
+
+const config = ref<DeviceConfig>({
+  device: 'Loading...',
+  rom: 'Loading...',
+  magisk: false,
+  modules: []
 });
 
 const generatedLink = ref<string | null>(null);
 const loading = ref(false);
 
+onMounted(async () => {
+  try {
+    config.value = await invoke('get_device_config_summary');
+  } catch (e) {
+    console.error("Failed to fetch device config", e);
+    config.value.device = "Unknown";
+    config.value.rom = "Unknown";
+  }
+});
+
 const generateLink = async () => {
   loading.value = true;
   try {
-    const link = await invoke<string>('generate_share_link', { config });
+    const link = await invoke<string>('generate_share_link', { config: config.value });
     generatedLink.value = link;
   } catch (e) {
     console.error(e);

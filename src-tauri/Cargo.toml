@@ -49,4 +49,5 @@ rkyv = "0.8.12"
 base64 = "0.22.1"
 futures = "0.3.31"
 aes-gcm = "0.10.3"
+tempfile = "3.23.0"
 
