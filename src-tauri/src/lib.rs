@@ -89,6 +89,7 @@ pub fn run() {
             commands::fastboot::check_dynamic_partitions,
             commands::fastboot::flash_all_partitions,
             commands::fastboot::set_active_slot_and_reboot,
+            commands::fastboot::reboot,
             commands::predictive_core::calculate_success_score,
             commands::gemini::ask_gemini,
             commands::automation::start_flash_process,

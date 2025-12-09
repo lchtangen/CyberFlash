@@ -1,0 +1,44 @@
+{
+  "device": "OnePlus 7 Pro",
+  "codename": "guacamole",
+  "maintainer": "CyberFlash Auto-Gen",
+  "last_updated": "2025-12-09",
+  "roms": [
+    {
+      "name": "crDroid 12 (Android 16)",
+      "version": "v12.3",
+      "android_version": "16",
+      "url": "https://sourceforge.net/projects/crdroid/files/guacamole/12.x/crDroidAndroid-16.0-20251129-guacamole-v12.3.zip/download",
+      "filename": "crDroidAndroid-16.0-20251129-guacamole-v12.3.zip",
+      "hash": "", 
+      "tags": ["stable", "recommended", "android-16"]
+    }
+  ],
+  "firmware": [
+    {
+      "name": "Firmware H.41 (Mandatory)",
+      "version": "H.41",
+      "url": "https://sourceforge.net/projects/oneplus-firmware/files/OnePlus7Pro/H.41/OPM7.181205.001_H41.zip/download",
+      "filename": "OPM7.181205.001_H41.zip",
+      "tags": ["firmware", "critical"]
+    }
+  ],
+  "recovery": [
+    {
+      "name": "TWRP 3.7.1",
+      "version": "3.7.1",
+      "url": "https://dl.twrp.me/guacamole/twrp-3.7.1_12-0-guacamole.img",
+      "filename": "twrp-3.7.1_12-0-guacamole.img",
+      "tags": ["recovery", "twrp"]
+    }
+  ],
+  "extras": [
+    {
+      "name": "Magisk v27.0",
+      "version": "v27.0",
+      "url": "https://github.com/topjohnwu/Magisk/releases/download/v27.0/Magisk-v27.0.apk",
+      "filename": "Magisk-v27.0.apk",
+      "tags": ["root", "optional"]
+    }
+  ]
+}

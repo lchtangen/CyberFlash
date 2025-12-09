@@ -393,11 +393,6 @@ pub async fn set_active_slot_and_reboot(app: AppHandle, slot: String, serial: Op
     Ok(format!("Switched to slot {} and rebooting", slot))
 }
 
-
-
-
-
-
 #[command]
 #[allow(dead_code)]
 pub async fn reboot(app: AppHandle, target: Option<String>, serial: Option<String>) -> Result<String, String> {
