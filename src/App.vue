@@ -11,9 +11,7 @@ import CommandPalette from './components/features/core/CommandPalette.vue';
 import DeviceConnectionHub from './components/features/core/DeviceConnectionHub.vue';
 import NotificationCenter from './components/features/core/NotificationCenter.vue';
 import DriverHealthCheck from './components/features/system/DriverHealthCheck.vue';
-import ContextualHelpBot from './components/features/ai/ContextualHelpBot.vue';
 import SidebarItem from './components/ui/SidebarItem.vue';
-import SmartDock from './components/ui/SmartDock.vue';
 import { useSettingsStore } from './stores/settings';
 import { useNotificationStore } from './stores/notifications';
 import { invoke } from '@tauri-apps/api/core';
@@ -201,19 +199,13 @@ onMounted(async () => {
     </main>
 
     <!-- Overlays -->
-    <SmartDock 
-      :current-view="currentView" 
-      @navigate="currentView = $event" 
-      @action="handleDockAction"
-    />
+    <!-- Overlays -->
     <AIAssistantOverlay />
     <CommandPalette />
     <DriverHealthCheck />
-    <ContextualHelpBot />
     <NotificationCenter :is-open="isNotificationPanelOpen" @close="isNotificationPanelOpen = false" />
   </div>
 </template>
-
 <style>
 /* Global styles are handled in style.css */
 </style>

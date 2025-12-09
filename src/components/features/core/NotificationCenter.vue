@@ -138,6 +138,13 @@ const clearHistory = () => {
           >
             <span class="material-symbols-rounded text-lg">delete_sweep</span>
           </button>
+          <button 
+            @click="$emit('close')" 
+            class="p-2 rounded-lg hover:bg-white/10 text-text-secondary hover:text-white transition-colors text-xs"
+            title="Close"
+          >
+            <span class="material-symbols-rounded text-lg">close</span>
+          </button>
         </div>
       </div>
 

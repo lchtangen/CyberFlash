@@ -62,13 +62,17 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
     
     <!-- Modal Content -->
     <div class="relative w-full max-w-lg bg-surface/90 border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
-      <div class="p-4 border-b border-white/10">
+      <div class="p-4 border-b border-white/10 flex items-center gap-2">
+        <span class="material-symbols-rounded text-white/50">search</span>
         <input 
           v-model="searchQuery" 
           placeholder="Type a command or ask AI..." 
-          class="w-full bg-transparent text-white placeholder-white/30 focus:outline-none text-lg"
+          class="flex-1 bg-transparent text-white placeholder-white/30 focus:outline-none text-lg"
           autofocus
         />
+        <button @click="isOpen = false" class="text-white/30 hover:text-white transition-colors">
+          <span class="material-symbols-rounded">close</span>
+        </button>
       </div>
       
       <div class="p-2 space-y-1 max-h-[300px] overflow-y-auto custom-scrollbar">

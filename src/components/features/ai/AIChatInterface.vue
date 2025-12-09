@@ -10,6 +10,10 @@ defineProps<{
   heightClass?: string;
 }>();
 
+defineEmits<{
+  (e: 'close'): void;
+}>();
+
 const aiStore = useAIStore();
 const settingsStore = useSettingsStore();
 const deviceStore = useDeviceStore();
@@ -118,13 +122,23 @@ const formatMessage = (text: string) => {
         </div>
       </div>
       
-      <button 
-        @click="clearChat"
-        class="p-2 rounded-lg hover:bg-white/10 text-text-secondary hover:text-error transition-all duration-200 group"
-        title="Clear Chat"
-      >
-        <span class="material-symbols-rounded text-lg group-hover:scale-110 transition-transform">delete_sweep</span>
-      </button>
+      <div class="flex items-center gap-1">
+        <button 
+          @click="clearChat"
+          class="p-2 rounded-lg hover:bg-white/10 text-text-secondary hover:text-error transition-all duration-200 group"
+          title="Clear Chat"
+        >
+          <span class="material-symbols-rounded text-lg group-hover:scale-110 transition-transform">delete_sweep</span>
+        </button>
+
+        <button 
+          @click="$emit('close')"
+          class="p-2 rounded-lg hover:bg-white/10 text-text-secondary hover:text-white transition-all duration-200 group"
+          title="Close"
+        >
+          <span class="material-symbols-rounded text-lg group-hover:scale-110 transition-transform">close</span>
+        </button>
+      </div>
     </div>
     
     <!-- Chat Area -->
