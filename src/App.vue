@@ -12,15 +12,29 @@ import DeviceConnectionHub from './components/features/core/DeviceConnectionHub.
 import NotificationCenter from './components/features/core/NotificationCenter.vue';
 import DriverHealthCheck from './components/features/system/DriverHealthCheck.vue';
 import ContextualHelpBot from './components/features/ai/ContextualHelpBot.vue';
-import VoiceCommander from './components/features/ai/VoiceCommander.vue';
 import SidebarItem from './components/ui/SidebarItem.vue';
+import SmartDock from './components/ui/SmartDock.vue';
 import { useSettingsStore } from './stores/settings';
 import { useNotificationStore } from './stores/notifications';
+import { invoke } from '@tauri-apps/api/core';
 
 const currentView = ref('dashboard');
 const isNotificationPanelOpen = ref(false);
 const settingsStore = useSettingsStore();
 const notificationStore = useNotificationStore();
+
+const handleDockAction = async (action: string) => {
+  if (action === 'reboot_device') {
+    try {
+      await invoke('adb_reboot', { mode: 'system' });
+      notificationStore.addNotification({ title: 'Rebooting', message: 'Device is restarting...', type: 'info' });
+    } catch (e) {
+      notificationStore.addNotification({ title: 'Reboot Failed', message: String(e), type: 'error' });
+    }
+  } else if (action === 'toggle_logs') {
+    notificationStore.addNotification({ title: 'Logs', message: 'Log view toggled', type: 'info' });
+  }
+};
 
 const navGroups = [
   {
@@ -176,7 +190,7 @@ onMounted(async () => {
         </div>
       </header>
       
-      <div class="flex-1 overflow-y-auto p-6 custom-scrollbar relative">
+      <div class="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar relative">
         <DashboardView v-if="currentView === 'dashboard'" @navigate="currentView = $event" />
         <FlashView v-if="currentView === 'flash'" />
         <ToolsView v-if="currentView === 'tools'" />
@@ -187,11 +201,15 @@ onMounted(async () => {
     </main>
 
     <!-- Overlays -->
+    <SmartDock 
+      :current-view="currentView" 
+      @navigate="currentView = $event" 
+      @action="handleDockAction"
+    />
     <AIAssistantOverlay />
     <CommandPalette />
     <DriverHealthCheck />
     <ContextualHelpBot />
-    <VoiceCommander />
     <NotificationCenter :is-open="isNotificationPanelOpen" @close="isNotificationPanelOpen = false" />
   </div>
 </template>

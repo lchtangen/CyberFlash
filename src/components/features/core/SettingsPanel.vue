@@ -4,6 +4,7 @@ import { useSettingsStore } from '../../../stores/settings';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
 import ThemeEngine from './ThemeEngine.vue';
 import SidebarItem from '../../ui/SidebarItem.vue';
+import GlassCard from '../../ui/GlassCard.vue';
 
 const settings = useSettingsStore();
 const activeCategory = ref('general');
@@ -37,13 +38,16 @@ const handleSave = async () => {
 <template>
   <div class="flex h-full gap-6 overflow-hidden">
     <!-- Sidebar Navigation -->
-    <div class="w-64 flex-shrink-0 bg-surface/30 border border-white/10 rounded-2xl backdrop-blur-xl flex flex-col overflow-hidden">
-      <div class="p-4 border-b border-white/10">
-        <h2 class="text-lg font-bold text-white tracking-tight">Settings</h2>
-        <p class="text-xs text-text-secondary">Configure CyberFlash</p>
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
+      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+          <span class="material-symbols-rounded text-primary">settings</span>
+          Settings
+        </h2>
+        <p class="text-xs text-text-secondary mt-1">Configure CyberFlash</p>
       </div>
       
-      <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
         <SidebarItem 
           v-for="cat in categories" 
           :key="cat.id"
@@ -54,152 +58,186 @@ const handleSave = async () => {
         />
       </div>
       
-      <div class="p-4 border-t border-white/10 bg-white/5">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xs">
+      <div class="p-4 border-t border-white/10 bg-white/5 backdrop-blur-md">
+        <div class="flex items-center gap-3 p-2 rounded-xl bg-black/20 border border-white/5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xs shadow-lg">
             CF
           </div>
           <div>
             <div class="text-xs font-bold text-white">CyberFlash Pro</div>
-            <div class="text-[10px] text-text-secondary">v2.0.1 (Build 2025.12)</div>
+            <div class="text-[10px] text-text-secondary font-mono">v2.0.1 (Build 2025.12)</div>
           </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
 
     <!-- Main Content Area -->
-    <div class="flex-1 bg-surface/30 border border-white/10 rounded-2xl backdrop-blur-xl flex flex-col overflow-hidden relative">
+    <GlassCard noPadding class="flex-1 flex flex-col overflow-hidden relative">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
         <div>
-          <h3 class="text-xl font-bold text-white">{{ activeCategoryLabel }}</h3>
-          <p class="text-sm text-text-secondary">Manage your {{ activeCategoryLabel?.toLowerCase() }} preferences</p>
+          <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            {{ activeCategoryLabel }}
+            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider">Config</span>
+          </h3>
+          <p class="text-sm text-text-secondary mt-1">Manage your {{ activeCategoryLabel?.toLowerCase() }} preferences</p>
         </div>
         <div class="flex items-center gap-3">
           <button 
             @click="handleSave" 
-            class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-bold transition-all shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95"
+            class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold transition-all shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95 group"
             :disabled="isSaving"
           >
-            <span class="material-symbols-rounded text-lg" :class="{'animate-spin': isSaving}">{{ isSaving ? 'sync' : 'save' }}</span>
+            <span class="material-symbols-rounded text-lg group-hover:rotate-180 transition-transform duration-500" :class="{'animate-spin': isSaving}">{{ isSaving ? 'sync' : 'save' }}</span>
             {{ isSaving ? 'Saving...' : 'Save Changes' }}
-          </button>
-          <button class="p-2 rounded-full hover:bg-white/10 text-text-secondary hover:text-white transition-colors">
-            <span class="material-symbols-rounded">help</span>
           </button>
         </div>
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
         
         <!-- General Settings -->
-        <div v-if="activeCategory === 'general'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'general'" class="space-y-8 animate-slide-up">
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">User Interface</h4>
-            <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
-              <ToggleSwitch v-model="settings.enableAnimations" label="Enable Animations" description="Smooth transitions and motion effects" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.soundEffects" label="Sound Effects" description="Play sounds on interactions and completion" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.hapticFeedback" label="Haptic Feedback" description="Vibrate on important actions" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.compactMode" label="Compact Mode" description="Reduce padding for higher information density" />
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              User Interface
+            </h4>
+            <div class="grid grid-cols-1 gap-4">
+              <div class="bg-white/5 rounded-2xl p-1 border border-white/5 hover:border-white/10 transition-colors hover-tilt-subtle">
+                <div class="bg-black/20 rounded-xl px-4 py-2">
+                  <ToggleSwitch v-model="settings.enableAnimations" label="Enable Animations" description="Smooth transitions and motion effects" />
+                  <div class="h-px bg-white/5 my-1"></div>
+                  <ToggleSwitch v-model="settings.soundEffects" label="Sound Effects" description="Play sounds on interactions and completion" />
+                  <div class="h-px bg-white/5 my-1"></div>
+                  <ToggleSwitch v-model="settings.hapticFeedback" label="Haptic Feedback" description="Vibrate on important actions" />
+                  <div class="h-px bg-white/5 my-1"></div>
+                  <ToggleSwitch v-model="settings.compactMode" label="Compact Mode" description="Reduce padding for higher information density" />
+                </div>
+              </div>
             </div>
           </section>
 
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Workflow</h4>
-            <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
-              <ToggleSwitch v-model="settings.showTerminalOverlay" label="Show Terminal Overlay" description="Display command output in a floating window" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.checkUpdates" label="Auto-Check Updates" description="Check for app updates on startup" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.sendStats" label="Anonymous Statistics" description="Help improve CyberFlash by sending usage data" />
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              Workflow
+            </h4>
+            <div class="bg-white/5 rounded-2xl p-1 border border-white/5 hover:border-white/10 transition-colors hover-tilt-subtle">
+              <div class="bg-black/20 rounded-xl px-4 py-2">
+                <ToggleSwitch v-model="settings.showTerminalOverlay" label="Show Terminal Overlay" description="Display command output in a floating window" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.checkUpdates" label="Auto-Check Updates" description="Check for app updates on startup" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.sendStats" label="Anonymous Statistics" description="Help improve CyberFlash by sending usage data" />
+              </div>
             </div>
           </section>
         </div>
 
         <!-- Appearance Settings -->
-        <div v-if="activeCategory === 'appearance'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'appearance'" class="space-y-8 animate-slide-up">
           <ThemeEngine />
           
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Advanced Visuals</h4>
-            <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
-              <ToggleSwitch v-model="settings.showMeshGradient" label="Mesh Gradients" description="Show dynamic background gradients" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.cardHoverEffects" label="Hover Effects" description="Highlight cards when hovering" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.buttonGlow" label="Button Glow" description="Add neon glow to primary buttons" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.rippleEffects" label="Ripple Effects" description="Material-style click ripples" />
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              Advanced Visuals
+            </h4>
+            <div class="bg-white/5 rounded-2xl p-1 border border-white/5 hover:border-white/10 transition-colors hover-tilt-subtle">
+              <div class="bg-black/20 rounded-xl px-4 py-2">
+                <ToggleSwitch v-model="settings.showMeshGradient" label="Mesh Gradients" description="Show dynamic background gradients" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.cardHoverEffects" label="Hover Effects" description="Highlight cards when hovering" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.buttonGlow" label="Button Glow" description="Add neon glow to primary buttons" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.rippleEffects" label="Ripple Effects" description="Material-style click ripples" />
+              </div>
             </div>
           </section>
         </div>
 
         <!-- Flashing & Safety -->
-        <div v-if="activeCategory === 'flashing'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'flashing'" class="space-y-8 animate-slide-up">
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Safety Checks</h4>
-            <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
-              <ToggleSwitch v-model="settings.verifyMd5Checksum" label="Verify MD5 Checksums" description="Ensure downloaded files are not corrupted" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.checkBatteryLevel" label="Check Battery Level" description="Prevent flashing if battery is low (<30%)" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.checkDeviceCompatibility" label="Device Compatibility" description="Verify ROM matches device codename" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.preventDowngrade" label="Prevent Downgrade" description="Warn before flashing older firmware versions" />
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              Safety Checks
+            </h4>
+            <div class="bg-white/5 rounded-2xl p-1 border border-white/5 hover:border-white/10 transition-colors hover-tilt-subtle">
+              <div class="bg-black/20 rounded-xl px-4 py-2">
+                <ToggleSwitch v-model="settings.verifyMd5Checksum" label="Verify MD5 Checksums" description="Ensure downloaded files are not corrupted" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.checkBatteryLevel" label="Check Battery Level" description="Prevent flashing if battery is low (<30%)" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.checkDeviceCompatibility" label="Device Compatibility" description="Verify ROM matches device codename" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.preventDowngrade" label="Prevent Downgrade" description="Warn before flashing older firmware versions" />
+              </div>
             </div>
           </section>
 
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Backup Strategy</h4>
-            <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
-              <ToggleSwitch v-model="settings.backupEFS" label="Auto-Backup EFS" description="Backup IMEI/Signal partitions before flashing" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.backupPersist" label="Backup Persist" description="Backup sensor calibration data" />
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              Backup Strategy
+            </h4>
+            <div class="bg-white/5 rounded-2xl p-1 border border-white/5 hover:border-white/10 transition-colors hover-tilt-subtle">
+              <div class="bg-black/20 rounded-xl px-4 py-2">
+                <ToggleSwitch v-model="settings.backupEFS" label="Auto-Backup EFS" description="Backup IMEI/Signal partitions before flashing" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.backupPersist" label="Backup Persist" description="Backup sensor calibration data" />
+              </div>
             </div>
           </section>
         </div>
 
         <!-- ADB & Fastboot -->
-        <div v-if="activeCategory === 'adb'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'adb'" class="space-y-8 animate-slide-up">
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Connection</h4>
-            <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
-              <ToggleSwitch v-model="settings.useInternalServer" label="Use Internal ADB Server" description="Use bundled ADB instead of system ADB" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.killServerOnExit" label="Kill Server on Exit" description="Stop ADB server when closing app" />
-              <div class="h-px bg-white/5 my-1"></div>
-              <ToggleSwitch v-model="settings.usbBufferAlignment" label="USB Buffer Alignment" description="Optimize large file transfers (Fastboot)" />
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              Connection
+            </h4>
+            <div class="bg-white/5 rounded-2xl p-1 border border-white/5 hover:border-white/10 transition-colors hover-tilt-subtle">
+              <div class="bg-black/20 rounded-xl px-4 py-2">
+                <ToggleSwitch v-model="settings.useInternalServer" label="Use Internal ADB Server" description="Use bundled ADB instead of system ADB" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.killServerOnExit" label="Kill Server on Exit" description="Stop ADB server when closing app" />
+                <div class="h-px bg-white/5 my-1"></div>
+                <ToggleSwitch v-model="settings.usbBufferAlignment" label="USB Buffer Alignment" description="Optimize large file transfers (Fastboot)" />
+              </div>
             </div>
           </section>
 
           <section>
-            <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Paths</h4>
-            <div class="space-y-4 bg-black/20 rounded-xl p-4 border border-white/5">
+            <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="w-8 h-[1px] bg-primary/50"></span>
+              Paths
+            </h4>
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-colors space-y-4">
               <div>
-                <label class="text-xs text-text-secondary block mb-1">ADB Binary Path</label>
+                <label class="text-xs text-text-secondary block mb-2 font-bold uppercase tracking-wider">ADB Binary Path</label>
                 <div class="flex gap-2">
-                  <input v-model="settings.adbPath" type="text" class="flex-1 bg-surface/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-primary/50" />
-                  <button class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs font-bold transition-colors">Browse</button>
+                  <input v-model="settings.adbPath" type="text" class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+                  <button class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white text-xs font-bold transition-all hover:scale-105 active:scale-95">Browse</button>
                 </div>
               </div>
               <div>
-                <label class="text-xs text-text-secondary block mb-1">Fastboot Binary Path</label>
+                <label class="text-xs text-text-secondary block mb-2 font-bold uppercase tracking-wider">Fastboot Binary Path</label>
                 <div class="flex gap-2">
-                  <input v-model="settings.fastbootPath" type="text" class="flex-1 bg-surface/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-primary/50" />
-                  <button class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs font-bold transition-colors">Browse</button>
+                  <input v-model="settings.fastbootPath" type="text" class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+                  <button class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white text-xs font-bold transition-all hover:scale-105 active:scale-95">Browse</button>
                 </div>
               </div>
             </div>
           </section>
         </div>
 
-        <!-- Automation -->
         <!-- Performance Settings (New) -->
-        <div v-if="activeCategory === 'performance'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'performance'" class="space-y-8 animate-slide-up">
           <section>
             <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">System Resources</h4>
             <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
@@ -254,7 +292,7 @@ const handleSave = async () => {
         </div>
 
         <!-- Automation Settings -->
-        <div v-if="activeCategory === 'automation'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'automation'" class="space-y-8 animate-slide-up">
           <section>
             <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">AI Configuration</h4>
             <div class="space-y-4 bg-black/20 rounded-xl p-4 border border-white/5">
@@ -304,7 +342,7 @@ const handleSave = async () => {
         </div>
 
         <!-- Network -->
-        <div v-if="activeCategory === 'network'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div v-if="activeCategory === 'network'" class="space-y-8 animate-slide-up">
            <section>
             <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4">Proxy & Connection</h4>
             <div class="space-y-1 bg-black/20 rounded-xl p-4 border border-white/5">
@@ -319,7 +357,7 @@ const handleSave = async () => {
         </div>
 
       </div>
-    </div>
+    </GlassCard>
   </div>
 </template>
 
@@ -337,5 +375,24 @@ const handleSave = async () => {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hover-tilt-subtle {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+.hover-tilt-subtle:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  z-index: 10;
 }
 </style>

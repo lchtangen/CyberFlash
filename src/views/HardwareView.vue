@@ -23,13 +23,16 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
 <template>
   <div class="flex h-full gap-6 overflow-hidden p-6">
     <!-- Sidebar Navigation -->
-    <div class="w-64 flex-shrink-0 bg-surface/30 border border-white/10 rounded-2xl backdrop-blur-xl flex flex-col overflow-hidden">
-      <div class="p-4 border-b border-white/10">
-        <h2 class="text-lg font-bold text-white tracking-tight">Hardware</h2>
-        <p class="text-xs text-text-secondary">Diagnostics & Health</p>
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
+      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+          <span class="material-symbols-rounded text-success">memory</span>
+          Hardware
+        </h2>
+        <p class="text-xs text-text-secondary mt-1">Diagnostics & Health</p>
       </div>
       
-      <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
         <SidebarItem 
           v-for="cat in categories" 
           :key="cat.id"
@@ -39,40 +42,49 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
           @click="activeCategory = cat.id"
         />
       </div>
-    </div>
+    </GlassCard>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0 bg-surface/30 border border-white/10 rounded-2xl backdrop-blur-xl overflow-hidden">
+    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
         <div>
-          <h2 class="text-xl font-bold text-white tracking-tight">{{ activeCategoryLabel }}</h2>
-          <p class="text-sm text-text-secondary">Real-time hardware analysis</p>
+          <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+            {{ activeCategoryLabel }}
+            <span class="px-2 py-0.5 rounded-full bg-success/20 text-success text-[10px] font-bold border border-success/20 uppercase tracking-wider">Real-time</span>
+          </h2>
+          <p class="text-sm text-text-secondary mt-1">Real-time hardware analysis</p>
         </div>
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
         
         <!-- Power Tab -->
-        <div v-if="activeCategory === 'power'" class="space-y-6">
-          <PowerMonitor />
+        <div v-if="activeCategory === 'power'" class="space-y-8 animate-slide-up">
+          <div class="hover-tilt-subtle">
+            <PowerMonitor />
+          </div>
         </div>
 
         <!-- Cable Tab -->
-        <div v-if="activeCategory === 'cable'" class="space-y-6">
-          <CableTester />
+        <div v-if="activeCategory === 'cable'" class="space-y-8 animate-slide-up">
+          <div class="hover-tilt-subtle">
+            <CableTester />
+          </div>
         </div>
 
         <!-- Storage Tab -->
-        <div v-if="activeCategory === 'storage'" class="space-y-6">
-          <StorageHealth />
+        <div v-if="activeCategory === 'storage'" class="space-y-8 animate-slide-up">
+          <div class="hover-tilt-subtle">
+            <StorageHealth />
+          </div>
         </div>
 
         <!-- Thermal Tab -->
-        <div v-if="activeCategory === 'thermal'" class="space-y-6">
-          <GlassCard class="h-64 flex flex-col items-center justify-center text-center p-8">
-            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+        <div v-if="activeCategory === 'thermal'" class="space-y-8 animate-slide-up">
+          <GlassCard class="h-64 flex flex-col items-center justify-center text-center p-8 hover-tilt">
+            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 shadow-lg shadow-black/20">
               <span class="material-symbols-rounded text-4xl text-white/20">thermostat</span>
             </div>
             <h3 class="text-lg font-bold text-white mb-2">Thermal Vision</h3>
@@ -83,6 +95,51 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         </div>
 
       </div>
-    </div>
+    </GlassCard>
   </div>
 </template>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hover-tilt-subtle {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+.hover-tilt-subtle:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.hover-tilt {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+.hover-tilt:hover {
+  transform: translateY(-8px) scale(1.02) rotateX(2deg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+</style>
