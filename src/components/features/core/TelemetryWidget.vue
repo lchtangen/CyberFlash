@@ -1,19 +1,43 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
+import { useDeviceStore } from '../../../stores/device';
 import GlassCard from '../../ui/GlassCard.vue';
 
+const deviceStore = useDeviceStore();
 const cpu = ref(0);
 const ram = ref(0);
 const temp = ref(0);
 const network = ref(0);
+let interval: any = null;
+
+const fetchTelemetry = async () => {
+  if (!deviceStore.isConnected) {
+    cpu.value = 0;
+    ram.value = 0;
+    temp.value = 0;
+    network.value = 0;
+    return;
+  }
+
+  try {
+    const data = await invoke<{ cpu: number, ram: number, temp: number, network: number }>('get_telemetry');
+    cpu.value = data.cpu;
+    ram.value = data.ram;
+    temp.value = data.temp;
+    network.value = data.network;
+  } catch (e) {
+    console.error('Telemetry error:', e);
+  }
+};
 
 onMounted(() => {
-  setInterval(() => {
-    cpu.value = Math.floor(Math.random() * 30) + 10;
-    ram.value = Math.floor(Math.random() * 20) + 40;
-    temp.value = Math.floor(Math.random() * 10) + 35;
-    network.value = Math.floor(Math.random() * 100);
-  }, 2000);
+  fetchTelemetry();
+  interval = setInterval(fetchTelemetry, 3000);
+});
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval);
 });
 
 const getCircleDash = (percent: number, r: number) => {

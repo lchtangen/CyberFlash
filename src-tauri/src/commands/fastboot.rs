@@ -2,6 +2,21 @@ use tauri::{command, AppHandle};
 use tauri_plugin_shell::ShellExt;
 use std::collections::HashMap;
 
+pub async fn run_fastboot_cmd(app: AppHandle, args: Vec<&str>) -> Result<String, String> {
+    let output = app.shell().sidecar("fastboot")
+        .map_err(|e| e.to_string())?
+        .args(args)
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}
+
 #[derive(serde::Serialize)]
 pub struct PartitionLayout {
     pub slot_count: u8,
@@ -82,21 +97,6 @@ pub async fn get_var_all(app: AppHandle, serial: Option<String>) -> Result<HashM
     }
 
     Ok(vars)
-}
-
-pub async fn run_fastboot_cmd(app: AppHandle, args: Vec<&str>) -> Result<String, String> {
-    let output = app.shell().sidecar("fastboot")
-        .map_err(|e| e.to_string())?
-        .args(args)
-        .output()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).to_string())
-    } else {
-        Err(String::from_utf8_lossy(&output.stderr).to_string())
-    }
 }
 
 #[command]
@@ -319,6 +319,23 @@ pub async fn flash_all_partitions(app: AppHandle, folder_path: String, serial: O
         }
     }
     Ok(log)
+}
+
+#[command]
+pub async fn resize_logical_partition(app: AppHandle, partition: String, size: String, serial: Option<String>) -> Result<String, String> {
+    let mut cmd = app.shell().sidecar("fastboot").map_err(|e| e.to_string())?;
+    if let Some(s) = serial {
+        cmd = cmd.args(["-s", &s]);
+    }
+    cmd = cmd.args(["resize-logical-partition", &partition, &size]);
+
+    let output = cmd.output().await.map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(format!("Resized {} to {}", partition, size))
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
 }
 
 #[command]

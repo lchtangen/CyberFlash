@@ -2,35 +2,24 @@
 # Script to run Tauri dev environment inside VS Code Snap
 # This unsets conflicting environment variables that cause crashes with libpthread/WebKit
 
-echo "Setting up clean environment for VS Code Snap..."
-
-# Reset XDG_DATA_DIRS to system defaults (ignoring Snap paths)
-export XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktop
-export GSETTINGS_SCHEMA_DIR=/usr/share/glib-2.0/schemas
-
-# Unset Snap/GTK specific variables
-unset GTK_PATH
-unset GTK_EXE_PREFIX
-unset GIO_MODULE_DIR
-unset GDK_PIXBUF_MODULE_FILE
-unset GTK_MODULES
-unset GTK_IM_MODULE_FILE
-unset GDK_BACKEND
-unset XDG_DATA_HOME
-unset LD_PRELOAD
-
-# Force LD_LIBRARY_PATH to system paths to avoid Snap libraries
-export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:/usr/lib:/lib
-
 echo "Cleaning up previous sessions..."
-# Kill any process running on port 1420
-fuser -k 1420/tcp || true
+fuser -k -9 1420/tcp 2>/dev/null
 
-# Clean cargo build artifacts to prevent permission errors
-echo "Cleaning cargo build artifacts..."
-rm -rf src-tauri/target/debug/build/temp-app*
-rm -rf src-tauri/target/debug/build/tauri*
-rm -f src-tauri/target/debug/cyberflash-v2
+echo "Starting Tauri Dev with clean environment..."
 
-echo "Starting Tauri Dev..."
-npm run tauri dev
+# Capture necessary variables
+USER_HOME=$HOME
+USER_PATH=$PATH
+USER_DISPLAY=$DISPLAY
+USER_XAUTH=$XAUTHORITY
+USER_DBUS=$DBUS_SESSION_BUS_ADDRESS
+
+# Run with clean environment
+# We strip all environment variables and only pass the essentials
+# This removes GTK_PATH, LD_LIBRARY_PATH, and other Snap-injected variables
+env -i HOME="$USER_HOME" \
+       PATH="$USER_PATH" \
+       DISPLAY="$USER_DISPLAY" \
+       XAUTHORITY="$USER_XAUTH" \
+       DBUS_SESSION_BUS_ADDRESS="$USER_DBUS" \
+       npm run tauri dev

@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useFlashStore } from '../../../stores/flash';
 import { computed, ref, watch, nextTick } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
 
 const flashStore = useFlashStore();
 const terminalRef = ref<HTMLElement | null>(null);
+const commandInput = ref('');
+const isProcessing = ref(false);
 
 const logs = computed(() => {
   return flashStore.logs.map((msg, index) => ({
@@ -29,6 +32,30 @@ watch(() => flashStore.logs.length, async () => {
     terminalRef.value.scrollTop = terminalRef.value.scrollHeight;
   }
 });
+
+const executeCommand = async () => {
+  const cmd = commandInput.value.trim();
+  if (!cmd) return;
+
+  flashStore.logs.push(`$ ${cmd}`);
+  const cmdToRun = commandInput.value; // Store before clearing
+  commandInput.value = '';
+  isProcessing.value = true;
+
+  try {
+    // Run as ADB Shell command
+    const output = await invoke<string>('run_adb_shell', { command: cmdToRun });
+    if (output) {
+        output.split('\n').forEach(line => {
+            if(line.trim()) flashStore.logs.push(line);
+        });
+    }
+  } catch (e) {
+    flashStore.logs.push(`Error: ${e}`);
+  } finally {
+    isProcessing.value = false;
+  }
+};
 </script>
 
 <template>
@@ -44,7 +71,7 @@ watch(() => flashStore.logs.length, async () => {
       </div>
       <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-50">
         <span class="material-symbols-rounded text-xs">terminal</span>
-        <span class="text-[10px] uppercase tracking-wider font-bold">cyberflash-cli — bash</span>
+        <span class="text-[10px] uppercase tracking-wider font-bold">adb-shell</span>
       </div>
       <div class="text-[10px] text-text-muted opacity-50">80x24</div>
     </div>
@@ -53,8 +80,8 @@ watch(() => flashStore.logs.length, async () => {
     <div ref="terminalRef" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-1 relative">
       <!-- Welcome Message -->
       <div v-if="logs.length === 0" class="text-text-muted mb-4">
-        <p>CyberFlash v2.0.0 (x86_64-unknown-linux-gnu)</p>
-        <p>Type "help" for assistance.</p>
+        <p>CyberFlash v2.0.0 (ADB Shell)</p>
+        <p>Connected to device. Type commands directly (e.g., 'ls', 'pm list packages').</p>
         <br>
       </div>
 
@@ -67,15 +94,24 @@ watch(() => flashStore.logs.length, async () => {
            <span :class="getColor(log.level)">{{ log.message }}</span>
         </div>
       </div>
+    </div>
 
-      <!-- Active Prompt Line -->
-      <div class="flex items-center gap-2 mt-2 text-white/90">
-        <span class="text-success font-bold">user@cyberflash</span>
+    <!-- Input Area -->
+    <div class="p-2 bg-black/20 border-t border-white/5 flex items-center gap-2">
+        <span class="text-success font-bold">shell@android</span>
         <span class="text-text-muted">:</span>
         <span class="text-primary font-bold">~</span>
         <span class="text-text-muted">$</span>
-        <span class="w-2 h-4 bg-white/50 animate-pulse"></span>
-      </div>
+        <input 
+          v-model="commandInput"
+          @keydown.enter="executeCommand"
+          :disabled="isProcessing"
+          type="text" 
+          class="flex-1 bg-transparent border-none outline-none text-white placeholder-white/20 font-mono text-sm"
+          placeholder="Enter command..."
+          autofocus
+        />
+        <span v-if="isProcessing" class="i-lucide-loader-2 animate-spin text-white/50"></span>
     </div>
   </div>
 </template>

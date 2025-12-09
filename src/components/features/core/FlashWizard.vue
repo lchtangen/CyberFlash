@@ -13,20 +13,25 @@ const islandStore = useDynamicIslandStore();
 const logContainer = ref<HTMLElement | null>(null);
 
 const phases = [
-  { id: 1, title: 'Downloads', description: 'Download required files' },
-  { id: 2, title: 'Device Prep', description: 'Enable Dev Options & Debugging' },
+  { id: 1, title: 'Downloads', description: 'Download ROM & Tools' },
+  { id: 2, title: 'Backup', description: 'Backup SMS & Apps' },
   { id: 3, title: 'Unlock Bootloader', description: 'Unlock device bootloader' },
-  { id: 4, title: 'Install TWRP', description: 'Flash Recovery' },
-  { id: 5, title: 'Flash Firmware', description: 'Update Firmware H.41' },
-  { id: 6, title: 'Wipe Device', description: 'Factory Reset & Format Data' },
-  { id: 7, title: 'Install ROM', description: 'Flash crDroid 12' },
-  { id: 8, title: 'Post-Install', description: 'Final Setup & Root' },
+  { id: 4, title: 'Flash Firmware', description: 'Update Firmware Partitions' },
+  { id: 5, title: 'Flash Recovery', description: 'Install TWRP/Recovery' },
+  { id: 6, title: 'Root & Patch', description: 'Patch Boot Image & Flash' },
 ];
 
 const currentPhaseInfo = computed(() => phases[flashStore.currentPhase] || phases[0]);
 const globalProgress = computed(() => ((flashStore.currentPhase) / phases.length) * 100);
 
-const startPhase = () => {
+const startPhase = async () => {
+  // Connection Check
+  if (flashStore.currentPhase > 0) { // Skip check for downloads phase? Or check always?
+      // Ideally check connection before starting any device interaction
+      // But Phase 1 is downloads, so maybe not needed.
+      // Phase 2 is Backup, needs ADB.
+  }
+  
   flashStore.startFlash();
   
   // Update Dynamic Island

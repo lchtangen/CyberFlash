@@ -43,4 +43,5 @@ pub mod zero_touch;
 pub mod cloud_sync;
 pub mod multi_device;
 pub mod recovery_script;
+pub mod devices;
 

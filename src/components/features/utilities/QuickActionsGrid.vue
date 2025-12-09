@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
 import { useDynamicIslandStore } from '../../../stores/dynamicIsland';
 import GlassCard from '../../ui/GlassCard.vue';
 import ToggleSwitch from '../../ui/ToggleSwitch.vue';
 
 const islandStore = useDynamicIslandStore();
 
-// Mock State
+// State
 const wirelessAdb = ref(false);
-const wirelessIp = ref('192.168.1.45:5555');
+const wirelessIp = ref('');
 const dpiValue = ref('420');
 const chargeLimit = ref(80);
 const shellCmd = ref('');
@@ -16,7 +17,7 @@ const scrcpyBitrate = ref('8M');
 const logDuration = ref('10s');
 const pkgName = ref('');
 
-const reboot = (mode: string) => {
+const reboot = async (mode: string) => {
   islandStore.showNotification({
     id: 'reboot',
     type: 'process',
@@ -27,10 +28,17 @@ const reboot = (mode: string) => {
     border: 'border-warning/30',
     color: 'text-warning'
   }, 4000);
-  console.log(`Rebooting to ${mode}`);
+  
+  try {
+    await invoke('reboot_device', { mode });
+  } catch (e) {
+    console.error(e);
+  }
 };
 
-const runShell = () => {
+const runShell = async () => {
+  if (!shellCmd.value) return;
+  
   islandStore.showNotification({
     id: 'shell',
     type: 'process',
@@ -41,11 +49,17 @@ const runShell = () => {
     border: 'border-white/20',
     color: 'text-white'
   }, 2000);
-  console.log(`Running: ${shellCmd.value}`);
-  shellCmd.value = '';
+  
+  try {
+    await invoke('run_adb_shell', { command: shellCmd.value });
+    shellCmd.value = '';
+  } catch (e) {
+    console.error(e);
+  }
 };
 
-const syncClipboard = (direction: 'get' | 'set') => {
+const syncClipboard = async (direction: 'get' | 'set') => {
+  // Not implemented in backend yet, keeping mock for now or implementing later
   islandStore.showNotification({
     id: 'clipboard',
     type: 'success',
@@ -56,7 +70,6 @@ const syncClipboard = (direction: 'get' | 'set') => {
     border: 'border-success/30',
     color: 'text-success'
   }, 2000);
-  console.log(`Clipboard ${direction}`);
 };
 
 </script>

@@ -8,7 +8,7 @@ pub struct FileMetadata {
     pub name: String,
     pub size: u64,
     pub hash: String,
-    pub file_type: String,
+    pub rom_type: String,
 }
 
 #[command]
@@ -23,7 +23,7 @@ pub async fn parse_rom_file(file_path: String) -> Result<FileMetadata, String> {
     
     // Determine type
     let extension = path.extension().unwrap_or_default().to_string_lossy().to_lowercase();
-    let file_type = match extension.as_str() {
+    let rom_type = match extension.as_str() {
         "zip" => "Recovery ZIP",
         "img" => "Fastboot Image",
         "bin" => "Payload Binary",
@@ -37,7 +37,7 @@ pub async fn parse_rom_file(file_path: String) -> Result<FileMetadata, String> {
         name,
         size: metadata.len(),
         hash,
-        file_type,
+        rom_type,
     })
 }
 

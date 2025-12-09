@@ -1,6 +1,75 @@
 use tauri::{command, AppHandle, Emitter};
 use tauri_plugin_shell::ShellExt;
 
+#[derive(serde::Serialize)]
+pub struct Telemetry {
+    cpu: u8,
+    ram: u8,
+    temp: u8,
+    network: u8,
+}
+
+#[command]
+pub async fn get_telemetry(app: AppHandle) -> Result<Telemetry, String> {
+    // 1. Battery Temp
+    let output_battery = app.shell().sidecar("adb")
+        .map_err(|e| e.to_string())?
+        .args(["shell", "dumpsys", "battery"])
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+    
+    let mut temp = 0;
+    let output_str = String::from_utf8_lossy(&output_battery.stdout);
+    for line in output_str.lines() {
+        if line.trim().starts_with("temperature:") {
+            let temp_str = line.split(':').nth(1).unwrap_or("0").trim();
+            temp = temp_str.parse::<u32>().unwrap_or(0) / 10; // usually in 10th of degree C
+            break;
+        }
+    }
+
+    // 2. RAM
+    let output_ram = app.shell().sidecar("adb")
+        .map_err(|e| e.to_string())?
+        .args(["shell", "cat", "/proc/meminfo"])
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+    
+    let mut total_ram = 1;
+    let mut avail_ram = 0;
+    let ram_str = String::from_utf8_lossy(&output_ram.stdout);
+    for line in ram_str.lines() {
+        if line.starts_with("MemTotal:") {
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            if parts.len() > 1 {
+                total_ram = parts[1].parse::<u64>().unwrap_or(1);
+            }
+        }
+        if line.starts_with("MemAvailable:") {
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            if parts.len() > 1 {
+                avail_ram = parts[1].parse::<u64>().unwrap_or(0);
+            }
+        }
+    }
+    let ram_usage = ((total_ram - avail_ram) as f32 / total_ram as f32 * 100.0) as u8;
+
+    // 3. CPU (Mock for now as it's slow)
+    let cpu = 42; 
+
+    // 4. Network (Mock)
+    let network = 50;
+
+    Ok(Telemetry {
+        cpu,
+        ram: ram_usage,
+        temp: temp as u8,
+        network,
+    })
+}
+
 #[command]
 pub async fn get_connected_devices(app: AppHandle) -> Result<Vec<String>, String> {
     let output = app.shell().sidecar("adb")

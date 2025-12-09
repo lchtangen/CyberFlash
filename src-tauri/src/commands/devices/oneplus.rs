@@ -1,5 +1,6 @@
 use tauri::command;
 use crate::commands::flash_as_code::{FlashConfig, FlashStep};
+use std::path::Path;
 
 #[command]
 pub fn generate_op7pro_flash_config(rom_type: String, path: String) -> FlashConfig {
@@ -10,14 +11,14 @@ pub fn generate_op7pro_flash_config(rom_type: String, path: String) -> FlashConf
         // Assuming path is a folder path containing images
         
         // Critical partitions for OnePlus 7 Pro (Guacamole)
-        // Note: system, vendor, product, odm are usually logical partitions in newer Android versions,
-        // but OP7Pro launched with Android 9 (Pie) and A/B. It got dynamic partitions in Android 10? 
-        // Actually OP7Pro does NOT have dynamic partitions by default unless retrofitted.
-        // It uses standard A/B.
-        
-        let partitions = vec![
+        let mut partitions = vec![
             "boot", "dtbo", "vbmeta", "modem", "bluetooth", "dsp", "logo", "abl", "aop", "cmnlib", "cmnlib64", "devcfg", "qupfw", "storsec", "tz", "hyp", "keymaster", "xbl", "xbl_config"
         ];
+        
+        // Check for init_boot (Android 13/14+)
+        if Path::new(&path).join("init_boot.img").exists() {
+            partitions.push("init_boot");
+        }
         
         // System/Vendor/Product/ODM are large, handle separately
         let large_partitions = vec!["system", "vendor", "product", "odm"];

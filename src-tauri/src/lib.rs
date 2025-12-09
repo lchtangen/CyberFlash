@@ -6,9 +6,17 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+use tauri::Manager;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.maximize();
+            }
+            Ok(())
+        })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
         .manage(commands::log_parser::SentinelState::default())
@@ -16,6 +24,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             commands::adb::get_connected_devices,
+            commands::adb::get_telemetry,
             commands::adb::kill_server,
             commands::adb::reboot_device,
             commands::adb::adb_sideload,
@@ -47,8 +56,10 @@ pub fn run() {
             commands::fastboot::get_fastboot_devices,
             commands::fastboot::get_var_all,
             commands::fastboot::get_partition_layout,
+            commands::fastboot::resize_logical_partition,
             commands::fastboot::set_active_slot,
             commands::fastboot::check_bootloader_unlocked,
+            commands::devices::oneplus::generate_op7pro_flash_config,
             commands::fastboot::detect_ab_slots,
             commands::fastboot::flash_partition,
             commands::fastboot::erase_partition,

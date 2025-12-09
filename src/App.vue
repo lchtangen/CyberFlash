@@ -211,7 +211,7 @@ onMounted(async () => {
     <!-- Main Content -->
     <main class="flex-1 m-3 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl flex flex-col relative overflow-hidden shadow-2xl shadow-black/50 z-10">
       <!-- Top Bar -->
-      <header class="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-transparent z-10">
+      <header class="relative h-16 border-b border-white/5 flex items-center justify-between px-6 bg-transparent z-10">
         <div class="flex items-center gap-4">
           <h2 class="text-lg font-medium text-white capitalize tracking-wide">{{ currentView }}</h2>
         </div>

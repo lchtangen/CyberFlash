@@ -28,11 +28,49 @@ export const useDeviceStore = defineStore('device', () => {
         isConnected.value = true;
         serial.value = devices[0];
         connectionType.value = 'adb';
-        // Ideally fetch more info here
+        
+        // Fetch details
+        try {
+          const model = await invoke<string>('get_prop_value', { prop: 'ro.product.model' });
+          deviceModel.value = model.trim();
+        } catch {
+          deviceModel.value = 'Unknown Device';
+        }
+
+        try {
+          const battery = await invoke<number>('check_battery_level');
+          batteryLevel.value = battery;
+        } catch {
+          batteryLevel.value = 0;
+        }
+
+        try {
+          const unlocked = await invoke<boolean>('check_bootloader_unlocked');
+          isBootloaderUnlocked.value = unlocked;
+        } catch {
+          isBootloaderUnlocked.value = false;
+        }
+
       } else {
-        isConnected.value = false;
-        serial.value = '';
-        connectionType.value = null;
+        // Check Fastboot
+        const fastbootDevices = await invoke<string[]>('get_fastboot_devices');
+        if (fastbootDevices && fastbootDevices.length > 0) {
+            isConnected.value = true;
+            serial.value = fastbootDevices[0];
+            connectionType.value = 'fastboot';
+            deviceModel.value = 'Fastboot Device';
+            batteryLevel.value = 0; // Cannot read battery in fastboot easily without getvar
+            
+            try {
+                const vars = await invoke<any>('get_var_all', { serial: fastbootDevices[0] });
+                if (vars['product']) deviceModel.value = vars['product'];
+                if (vars['unlocked'] === 'yes') isBootloaderUnlocked.value = true;
+            } catch {}
+        } else {
+            isConnected.value = false;
+            serial.value = '';
+            connectionType.value = null;
+        }
       }
     } catch (e) {
       console.error('Failed to scan devices:', e);
