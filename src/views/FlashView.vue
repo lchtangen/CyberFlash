@@ -65,13 +65,13 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
     <VisualBootloopDoctor :is-open="showBootloopDoctor" @close="showBootloopDoctor = false" />
 
     <!-- Sidebar Navigation -->
-    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
-      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
+      <div class="p-5 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
         <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-          <span class="material-symbols-rounded text-primary">bolt</span>
+          <span class="material-symbols-rounded text-primary drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">bolt</span>
           Operations
         </h2>
-        <p class="text-xs text-text-secondary mt-1">Flash & Manage</p>
+        <p class="text-xs text-text-secondary mt-1 font-medium tracking-wide">Flash & Manage</p>
       </div>
       
       <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
@@ -85,10 +85,10 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
         />
       </div>
 
-      <div class="p-4 border-t border-white/10 bg-white/5">
+      <div class="p-4 border-t border-white/10 bg-surface/30 backdrop-blur-xl">
         <button 
           @click="showBootloopDoctor = true"
-          class="w-full py-2.5 px-3 bg-error/10 hover:bg-error/20 border border-error/20 rounded-xl text-xs font-bold text-error transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 shadow-lg shadow-error/5"
+          class="w-full py-2.5 px-3 bg-error/10 hover:bg-error/20 border border-error/20 rounded-xl text-xs font-bold text-error transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 shadow-lg shadow-error/5 backdrop-blur-md"
         >
           <span class="material-symbols-rounded text-sm">medical_services</span>
           Bootloop Doctor
@@ -97,7 +97,7 @@ const activeCategoryLabel = computed(() => categories.find(c => c.id === activeC
     </GlassCard>
 
     <!-- Main Content Area -->
-    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
       <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
         <div>

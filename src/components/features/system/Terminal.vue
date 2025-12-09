@@ -32,9 +32,9 @@ watch(() => flashStore.logs.length, async () => {
 </script>
 
 <template>
-  <div class="h-full font-mono text-sm flex flex-col bg-[#0D0D0D] border border-white/10 rounded-xl backdrop-blur-md shadow-2xl overflow-hidden relative group">
+  <div class="h-full font-mono text-sm flex flex-col bg-surface/80 border border-white/10 rounded-xl backdrop-blur-xl shadow-2xl shadow-black/50 overflow-hidden relative group ring-1 ring-white/5">
     <!-- Header -->
-    <div class="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-white/5 select-none">
+    <div class="flex items-center justify-between px-4 py-2.5 border-b border-white/10 bg-surface/50 select-none backdrop-blur-md">
       <div class="flex items-center gap-2">
         <div class="flex gap-1.5">
           <div class="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>

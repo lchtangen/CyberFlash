@@ -63,7 +63,7 @@ const reboot = async (mode: string) => {
                 <span class="material-symbols-rounded text-2xl text-white" :class="{'text-primary drop-shadow-[0_0_8px_rgba(10,132,255,0.5)]': isConnected}">smartphone</span>
               </div>
               <!-- Status Dot Badge -->
-              <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#1C1C1E] flex items-center justify-center" :class="isConnected ? 'bg-success' : 'bg-surface'">
+              <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-surface flex items-center justify-center" :class="isConnected ? 'bg-success' : 'bg-surface'">
                  <div v-if="!isConnected" class="w-1.5 h-1.5 rounded-full bg-white/30"></div>
                  <span v-else class="material-symbols-rounded text-[10px] text-black font-bold">check</span>
               </div>

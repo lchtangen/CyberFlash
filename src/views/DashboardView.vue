@@ -38,13 +38,13 @@ const refreshSystem = async () => {
 <template>
   <div class="flex h-full gap-6 overflow-hidden p-6">
     <!-- Sidebar Navigation -->
-    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden">
-      <div class="p-5 border-b border-white/10 bg-white/5 backdrop-blur-md">
+    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
+      <div class="p-5 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
         <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-          <span class="material-symbols-rounded text-primary">dashboard</span>
+          <span class="material-symbols-rounded text-primary drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">dashboard</span>
           Mission Control
         </h2>
-        <p class="text-xs text-text-secondary mt-1">System Overview</p>
+        <p class="text-xs text-text-secondary mt-1 font-medium tracking-wide">System Overview</p>
       </div>
       
       <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
@@ -58,35 +58,35 @@ const refreshSystem = async () => {
         />
       </div>
       
-      <div class="p-4 border-t border-white/10 bg-white/5">
-         <VisionButton variant="secondary" icon="refresh" size="sm" class="w-full justify-center" @click="refreshSystem">
+      <div class="p-4 border-t border-white/10 bg-surface/30 backdrop-blur-xl">
+         <VisionButton variant="secondary" icon="refresh" size="sm" class="w-full justify-center shadow-lg shadow-black/20" @click="refreshSystem">
           Refresh System
         </VisionButton>
       </div>
     </GlassCard>
 
     <!-- Main Content Area -->
-    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md z-10">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/30 backdrop-blur-xl z-10">
         <div>
           <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             {{ activeCategoryLabel }}
-            <span v-if="activeCategory === 'overview'" class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider">Live</span>
+            <span v-if="activeCategory === 'overview'" class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider shadow-[0_0_10px_rgba(0,240,255,0.3)]">Live</span>
           </h2>
-          <p class="text-sm text-text-secondary mt-1">
+          <p class="text-sm text-text-secondary mt-1 font-medium">
             {{ activeCategory === 'overview' ? 'System Status & Quick Actions' : 'Advanced Operations' }}
           </p>
         </div>
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/20">
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/40">
         
         <!-- Overview Tab -->
         <div v-if="activeCategory === 'overview'" class="space-y-8 animate-slide-up">
            <!-- Device Status (Hero) -->
-            <div class="hover-tilt-subtle">
+            <div class="hover-tilt-subtle transition-transform duration-500">
               <DevicePanel />
             </div>
 
@@ -95,7 +95,7 @@ const refreshSystem = async () => {
             <GlassCard 
                 v-for="feat in features" 
                 :key="feat.id"
-                class="group cursor-pointer hover:bg-white/10 transition-all duration-500 border-white/5 hover:border-primary/50 hover-tilt"
+                class="group cursor-pointer hover:bg-surface/40 transition-all duration-500 border-white/5 hover:border-primary/30 hover-tilt ring-1 ring-white/5 hover:ring-primary/20"
                 @click="emit('navigate', feat.id)"
             >
                 <div class="flex flex-col h-full justify-between p-4 relative overflow-hidden">

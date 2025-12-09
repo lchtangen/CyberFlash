@@ -189,7 +189,7 @@ watch(() => flashStore.progress, (newVal) => {
           </div>
 
           <!-- Terminal Output (Collapsible or Fixed at bottom) -->
-          <div class="h-48 bg-[#0D0D0D] border-t border-white/10 flex flex-col">
+          <div class="h-48 bg-surface/50 backdrop-blur-md border-t border-white/10 flex flex-col">
             <div class="px-4 py-2 bg-white/5 border-b border-white/5 flex justify-between items-center">
               <span class="text-[10px] font-mono uppercase tracking-wider text-text-secondary">Process Log</span>
               <div class="flex gap-1.5">

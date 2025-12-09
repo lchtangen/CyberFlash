@@ -20,10 +20,10 @@ const classes = computed(() => {
   const base = 'relative inline-flex items-center justify-center font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden';
   
   const variants = {
-    primary: 'bg-primary text-white hover:brightness-110 shadow-lg shadow-primary/20 border border-white/10',
-    secondary: 'bg-surface/50 text-white hover:bg-surface/70 border border-white/10 backdrop-blur-md',
-    danger: 'bg-error/10 text-error hover:bg-error/20 border border-error/20 hover:border-error/40',
-    warning: 'bg-warning/10 text-warning hover:bg-warning/20 border border-warning/20 hover:border-warning/40',
+    primary: 'bg-primary text-white hover:brightness-110 shadow-lg shadow-primary/20 border border-white/10 group',
+    secondary: 'bg-surface/30 text-white hover:bg-surface/50 border border-white/10 backdrop-blur-xl shadow-lg shadow-black/20 group',
+    danger: 'bg-error/10 text-error hover:bg-error/20 border border-error/20 hover:border-error/40 backdrop-blur-md',
+    warning: 'bg-warning/10 text-warning hover:bg-warning/20 border border-warning/20 hover:border-warning/40 backdrop-blur-md',
     ghost: 'bg-transparent text-text-secondary hover:text-white hover:bg-white/5',
   };
   
@@ -39,6 +39,9 @@ const classes = computed(() => {
 
 <template>
   <button :class="classes" :disabled="disabled || loading">
+    <!-- Glow Effect for Primary/Secondary -->
+    <div v-if="variant === 'primary' || variant === 'secondary'" class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
     <!-- Loading Spinner -->
     <span v-if="loading" class="absolute inset-0 flex items-center justify-center bg-inherit">
       <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
