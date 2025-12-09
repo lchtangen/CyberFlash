@@ -16,7 +16,7 @@ defineEmits<{
 <template>
   <button 
     @click="$emit('click')"
-    class="w-full text-left px-3 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-3 group relative overflow-hidden"
+    class="w-full text-left px-3 py-2 rounded-xl transition-all duration-300 flex items-center gap-3 group relative overflow-hidden"
     :class="[
       active 
         ? (variant === 'primary' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-surface/50 backdrop-blur-xl text-white shadow-lg shadow-black/20 border border-white/10') 

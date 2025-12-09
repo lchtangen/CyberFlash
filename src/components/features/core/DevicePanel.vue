@@ -47,7 +47,7 @@ const reboot = async (mode: string) => {
 </script>
 
 <template>
-  <GlassCard class="relative overflow-hidden min-h-[320px] flex flex-col group hover-tilt">
+  <GlassCard class="relative overflow-hidden min-h-[260px] flex flex-col group hover-tilt">
     <!-- Background Effects -->
     <div v-if="isConnected" class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-50 transition-opacity duration-500"></div>
     <div v-else class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-20 animate-pulse"></div>
@@ -58,24 +58,24 @@ const reboot = async (mode: string) => {
     <div class="relative z-10 flex flex-col h-full justify-between">
       <div>
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
             <div class="relative">
-              <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-inner">
-                <span class="material-symbols-rounded text-2xl text-white" :class="{'text-primary drop-shadow-[0_0_8px_rgba(10,132,255,0.5)]': isConnected}">smartphone</span>
+              <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-inner">
+                <span class="material-symbols-rounded text-xl text-white" :class="{'text-primary drop-shadow-[0_0_8px_rgba(10,132,255,0.5)]': isConnected}">smartphone</span>
               </div>
               <!-- Status Dot Badge -->
-              <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-surface flex items-center justify-center" :class="isConnected ? 'bg-success' : 'bg-surface'">
-                 <div v-if="!isConnected" class="w-1.5 h-1.5 rounded-full bg-white/30"></div>
-                 <span v-else class="material-symbols-rounded text-[10px] text-black font-bold">check</span>
+              <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-surface flex items-center justify-center" :class="isConnected ? 'bg-success' : 'bg-surface'">
+                 <div v-if="!isConnected" class="w-1 h-1 rounded-full bg-white/30"></div>
+                 <span v-else class="material-symbols-rounded text-[8px] text-black font-bold">check</span>
               </div>
             </div>
             <div>
-              <h3 class="text-xl font-bold text-white tracking-tight leading-none">Device Status</h3>
-              <div class="flex items-center gap-2 mt-1.5">
+              <h3 class="text-lg font-bold text-white tracking-tight leading-none">Device Status</h3>
+              <div class="flex items-center gap-1.5 mt-1">
                 <span class="w-1.5 h-1.5 rounded-full" :class="isConnected ? 'bg-success animate-pulse' : 'bg-error'"></span>
-                <p class="text-xs font-medium tracking-wide" :class="isConnected ? 'text-success' : 'text-text-secondary'">
-                  {{ isConnected ? 'System Online' : 'Searching for Device...' }}
+                <p class="text-[10px] font-medium tracking-wide" :class="isConnected ? 'text-success' : 'text-text-secondary'">
+                  {{ isConnected ? 'System Online' : 'Searching...' }}
                 </p>
               </div>
             </div>

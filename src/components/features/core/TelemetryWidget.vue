@@ -47,86 +47,100 @@ const getCircleDash = (percent: number, r: number) => {
 </script>
 
 <template>
-  <GlassCard class="p-4 flex items-center justify-between gap-4">
-    <!-- CPU -->
-    <div class="flex items-center gap-3">
-      <div class="relative w-12 h-12">
-        <svg class="w-full h-full -rotate-90">
-          <circle cx="24" cy="24" r="20" class="stroke-white/10 fill-none stroke-[3]" />
-          <circle 
-            cx="24" cy="24" r="20" 
-            class="stroke-primary fill-none stroke-[3] transition-all duration-1000 ease-out"
-            :stroke-dasharray="getCircleDash(cpu, 20)"
-          />
-        </svg>
-        <div class="absolute inset-0 flex items-center justify-center">
-          <span class="text-[10px] font-bold text-white">{{ cpu }}%</span>
+  <GlassCard class="h-full flex flex-col relative overflow-hidden group">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-5 relative z-10">
+      <div class="flex items-center gap-2">
+        <div class="p-1.5 rounded-lg bg-white/5 border border-white/10">
+          <span class="material-symbols-rounded text-base text-primary">monitoring</span>
         </div>
+        <h3 class="text-sm font-bold text-white tracking-tight">Telemetry</h3>
       </div>
-      <div>
-        <div class="text-xs font-bold text-white">CPU Load</div>
-        <div class="text-[10px] text-text-secondary">Snapdragon 855</div>
+      <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/5">
+         <span class="w-1 h-1 rounded-full bg-success animate-pulse"></span>
+         <span class="text-[9px] font-mono text-success font-bold">LIVE</span>
       </div>
     </div>
 
-    <div class="w-px h-8 bg-white/10"></div>
-
-    <!-- RAM -->
-    <div class="flex items-center gap-3">
-      <div class="relative w-12 h-12">
-        <svg class="w-full h-full -rotate-90">
-          <circle cx="24" cy="24" r="20" class="stroke-white/10 fill-none stroke-[3]" />
-          <circle 
-            cx="24" cy="24" r="20" 
-            class="stroke-purple-500 fill-none stroke-[3] transition-all duration-1000 ease-out"
-            :stroke-dasharray="getCircleDash(ram, 20)"
-          />
-        </svg>
-        <div class="absolute inset-0 flex items-center justify-center">
-          <span class="text-[10px] font-bold text-white">{{ ram }}%</span>
+    <!-- Metrics Grid -->
+    <div class="flex-1 grid grid-cols-1 gap-3 relative z-10">
+      
+      <!-- CPU -->
+      <div class="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group/item">
+        <div class="relative w-10 h-10 shrink-0">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="20" cy="20" r="16" class="stroke-white/10 fill-none stroke-[3]" />
+            <circle 
+              cx="20" cy="20" r="16" 
+              class="stroke-primary fill-none stroke-[3] transition-all duration-1000 ease-out"
+              :stroke-dasharray="getCircleDash(cpu, 16)"
+              stroke-linecap="round"
+            />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-[9px] font-bold text-white">{{ cpu }}%</span>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-center mb-0.5">
+            <span class="text-xs font-bold text-white">CPU Load</span>
+            <span class="text-[9px] font-mono text-primary opacity-0 group-hover/item:opacity-100 transition-opacity">SD855</span>
+          </div>
+          <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+            <div class="h-full bg-primary transition-all duration-1000 ease-out" :style="{ width: `${cpu}%` }"></div>
+          </div>
         </div>
       </div>
-      <div>
-        <div class="text-xs font-bold text-white">Memory</div>
-        <div class="text-[10px] text-text-secondary">3.4 / 8 GB</div>
-      </div>
-    </div>
 
-    <div class="w-px h-8 bg-white/10"></div>
-
-    <!-- TEMP -->
-    <div class="flex items-center gap-3">
-      <div class="relative w-12 h-12">
-        <svg class="w-full h-full -rotate-90">
-          <circle cx="24" cy="24" r="20" class="stroke-white/10 fill-none stroke-[3]" />
-          <circle 
-            cx="24" cy="24" r="20" 
-            class="stroke-orange-500 fill-none stroke-[3] transition-all duration-1000 ease-out"
-            :stroke-dasharray="getCircleDash(temp, 20)"
-          />
-        </svg>
-        <div class="absolute inset-0 flex items-center justify-center">
-          <span class="text-[10px] font-bold text-white">{{ temp }}°</span>
+      <!-- RAM -->
+      <div class="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group/item">
+        <div class="relative w-10 h-10 shrink-0">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="20" cy="20" r="16" class="stroke-white/10 fill-none stroke-[3]" />
+            <circle 
+              cx="20" cy="20" r="16" 
+              class="stroke-purple-500 fill-none stroke-[3] transition-all duration-1000 ease-out"
+              :stroke-dasharray="getCircleDash(ram, 16)"
+              stroke-linecap="round"
+            />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-[9px] font-bold text-white">{{ ram }}%</span>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-center mb-0.5">
+            <span class="text-xs font-bold text-white">Memory</span>
+            <span class="text-[9px] font-mono text-purple-400 opacity-0 group-hover/item:opacity-100 transition-opacity">8GB</span>
+          </div>
+          <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+            <div class="h-full bg-purple-500 transition-all duration-1000 ease-out" :style="{ width: `${ram}%` }"></div>
+          </div>
         </div>
       </div>
-      <div>
-        <div class="text-xs font-bold text-white">Thermal</div>
-        <div class="text-[10px] text-text-secondary">Battery Temp</div>
+
+      <!-- Temp -->
+      <div class="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group/item">
+        <div class="relative w-10 h-10 shrink-0 flex items-center justify-center bg-white/5 rounded-full">
+           <span class="material-symbols-rounded text-lg" :class="temp > 40 ? 'text-error' : 'text-success'">thermostat</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-center mb-0.5">
+            <span class="text-xs font-bold text-white">Battery Temp</span>
+            <span class="text-[10px] font-mono font-bold" :class="temp > 40 ? 'text-error' : 'text-success'">{{ temp }}°C</span>
+          </div>
+          <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+            <div class="h-full transition-all duration-1000 ease-out" 
+                 :class="temp > 40 ? 'bg-error' : 'bg-success'"
+                 :style="{ width: `${(temp / 60) * 100}%` }"></div>
+          </div>
+        </div>
       </div>
+
     </div>
     
-    <div class="w-px h-8 bg-white/10"></div>
-
-    <!-- Network -->
-    <div class="flex items-center gap-3">
-      <div class="relative w-12 h-12 flex items-center justify-center bg-white/5 rounded-full">
-        <span class="material-symbols-rounded text-cyan-400 text-xl">network_check</span>
-      </div>
-      <div>
-        <div class="text-xs font-bold text-white">ADB Link</div>
-        <div class="text-[10px] text-text-secondary">{{ network }} MB/s</div>
-      </div>
-    </div>
-
+    <!-- Background Graph Decoration -->
+    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none"></div>
+    <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
   </GlassCard>
 </template>

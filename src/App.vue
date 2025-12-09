@@ -165,15 +165,15 @@ onMounted(async () => {
   <div class="min-h-screen mesh-gradient-bg text-text-primary font-sans overflow-hidden relative flex">
     <DynamicIsland />
     <!-- Sidebar -->
-    <aside class="w-72 m-3 mr-0 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-2xl flex flex-col shadow-2xl shadow-black/50 z-20 overflow-hidden transition-all duration-500 hover:bg-surface/40">
-      <div class="p-6 flex items-center gap-3 border-b border-white/5">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 relative group cursor-pointer overflow-hidden">
+    <aside class="w-64 m-3 mr-0 rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-2xl flex flex-col shadow-2xl shadow-black/50 z-20 overflow-hidden transition-all duration-500 hover:bg-surface/40">
+      <div class="p-5 flex items-center gap-3 border-b border-white/5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 relative group cursor-pointer overflow-hidden">
            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-           <span class="material-symbols-rounded text-white text-2xl drop-shadow-md">bolt</span>
+           <span class="material-symbols-rounded text-white text-xl drop-shadow-md">bolt</span>
         </div>
         <div>
-          <h1 class="text-lg font-bold text-white tracking-tight leading-none">CyberFlash</h1>
-          <span class="text-[10px] font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">V2.5 PRO</span>
+          <h1 class="text-base font-bold text-white tracking-tight leading-none">CyberFlash</h1>
+          <span class="text-[9px] font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">V2.5 PRO</span>
         </div>
       </div>
       

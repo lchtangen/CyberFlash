@@ -61,12 +61,12 @@ const executeCommand = async () => {
 <template>
   <div class="h-full font-mono text-sm flex flex-col bg-surface/80 border border-white/10 rounded-xl backdrop-blur-xl shadow-2xl shadow-black/50 overflow-hidden relative group ring-1 ring-white/5">
     <!-- Header -->
-    <div class="flex items-center justify-between px-4 py-2.5 border-b border-white/10 bg-surface/50 select-none backdrop-blur-md">
+    <div class="flex items-center justify-between px-3 py-2 border-b border-white/10 bg-surface/50 select-none backdrop-blur-md">
       <div class="flex items-center gap-2">
         <div class="flex gap-1.5">
-          <div class="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
-          <div class="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-          <div class="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
         </div>
       </div>
       <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-50">
@@ -77,7 +77,7 @@ const executeCommand = async () => {
     </div>
 
     <!-- Logs Area -->
-    <div ref="terminalRef" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-1 relative">
+    <div ref="terminalRef" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1 relative">
       <!-- Welcome Message -->
       <div v-if="logs.length === 0" class="text-text-muted mb-4">
         <p>CyberFlash v2.0.0 (ADB Shell)</p>

@@ -39,18 +39,18 @@ const refreshSystem = async () => {
 </script>
 
 <template>
-  <div class="flex h-full gap-6 overflow-hidden p-6">
+  <div class="flex h-full gap-4 overflow-hidden p-4">
     <!-- Sidebar Navigation -->
-    <GlassCard noPadding class="w-64 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
-      <div class="p-5 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
-        <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+    <GlassCard noPadding class="w-60 flex-shrink-0 flex flex-col overflow-hidden ring-1 ring-white/5 shadow-2xl shadow-black/20">
+      <div class="p-4 border-b border-white/10 bg-surface/30 backdrop-blur-xl">
+        <h2 class="text-base font-bold text-white tracking-tight flex items-center gap-2">
           <span class="material-symbols-rounded text-primary drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">dashboard</span>
           Mission Control
         </h2>
-        <p class="text-xs text-text-secondary mt-1 font-medium tracking-wide">System Overview</p>
+        <p class="text-[10px] text-text-secondary mt-0.5 font-medium tracking-wide">System Overview</p>
       </div>
       
-      <div class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
         <SidebarItem 
           v-for="cat in categories" 
           :key="cat.id"
@@ -61,7 +61,7 @@ const refreshSystem = async () => {
         />
       </div>
       
-      <div class="p-4 border-t border-white/10 bg-surface/30 backdrop-blur-xl">
+      <div class="p-3 border-t border-white/10 bg-surface/30 backdrop-blur-xl">
          <VisionButton variant="secondary" icon="refresh" size="sm" class="w-full justify-center shadow-lg shadow-black/20" @click="refreshSystem">
           Refresh System
         </VisionButton>
@@ -71,33 +71,33 @@ const refreshSystem = async () => {
     <!-- Main Content Area -->
     <GlassCard noPadding class="flex-1 flex flex-col min-w-0 overflow-hidden relative ring-1 ring-white/5 shadow-2xl shadow-black/20">
       <!-- Header -->
-      <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/30 backdrop-blur-xl z-10">
+      <div class="px-5 py-4 border-b border-white/10 flex justify-between items-center bg-surface/30 backdrop-blur-xl z-10">
         <div>
-          <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+          <h2 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
             {{ activeCategoryLabel }}
             <span v-if="activeCategory === 'overview'" class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-wider shadow-[0_0_10px_rgba(0,240,255,0.3)]">Live</span>
           </h2>
-          <p class="text-sm text-text-secondary mt-1 font-medium">
+          <p class="text-xs text-text-secondary mt-0.5 font-medium">
             {{ activeCategory === 'overview' ? 'System Status & Quick Actions' : 'Advanced Operations' }}
           </p>
         </div>
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-b from-transparent to-black/40">
+      <div class="flex-1 overflow-y-auto p-5 custom-scrollbar bg-gradient-to-b from-transparent to-black/40">
         
         <!-- Overview Tab -->
-        <div v-if="activeCategory === 'overview'" class="space-y-6 animate-slide-up">
+        <div v-if="activeCategory === 'overview'" class="space-y-4 animate-slide-up">
            
            <!-- Top Row: Device Status & Telemetry -->
-           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+           <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <!-- Device Status (Hero) -->
               <div class="lg:col-span-2 hover-tilt-subtle transition-transform duration-500">
                 <DevicePanel />
               </div>
               <!-- Live Telemetry -->
-              <div class="lg:col-span-1">
-                <TelemetryWidget />
+              <div class="lg:col-span-1 h-full">
+                <TelemetryWidget class="h-full" />
               </div>
            </div>
 

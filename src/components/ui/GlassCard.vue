@@ -11,7 +11,7 @@ defineProps<{
     class="relative overflow-hidden rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl transition-all duration-300 ring-1 ring-white/5 shadow-2xl shadow-black/20"
     :class="[
       !noHover ? 'hover:bg-surface/40 hover:border-white/20 hover:shadow-primary/10 hover:scale-[1.002]' : '',
-      !noPadding ? 'p-6' : ''
+      !noPadding ? 'p-5' : ''
     ]"
   >
     <!-- Glow Effect -->
